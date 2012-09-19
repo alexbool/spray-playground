@@ -14,7 +14,7 @@ object Main extends App {
 	val system = ActorSystem("SprayPlayground")
 
 	// create the service instance, supplying all required dependencies
-	val mainModule = new CalculatorService {
+	val calculatorModule = new CalculatorService {
 		implicit def actorSystem = system
 		// bake your module cake here
 
@@ -26,7 +26,7 @@ object Main extends App {
 
 	// create and start the HttpService actor running our service as well as the root actor
 	val httpService = system.actorOf(
-		props = Props(new HttpService(mainModule.calculatorService)),
+		props = Props(new HttpService(calculatorModule.calculatorService)),
 		name = "calculator-service")
 	val rootService = system.actorOf(
 		props = Props(new SprayCanRootService(httpService)),
