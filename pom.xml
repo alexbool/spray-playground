@@ -60,8 +60,6 @@
 					<artifactId>appassembler-maven-plugin</artifactId>
 					<version>1.2.2</version>
 				</plugin>
-				<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>rpm-maven-plugin</artifactId> 
-					<version>2.1-alpha-1</version> </plugin> -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -133,9 +131,6 @@
 					<repositoryName>lib</repositoryName>
 				</configuration>
 			</plugin>
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>rpm-maven-plugin</artifactId> 
-				<executions> <execution> <goals> <goal>rpm</goal> </goals> </execution> </executions> 
-				</plugin> -->
 		</plugins>
 	</build>
 </project>
