@@ -2,10 +2,6 @@ package com.alexb.calculator
 
 import akka.actor.Actor
 
-case class AddCommand(a: Double, b: Double)
-case class SubtractCommand(a: Double, b: Double)
-case class DivideCommand(a: Double, b: Double)
-
 class CalculatorActor extends Actor {
 
 	protected def receive = {
