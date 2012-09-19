@@ -1,12 +1,12 @@
-package com.alexb.service
+package com.alexb.calculator
 
 import cc.spray.Directives
 import cc.spray.directives.DoubleNumber
 import cc.spray.typeconversion.SprayJsonSupport
-import akka.pattern.{ ask }
 import akka.util.Timeout
 import akka.util.duration._
-import akka.actor.{ ActorSystem, Props, ActorRef }
+import akka.actor.ActorRef
+import akka.pattern.ask
 import cc.spray.json.DefaultJsonProtocol
 
 trait CalculatorService

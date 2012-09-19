@@ -1,8 +1,8 @@
-package com.alexb.service
+package com.alexb.calculator
 
 import cc.spray.http._
 import cc.spray.typeconversion._
-import MediaTypes._
+import cc.spray.http.MediaTypes._
 
 trait CustomMarshallers {
 

@@ -1,4 +1,4 @@
-package com.alexb.service
+package com.alexb.calculator
 
 import akka.actor.Actor
 

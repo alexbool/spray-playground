@@ -127,7 +127,7 @@
 				<configuration>
 					<programs>
 						<program>
-							<mainClass>com.alexb.service.Main</mainClass>
+							<mainClass>com.alexb.main.Main</mainClass>
 							<name>spray-playground</name>
 						</program>
 					</programs>

@@ -1,4 +1,4 @@
-package com.alexb.service
+package com.alexb.main
 
 import akka.actor.{ actorRef2Scala, ActorSystem, Props }
 import cc.spray.can.server.HttpServer
@@ -6,6 +6,7 @@ import cc.spray.io.pipelines.MessageHandlerDispatch
 import cc.spray.io.IoWorker
 import cc.spray.HttpService
 import cc.spray.SprayCanRootService
+import com.alexb.calculator.{ CalculatorService, CalculatorActor, AddCommandListener, AddCommand }
 
 object Main extends App {
 
