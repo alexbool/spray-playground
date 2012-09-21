@@ -4,19 +4,23 @@ import akka.actor.{ actorRef2Scala, ActorSystem, Props }
 import cc.spray.can.server.HttpServer
 import cc.spray.io.pipelines.MessageHandlerDispatch
 import cc.spray.io.IoWorker
-import cc.spray.HttpService
-import cc.spray.SprayCanRootService
+import cc.spray.{ HttpService, SprayCanRootService }
 import com.alexb.calculator.{ CalculatorModule, CalculatorActor, AddCommandListener, AddCommand }
-import com.alexb.orders.OrderService
-import com.alexb.orders.OrderActor
+import com.alexb.orders.{ OrderService, OrderActor, OrderModule }
+import com.mongodb.casbah.Imports._
+import com.typesafe.config.Config
 
 object Main extends App {
 
 	// we need an ActorSystem to host our application in
 	val system = ActorSystem("SprayPlayground")
-
+	
+	// MongoDB Connection
+	val mongoConn = MongoConnection(system.settings.config.getString("mongo.host"))
+	
 	// create the service instance, supplying all required dependencies
 	val calculatorModule = new CalculatorModule(system)
+	val orderModule = new OrderModule(system, mongoConn("spray_playground")("orders"))
 
 	// create and start the HttpService actor running our service as well as the root actor
 	val httpService = system.actorOf(
