@@ -6,7 +6,9 @@ import cc.spray.io.pipelines.MessageHandlerDispatch
 import cc.spray.io.IoWorker
 import cc.spray.HttpService
 import cc.spray.SprayCanRootService
-import com.alexb.calculator.{ CalculatorService, CalculatorActor, AddCommandListener, AddCommand }
+import com.alexb.calculator.{ CalculatorModule, CalculatorActor, AddCommandListener, AddCommand }
+import com.alexb.orders.OrderService
+import com.alexb.orders.OrderActor
 
 object Main extends App {
 
@@ -14,15 +16,7 @@ object Main extends App {
 	val system = ActorSystem("SprayPlayground")
 
 	// create the service instance, supplying all required dependencies
-	val calculatorModule = new CalculatorService {
-		implicit def actorSystem = system
-		// bake your module cake here
-
-		// Creating calculator actor
-		implicit val calculator = actorSystem.actorOf(
-			props = Props(new CalculatorActor),
-			name = "calculator-actor")
-	}
+	val calculatorModule = new CalculatorModule(system)
 
 	// create and start the HttpService actor running our service as well as the root actor
 	val httpService = system.actorOf(
