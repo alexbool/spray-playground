@@ -22,9 +22,13 @@ trait OrderService
 		pathPrefix("orders") {
 			path("save-order") {
 				post {
-					// TODO
-					respondWithStatus(StatusCodes.Accepted) {
-						completeWith("")
+					content(as[AddOrderCommand]) { cmd =>
+						orderActor ! cmd
+						respondWithStatus(StatusCodes.Accepted) {
+							completeWith { 
+								"" 
+							}
+						}
 					}
 				}
 			} ~
