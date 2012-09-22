@@ -1,4 +1,4 @@
-package com.alexb.spray.test
+package com.alexb.calculator
 
 import cc.spray.json._
 import org.scalatest._
@@ -19,7 +19,7 @@ object ResponseJsonProtocol extends DefaultJsonProtocol {
 	}
 }
 
-class SprayJsonEitherTest extends FlatSpec with ShouldMatchers {
+class SprayJsonEitherSpec extends FlatSpec with ShouldMatchers {
 	import ResponseJsonProtocol._
 
 	"spray-json" should "serialize Either[A, B] values" in {
