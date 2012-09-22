@@ -9,5 +9,5 @@ trait MongoContext {
 	implicit def actorSystem: ActorSystem
 	
 	// MongoDB connection instance
-	implicit val mongoConn = MongoConnection(actorSystem.settings.config.getString("mongo.host"))
+	implicit def mongoConn = MongoConnection(actorSystem.settings.config.getString("mongo.host"))
 }

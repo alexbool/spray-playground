@@ -6,9 +6,9 @@ import com.mongodb.casbah.MongoCollection
 trait OrderModule extends OrderService {
 
 	implicit def actorSystem: ActorSystem
-	implicit val collection: MongoCollection
+	implicit def collection: MongoCollection
 	
-	val orderActor = actorSystem.actorOf(
+	def orderActor = actorSystem.actorOf(
 		props = Props(new OrderActor(collection)),
 		name = "order-actor")
 }

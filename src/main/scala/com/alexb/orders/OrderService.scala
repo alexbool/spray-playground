@@ -16,7 +16,7 @@ trait OrderService
 	
 	implicit val timeout = Timeout(5 seconds) // needed for `?` below
 
-	implicit val orderActor: ActorRef
+	implicit def orderActor: ActorRef
 
 	val orderService = {
 		pathPrefix("orders") {
