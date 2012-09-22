@@ -31,4 +31,5 @@ class OrderActor(collection: MongoCollection) extends Actor {
 					d("items").asInstanceOf[List[DBObject]].map(f => OrderItem(
 							f("itemId").asInstanceOf[String],
 							f("quantity").asInstanceOf[Int]))))
+			.toList
 }
