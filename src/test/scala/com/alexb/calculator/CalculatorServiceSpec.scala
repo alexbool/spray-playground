@@ -8,13 +8,9 @@ import cc.spray.test.SprayTest
 import org.scalatest._
 
 class CalculatorServiceSpec(system: ActorSystem) extends TestKit(system)
-	with WordSpec with MustMatchers with SprayTest with CalculatorService {
+	with WordSpec with MustMatchers with SprayTest with CalculatorService with CalculatorServiceContext {
 
 	def this() = this(ActorSystem("MySpec"))
-	
-	implicit val calculator = actorSystem.actorOf(
-		props = Props(new CalculatorActor),
-		name = "calculator-actor")
 
 	"Calculator service" must {
 		"do right additions" in {
