@@ -1,7 +1,8 @@
 package com.alexb.orders
 
 import cc.spray.Directives
-import cc.spray.directives.DoubleNumber
+import cc.spray.directives.PathElement
+import cc.spray.http.StatusCodes
 import cc.spray.typeconversion.SprayJsonSupport
 import akka.util.Timeout
 import akka.util.duration._
@@ -21,9 +22,20 @@ trait OrderService
 		pathPrefix("orders") {
 			path("save-order") {
 				post {
-					completeWith(Order("1", "1", List(OrderItem("Trololo", 2))))
+					// TODO
+					respondWithStatus(StatusCodes.Accepted) {
+						completeWith("")
+					}
 				}
+			} ~
+			path("get-orders" / PathElement) { clientId =>
+				get {
+					completeWith((orderActor ? OrdersByClientIdQuery(clientId)).mapTo[List[Order]])
+				}
+			} ~
+			path("test") {
+				completeWith(Order("1", "1", List(OrderItem("Trololo", 2))))
 			}
-		}
+		} 
 	}
 }
