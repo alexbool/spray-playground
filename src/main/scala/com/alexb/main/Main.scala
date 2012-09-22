@@ -25,8 +25,8 @@ object Main extends App {
 		props = Props(new HttpService(calculatorModule.calculatorService)),
 		name = "calculator-service")
 	val orderHttpService = system.actorOf(
-			props = Props(new HttpService(orderModule.orderService)),
-			name = "order-service")
+		props = Props(new HttpService(orderModule.orderService)),
+		name = "order-service")
 	val rootService = system.actorOf(
 		props = Props(new SprayCanRootService(calculatorHttpService, orderHttpService)),
 		name = "root-service")
