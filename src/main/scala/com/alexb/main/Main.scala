@@ -7,27 +7,28 @@ import cc.spray.io.IoWorker
 import cc.spray.{ HttpService, SprayCanRootService }
 import com.alexb.calculator.{ CalculatorModule, CalculatorActor, AddCommandListener, AddCommand }
 import com.alexb.orders.{ OrderService, OrderActor, OrderModule }
-import com.mongodb.casbah.Imports._
-import com.typesafe.config.Config
 
 object Main extends App {
 
 	// we need an ActorSystem to host our application in
 	val system = ActorSystem("SprayPlayground")
 	
-	// MongoDB Connection
-	val mongoConn = MongoConnection(system.settings.config.getString("mongo.host"))
-	
 	// create the service instance, supplying all required dependencies
 	val calculatorModule = new CalculatorModule(system)
-	val orderModule = new OrderModule(system, mongoConn("spray_playground")("orders"))
+	val orderModule = new OrderModule with MongoContext {
+		implicit def actorSystem = system
+		val collection = mongoConn("spray_playground")("orders")
+	}
 
 	// create and start the HttpService actor running our service as well as the root actor
-	val httpService = system.actorOf(
+	val calculatorHttpService = system.actorOf(
 		props = Props(new HttpService(calculatorModule.calculatorService)),
 		name = "calculator-service")
+	val orderHttpService = system.actorOf(
+			props = Props(new HttpService(orderModule.orderService)),
+			name = "order-service")
 	val rootService = system.actorOf(
-		props = Props(new SprayCanRootService(httpService)),
+		props = Props(new SprayCanRootService(calculatorHttpService, orderHttpService)),
 		name = "root-service")
 
 	///////////////////////////////////////////////////////////////////////////
