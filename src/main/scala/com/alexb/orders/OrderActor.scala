@@ -25,11 +25,14 @@ class OrderActor(collection: MongoCollection) extends Actor {
 	private def getOrdersByClient(clientId: String) = 
 		collection
 			.find(MongoDBObject("clientId" -> clientId))
-			.map(d => Order(
-					d("_id").asInstanceOf[String],
-					d("clientId").asInstanceOf[String],
-					d("items").asInstanceOf[List[DBObject]].map(f => OrderItem(
-							f("itemId").asInstanceOf[String],
-							f("quantity").asInstanceOf[Int]))))
+			.map(toOrder)
 			.toList
+	
+	private val toOrder: DBObject => Order =
+		d => Order(d("_id").asInstanceOf[String],
+					d("clientId").asInstanceOf[String],
+					d("items").asInstanceOf[List[DBObject]].map(toOrderItem))
+	
+	private val toOrderItem: DBObject => OrderItem =
+		d => OrderItem(d("itemId").asInstanceOf[String], d("quantity").asInstanceOf[Int])
 }
