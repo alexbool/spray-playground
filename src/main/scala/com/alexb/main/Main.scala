@@ -49,7 +49,9 @@ object Main extends App {
 
 	// a running HttpServer can be bound, unbound and rebound
 	// initially to need to tell it where to bind to
-	sprayCanServer ! HttpServer.Bind("localhost", 8080)
+	sprayCanServer ! HttpServer.Bind(
+			system.settings.config.getString("application.host"),
+			system.settings.config.getInt("application.port"))
 
 	// finally we drop the main thread but hook the shutdown of
 	// our IoWorker into the shutdown of the applications ActorSystem
