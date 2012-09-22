@@ -17,7 +17,7 @@ trait CalculatorService
 
 	implicit val timeout = Timeout(5 seconds) // needed for `?` below
 
-	implicit val calculator: ActorRef
+	implicit def calculator: ActorRef
 
 	val calculatorService = {
 		pathPrefix("calculator") { 
