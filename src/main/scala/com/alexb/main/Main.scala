@@ -5,7 +5,7 @@ import cc.spray.can.server.HttpServer
 import cc.spray.io.pipelines.MessageHandlerDispatch
 import cc.spray.io.IoWorker
 import cc.spray.{ HttpService, SprayCanRootService }
-import com.alexb.calculator.{ CalculatorModule, CalculatorActor, AddCommandListener, AddCommand }
+import com.alexb.calculator.{ CalculatorModule, AddCommandListener, AddCommand }
 import com.alexb.orders.{ OrderService, OrderActor, OrderModule }
 
 object Main extends App {
