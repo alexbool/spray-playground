@@ -32,7 +32,7 @@ trait OrderService
 					}
 				}
 			} ~
-			path("get-orders" / PathElement) { clientId =>
+			path("orders-by-client" / PathElement) { clientId =>
 				get {
 					completeWith((orderActor ? OrdersByClientIdQuery(clientId)).mapTo[List[Order]])
 				}
