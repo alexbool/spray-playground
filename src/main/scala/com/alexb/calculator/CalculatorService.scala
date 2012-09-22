@@ -20,21 +20,23 @@ trait CalculatorService
 	implicit val calculator: ActorRef
 
 	val calculatorService = {
-		path("add" / DoubleNumber / DoubleNumber) { (a, b) =>
-			get {
-				val cmd = AddCommand(a, b)
-				actorSystem.eventStream.publish(cmd)
-				completeWith((calculator ? cmd).mapTo[Double])
-			}
-		} ~ 
-		path("subtract" / DoubleNumber / DoubleNumber) { (a, b) =>
-			get {
-				completeWith((calculator ? SubtractCommand(a, b)).mapTo[Double])
-			}
-		} ~ 
-		path("divide" / DoubleNumber / DoubleNumber) { (a, b) =>
-			get {
-				completeWith((calculator ? DivideCommand(a, b)).mapTo[Either[Double, ArithmeticException]])
+		pathPrefix("calculator") { 
+			path("add" / DoubleNumber / DoubleNumber) { (a, b) =>
+				get {
+					val cmd = AddCommand(a, b)
+					actorSystem.eventStream.publish(cmd)
+					completeWith((calculator ? cmd).mapTo[Double])
+				}
+			} ~ 
+			path("subtract" / DoubleNumber / DoubleNumber) { (a, b) =>
+				get {
+					completeWith((calculator ? SubtractCommand(a, b)).mapTo[Double])
+				}
+			} ~ 
+			path("divide" / DoubleNumber / DoubleNumber) { (a, b) =>
+				get {
+					completeWith((calculator ? DivideCommand(a, b)).mapTo[Either[Double, ArithmeticException]])
+				}
 			}
 		}
 	}
