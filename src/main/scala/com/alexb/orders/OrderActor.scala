@@ -9,7 +9,7 @@ class OrderActor(collection: MongoCollection) extends Actor {
 	def receive = {
 		case cmd: AddOrderCommand => saveOrder(Order(UUID.randomUUID.toString, cmd.clientId, List()))
 		case cmd: DeleteOrderCommand => deleteOrder(cmd.orderId)
-		case cmd: OrdersByClientIdQuery => sender ! getOrdersByClient(cmd.clientId)
+		case cmd: OrdersByClientIdQuery => sender ! findOrdersByClient(cmd.clientId)
 	}
 	
 	private def saveOrder(order: Order) = {
@@ -22,7 +22,7 @@ class OrderActor(collection: MongoCollection) extends Actor {
 		collection -= MongoDBObject("_id" -> orderId)
 	}
 	
-	private def getOrdersByClient(clientId: String) = 
+	private def findOrdersByClient(clientId: String) = 
 		collection
 			.find(MongoDBObject("clientId" -> clientId))
 			.map(toOrder)
