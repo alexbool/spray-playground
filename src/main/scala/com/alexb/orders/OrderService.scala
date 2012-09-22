@@ -18,9 +18,11 @@ trait OrderService
 	implicit val orderActor: ActorRef
 
 	val orderService = {
-		path("save-order") {
-			post {
-				completeWith(Order("1", "1", List(OrderItem("Trololo", 2))))
+		pathPrefix("orders") {
+			path("save-order") {
+				post {
+					completeWith(Order("1", "1", List(OrderItem("Trololo", 2))))
+				}
 			}
 		}
 	}
