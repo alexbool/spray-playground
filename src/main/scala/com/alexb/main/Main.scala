@@ -17,7 +17,7 @@ object Main extends App {
 	val calculatorModule = new CalculatorModule(system)
 	val orderModule = new OrderModule with MongoContext {
 		implicit def actorSystem = system
-		val collection = mongoConn("spray_playground")("orders")
+		implicit val collection = mongoConn("spray_playground")("orders")
 	}
 
 	// create and start the HttpService actor running our service as well as the root actor
