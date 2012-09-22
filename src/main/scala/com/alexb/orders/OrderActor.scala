@@ -4,7 +4,7 @@ import akka.actor.Actor
 import com.mongodb.casbah.Imports._
 import java.util.UUID
 
-class OrderActor(val collection: MongoCollection) extends Actor {
+class OrderActor(collection: MongoCollection) extends Actor {
 
 	def receive = {
 		case cmd: AddOrderCommand => saveOrder(Order(UUID.randomUUID.toString, cmd.clientId, List()))
@@ -23,7 +23,8 @@ class OrderActor(val collection: MongoCollection) extends Actor {
 	}
 	
 	private def getOrdersByClient(clientId: String) = 
-		collection.find(MongoDBObject("clientId" -> clientId))
+		collection
+			.find(MongoDBObject("clientId" -> clientId))
 			.map(d => Order(
 					d("orderId").asInstanceOf[String],
 					d("clientId").asInstanceOf[String],
