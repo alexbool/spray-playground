@@ -13,20 +13,20 @@ class OrderActor(collection: MongoCollection) extends Actor {
 	}
 	
 	private def saveOrder(order: Order) = {
-		collection += MongoDBObject("orderId" -> order.orderId,
+		collection += MongoDBObject("_id" -> order.orderId,
 									"clientId" -> order.clientId,
 									"items" -> order.items)
 	}
 	
 	private def deleteOrder(orderId: String) = {
-		collection -= MongoDBObject("orderId" -> orderId)
+		collection -= MongoDBObject("_id" -> orderId)
 	}
 	
 	private def getOrdersByClient(clientId: String) = 
 		collection
 			.find(MongoDBObject("clientId" -> clientId))
 			.map(d => Order(
-					d("orderId").asInstanceOf[String],
+					d("_id").asInstanceOf[String],
 					d("clientId").asInstanceOf[String],
 					d("items").asInstanceOf[List[DBObject]].map(f => OrderItem(
 							f("itemId").asInstanceOf[String],
