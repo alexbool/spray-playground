@@ -32,6 +32,11 @@ trait OrderService
 					}
 				}
 			} ~
+			path("orders" / PathElement) { orderId =>
+				get {
+					completeWith((orderActor ? OrderByIdQuery(orderId)).mapTo[Option[Order]])
+				}
+			} ~
 			path("orders-by-client" / PathElement) { clientId =>
 				get {
 					completeWith((orderActor ? OrdersByClientIdQuery(clientId)).mapTo[List[Order]])
