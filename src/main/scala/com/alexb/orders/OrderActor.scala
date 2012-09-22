@@ -35,10 +35,10 @@ class OrderActor(collection: MongoCollection) extends Actor {
 			.toList
 	
 	private val toOrder: DBObject => Order =
-		d => Order(d("_id").asInstanceOf[String],
-					d("clientId").asInstanceOf[String],
-					d("items").asInstanceOf[List[DBObject]].map(toOrderItem))
+		d => Order(d.getAs[String]("_id").get,
+					d.getAs[String]("clientId").get,
+					d.getAs[List[DBObject]]("items").get.map(toOrderItem))
 	
 	private val toOrderItem: DBObject => OrderItem =
-		d => OrderItem(d("itemId").asInstanceOf[String], d("quantity").asInstanceOf[Int])
+		d => OrderItem(d.getAs[String]("itemId").get, d.getAs[Int]("quantity").get)
 }
