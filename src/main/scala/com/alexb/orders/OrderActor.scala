@@ -37,7 +37,7 @@ class OrderActor(collection: MongoCollection) extends Actor {
 	private val toOrder: DBObject => Order =
 		d => Order(d.getAs[String]("_id").get,
 					d.getAs[String]("clientId").get,
-					d.getAs[List[DBObject]]("items").get.map(toOrderItem))
+					d.getAs[Iterable[DBObject]]("items").get.toList.map(toOrderItem))
 	
 	private val toOrderItem: DBObject => OrderItem =
 		d => OrderItem(d.getAs[String]("itemId").get, d.getAs[Int]("quantity").get)
