@@ -9,6 +9,5 @@ trait OrderModule extends OrderService {
 	implicit def collection: MongoCollection
 	
 	def orderActor = actorSystem.actorOf(
-		props = Props(new OrderActor(collection)),
-		name = "order-actor")
+		props = Props(new OrderActor(collection)))
 }
