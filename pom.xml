@@ -5,6 +5,7 @@
 	<artifactId>spray-playground</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<properties>
+		<spray-version>1.0-M2.2</spray-version>
 		<akka-version>2.0.3</akka-version>
 	</properties>
 	<repositories>
@@ -26,12 +27,12 @@
 		<dependency>
 			<groupId>cc.spray</groupId>
 			<artifactId>spray-server</artifactId>
-			<version>1.0-M2.2</version>
+			<version>${spray-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>cc.spray</groupId>
 			<artifactId>spray-can</artifactId>
-			<version>1.0-M2.2</version>
+			<version>${spray-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>cc.spray</groupId>
