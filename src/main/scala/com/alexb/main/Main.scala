@@ -17,7 +17,7 @@ object Main extends App {
 	
 	// create the service instance, supplying all required dependencies
 	// val calculatorModule = new CalculatorModule
-	val service = new Actor with CalculatorModule with OrderModule with MongoContext {
+	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with MongoContext {
 		def actorSystem = system
 		
 		val timeout = Timeout(5 seconds) // needed for `?`
@@ -35,7 +35,7 @@ object Main extends App {
 
 	// create and start the HttpService actor running our service as well as the root actor
 	val httpService = system.actorOf(
-		props = Props(service),
+		props = Props[SprayPlaygroundService],
 		name = "service")
 
 	///////////////////////////////////////////////////////////////////////////
