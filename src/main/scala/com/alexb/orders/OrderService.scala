@@ -1,49 +1,46 @@
 package com.alexb.orders
 
-import cc.spray.Directives
-import cc.spray.directives.PathElement
+import cc.spray.routing.directives.PathMatchers._
+import cc.spray.routing.HttpService
 import cc.spray.http.StatusCodes
-import cc.spray.typeconversion.SprayJsonSupport
+import cc.spray.httpx.SprayJsonSupport
 import akka.util.Timeout
-import akka.util.duration._
 import akka.actor.ActorRef
 import akka.pattern.ask
 
 trait OrderService
-	extends Directives
+	extends HttpService
 	with SprayJsonSupport
 	with OrderMarshallers {
 	
-	implicit val timeout = Timeout(5 seconds) // needed for `?` below
+	implicit val timeout: Timeout // needed for `?` below
 
 	implicit def orderActor: ActorRef
 
-	val orderService = {
+	val orderRoute = {
 		pathPrefix("orders") {
 			path("save-order") {
 				post {
-					content(as[AddOrderCommand]) { cmd =>
+					entity(as[AddOrderCommand]) { cmd =>
 						orderActor ! cmd
 						respondWithStatus(StatusCodes.Accepted) {
-							completeWith { 
-								"" 
-							}
+							complete("")
 						}
 					}
 				}
 			} ~
 			path("orders" / PathElement) { orderId =>
 				get {
-					completeWith((orderActor ? OrderByIdQuery(orderId)).mapTo[Option[Order]])
+					complete((orderActor ? OrderByIdQuery(orderId)).mapTo[Option[Order]])
 				}
 			} ~
 			path("orders-by-client" / PathElement) { clientId =>
 				get {
-					completeWith((orderActor ? OrdersByClientIdQuery(clientId)).mapTo[List[Order]])
+					complete((orderActor ? OrdersByClientIdQuery(clientId)).mapTo[List[Order]])
 				}
 			} ~
 			path("test") {
-				completeWith(Order("1", "1", List(OrderItem("Trololo", 2))))
+				complete(Order("1", "1", List(OrderItem("Trololo", 2))))
 			}
 		} 
 	}

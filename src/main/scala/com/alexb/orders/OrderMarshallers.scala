@@ -1,7 +1,7 @@
 package com.alexb.orders
 
 import cc.spray.http._
-import cc.spray.typeconversion._
+import cc.spray.httpx._
 import cc.spray.http.MediaTypes._
 import cc.spray.json.DefaultJsonProtocol
 
