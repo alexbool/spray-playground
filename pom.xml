@@ -36,6 +36,11 @@
 		</dependency>
 		<dependency>
 			<groupId>cc.spray</groupId>
+			<artifactId>spray-caching</artifactId>
+			<version>${spray-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cc.spray</groupId>
 			<artifactId>spray-json_2.9.2</artifactId>
 			<version>1.1.1</version>
 		</dependency>
