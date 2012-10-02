@@ -29,7 +29,7 @@ object Main extends App {
 		// this actor only runs our route, but you could add
 		// other things here, like request stream processing
 		// or timeout handling
-	 	def receive = runRoute(calculatorRoute)
+	 	def receive = runRoute(calculatorRoute ~ orderRoute)
 		implicit def collection = mongoConn("spray_playground")("orders")
 	}
 
