@@ -11,7 +11,9 @@ trait CalculatorServiceContext {
 	implicit def actorSystem: ActorSystem
 	
 	// Creating calculator actor
-	implicit def calculator = actorSystem.actorOf(
+	private lazy val calculatorActor = actorSystem.actorOf(
 			props = Props(new CalculatorActor),
 			name = "calculator-actor")
+	
+	implicit def calculator = calculatorActor
 }
