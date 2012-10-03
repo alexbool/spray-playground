@@ -7,6 +7,7 @@
 	<properties>
 		<spray-version>1.0-M3-SNAPSHOT-20120920</spray-version>
 		<akka-version>2.0.3</akka-version>
+		<infinispan-version>5.2.0.Alpha4</infinispan-version>
 	</properties>
 	<repositories>
 		<repository>
@@ -53,6 +54,11 @@
 			<groupId>org.mongodb</groupId>
 			<artifactId>casbah-core_2.9.2</artifactId>
 			<version>2.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-core</artifactId>
+			<version>${infinispan-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.scalatest</groupId>
