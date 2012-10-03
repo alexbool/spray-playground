@@ -8,6 +8,8 @@ trait OrderModule extends OrderService {
 	implicit def actorSystem: ActorSystem
 	implicit def collection: MongoCollection
 	
-	def orderActor = actorSystem.actorOf(
+	private lazy val orderActorRef = actorSystem.actorOf(
 		props = Props(new OrderActor(collection)))
+		
+	def orderActor = orderActorRef
 }
