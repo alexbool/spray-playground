@@ -7,7 +7,7 @@
 	<properties>
 		<spray-version>1.0-M3-SNAPSHOT-20120920</spray-version>
 		<akka-version>2.0.3</akka-version>
-		<infinispan-version>5.2.0.Alpha4</infinispan-version>
+		<infinispan-version>5.2.0.Beta1</infinispan-version>
 	</properties>
 	<repositories>
 		<repository>
