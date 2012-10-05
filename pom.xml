@@ -152,6 +152,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<recompileMode>incremental</recompileMode>
 					<args>
 						<arg>-Ydependent-method-types</arg>
 					</args>
