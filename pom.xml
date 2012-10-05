@@ -76,6 +76,12 @@
 			<version>${spray-version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.specs2</groupId>
+			<artifactId>specs2_2.9.2</artifactId>
+			<version>1.11</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<pluginManagement>
