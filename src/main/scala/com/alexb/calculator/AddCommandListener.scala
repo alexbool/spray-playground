@@ -1,11 +1,11 @@
 package com.alexb.calculator
 
-import akka.actor.Actor
+import akka.actor.{ Actor, ActorLogging }
 
-class AddCommandListener extends Actor {
+class AddCommandListener extends Actor with ActorLogging {
 
 	def receive = {
 		case cmd: AddCommand =>
-			System.out.println("AddCommandListener noticed AddCommand(%.2f, %.2f)".format(cmd.a, cmd.b))
+			log.info("AddCommandListener noticed AddCommand(%.2f, %.2f)".format(cmd.a, cmd.b))
 	}
 }
