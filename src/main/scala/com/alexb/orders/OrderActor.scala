@@ -1,16 +1,18 @@
 package com.alexb.orders
 
 import akka.actor.Actor
+import akka.dispatch.Future
 import com.mongodb.casbah.Imports._
 import java.util.UUID
+import com.alexb.utils.FutureUtils
 
-class OrderActor(collection: MongoCollection) extends Actor {
+class OrderActor(collection: MongoCollection) extends Actor with FutureUtils {
 
 	def receive = {
-		case cmd: AddOrderCommand => saveOrder(Order(UUID.randomUUID.toString, cmd.clientId, List()))
-		case cmd: DeleteOrderCommand => deleteOrder(cmd.orderId)
-		case cmd: OrderByIdQuery => sender ! findOrder(cmd.orderId)
-		case cmd: OrdersByClientIdQuery => sender ! findOrdersByClient(cmd.clientId)
+		case cmd: AddOrderCommand => wrapInFuture { saveOrder(Order(UUID.randomUUID.toString, cmd.clientId, List())) }
+		case cmd: DeleteOrderCommand => wrapInFuture { deleteOrder(cmd.orderId) }
+		case cmd: OrderByIdQuery => answerWithFutureResult { findOrder(cmd.orderId)	} 
+		case cmd: OrdersByClientIdQuery => answerWithFutureResult { findOrdersByClient(cmd.clientId) }
 	}
 	
 	private def saveOrder(order: Order) = {
