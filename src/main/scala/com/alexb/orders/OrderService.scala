@@ -40,7 +40,7 @@ trait OrderService
 				}
 			} ~
 			path("test") {
-				complete(Order("1", "1", List(OrderItem("Trololo", 2))))
+				complete(Order("1", "1", List(OrderItem("Trololo", 2)), "Some notes"))
 			}
 		} 
 	}

@@ -1,6 +1,6 @@
 package com.alexb.orders
 
-case class AddOrderCommand(clientId: String, items: List[OrderItem])
+case class AddOrderCommand(clientId: String, items: List[OrderItem], notes: String)
 case class DeleteOrderCommand(orderId: String)
 
 case class OrderByIdQuery(orderId: String)
