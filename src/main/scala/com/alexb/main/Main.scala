@@ -19,6 +19,7 @@ object Main extends App {
 	// val calculatorModule = new CalculatorModule
 	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with MongoContext {
 		def actorSystem = system
+		def config = system.settings.config
 		
 		val timeout = Timeout(5 seconds) // needed for `?`
 		
