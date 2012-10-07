@@ -5,8 +5,8 @@ import com.typesafe.config.Config
 
 trait MongoContext {
 
-	implicit def config: Config
+	def config: Config
 	
 	// MongoDB connection instance
-	implicit def mongoConn = MongoConnection(config.getString("mongo.host"))
+	def mongoConn = MongoConnection(config.getString("mongo.host"))
 }
