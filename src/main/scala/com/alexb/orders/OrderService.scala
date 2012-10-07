@@ -15,7 +15,8 @@ trait OrderService
 	
 	implicit val timeout: Timeout // needed for `?` below
 
-	implicit def orderActor: ActorRef
+	def orderActor: ActorRef
+	def orderSearchActor: ActorRef
 
 	val orderRoute = {
 		pathPrefix("orders") {
@@ -37,6 +38,13 @@ trait OrderService
 			path("orders-by-client" / PathElement) { clientId =>
 				get {
 					complete((orderActor ? OrdersByClientIdQuery(clientId)).mapTo[List[Order]])
+				}
+			} ~
+			path("search-by-notes") {
+				get {
+					parameter('query.as[String]) { query =>
+						complete((orderSearchActor ? SearchOrdersByNotesQuery(query)).mapTo[Seq[Order]])
+					}
 				}
 			} ~
 			path("test") {

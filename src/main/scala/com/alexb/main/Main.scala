@@ -17,7 +17,7 @@ object Main extends App {
 	
 	// create the service instance, supplying all required dependencies
 	// val calculatorModule = new CalculatorModule
-	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with MongoContext {
+	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with MongoContext with ElasticSearchContext {
 		def actorSystem = system
 		def config = system.settings.config
 		
@@ -31,7 +31,7 @@ object Main extends App {
 		// other things here, like request stream processing
 		// or timeout handling
 	 	def receive = runRoute(calculatorRoute ~ orderRoute)
-		implicit def collection = mongoConn("spray_playground")("orders")
+		def collection = mongoConn("spray_playground")("orders")
 	}
 
 	// create and start the HttpService actor running our service as well as the root actor
