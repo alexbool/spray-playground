@@ -8,6 +8,7 @@
 		<spray-version>1.0-M3-SNAPSHOT-20120920</spray-version>
 		<akka-version>2.0.3</akka-version>
 		<infinispan-version>5.2.0.Beta1</infinispan-version>
+		<elasticsearch-version>0.19.10</elasticsearch-version>
 	</properties>
 	<repositories>
 		<repository>
@@ -63,6 +64,11 @@
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-core</artifactId>
 			<version>${infinispan-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>${elasticsearch-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.scalatest</groupId>
