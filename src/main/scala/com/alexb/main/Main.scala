@@ -2,8 +2,7 @@ package com.alexb.main
 
 import akka.actor.{ actorRef2Scala, Actor, ActorSystem, Props }
 import cc.spray.can.server.HttpServer
-import cc.spray.io.pipelining.SingletonHandler
-import cc.spray.io.IOBridge
+import cc.spray.io.{ IOBridge, SingletonHandler }
 import cc.spray.routing.HttpService
 import akka.util.Timeout
 import akka.util.duration._
