@@ -12,7 +12,7 @@ trait CalculatorService
 	extends HttpService
 	with SprayJsonSupport
 	with DefaultJsonProtocol
-	with DoubleResultProtocol {
+	with CalculatorMarshallers {
 
 	implicit val timeout: Timeout // needed for `?` below
 
@@ -24,17 +24,17 @@ trait CalculatorService
 				get {
 					val cmd = AddCommand(a, b)
 					actorSystem.eventStream.publish(cmd)
-					complete((calculator ? cmd).mapTo[Double])
+					complete((calculator ? cmd).mapTo[CalculatorResult])
 				}
 			} ~ 
 			path("subtract" / DoubleNumber / DoubleNumber) { (a, b) =>
 				get {
-					complete((calculator ? SubtractCommand(a, b)).mapTo[Double])
+					complete((calculator ? SubtractCommand(a, b)).mapTo[CalculatorResult])
 				}
 			} ~ 
 			path("divide" / DoubleNumber / DoubleNumber) { (a, b) =>
 				get {
-					complete((calculator ? DivideCommand(a, b)).mapTo[Either[Double, ArithmeticException]])
+					complete((calculator ? DivideCommand(a, b)).mapTo[CalculatorResult])
 				}
 			}
 		}
