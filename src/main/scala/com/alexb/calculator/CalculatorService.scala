@@ -19,21 +19,17 @@ trait CalculatorService
 	def calculator: ActorRef
 
 	val calculatorRoute = {
-		pathPrefix("calculator") { 
-			path("add" / DoubleNumber / DoubleNumber) { (a, b) =>
-				get {
+		pathPrefix("calculator") {
+			get {
+				path("add" / DoubleNumber / DoubleNumber) { (a, b) =>
 					val cmd = AddCommand(a, b)
 					actorSystem.eventStream.publish(cmd)
 					complete((calculator ? cmd).mapTo[CalculatorResult])
-				}
-			} ~ 
-			path("subtract" / DoubleNumber / DoubleNumber) { (a, b) =>
-				get {
+				} ~
+				path("subtract" / DoubleNumber / DoubleNumber) { (a, b) =>
 					complete((calculator ? SubtractCommand(a, b)).mapTo[CalculatorResult])
-				}
-			} ~ 
-			path("divide" / DoubleNumber / DoubleNumber) { (a, b) =>
-				get {
+				} ~
+				path("divide" / DoubleNumber / DoubleNumber) { (a, b) =>
 					complete((calculator ? DivideCommand(a, b)).mapTo[CalculatorResult])
 				}
 			}
