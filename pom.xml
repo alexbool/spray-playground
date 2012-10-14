@@ -6,7 +6,7 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spray-version>1.0-M3-SNAPSHOT-20121008</spray-version>
+		<spray-version>1.0-M3</spray-version>
 		<akka-version>2.0.3</akka-version>
 		<infinispan-version>5.2.0.Beta1</infinispan-version>
 		<elasticsearch-version>0.19.10</elasticsearch-version>
@@ -14,7 +14,7 @@
 	<repositories>
 		<repository>
 			<id>Spray Repository</id>
-			<url>http://repo.spray.cc/</url>
+			<url>http://repo.spray.io/</url>
 		</repository>
 		<repository>
 			<id>Akka Releases</id>
@@ -32,24 +32,24 @@
 			<version>2.9.2</version>
 		</dependency>
 		<dependency>
-			<groupId>cc.spray</groupId>
+			<groupId>io.spray</groupId>
 			<artifactId>spray-routing</artifactId>
 			<version>${spray-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>cc.spray</groupId>
+			<groupId>io.spray</groupId>
 			<artifactId>spray-can</artifactId>
 			<version>${spray-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>cc.spray</groupId>
+			<groupId>io.spray</groupId>
 			<artifactId>spray-caching</artifactId>
 			<version>${spray-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>cc.spray</groupId>
+			<groupId>io.spray</groupId>
 			<artifactId>spray-json_2.9.2</artifactId>
-			<version>1.1.1</version>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
@@ -78,7 +78,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>cc.spray</groupId>
+			<groupId>io.spray</groupId>
 			<artifactId>spray-testkit</artifactId>
 			<version>${spray-version}</version>
 			<scope>test</scope>

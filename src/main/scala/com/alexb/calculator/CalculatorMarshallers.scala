@@ -1,6 +1,6 @@
 package com.alexb.calculator
 
-import cc.spray.json._
+import spray.json._
 
 trait CalculatorMarshallers extends DefaultJsonProtocol {
 

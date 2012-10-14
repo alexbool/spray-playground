@@ -1,6 +1,6 @@
 package com.alexb.calculator
 
-import cc.spray.json._
+import spray.json._
 import org.scalatest._
 
 case class SuccessResponse(result: Double)

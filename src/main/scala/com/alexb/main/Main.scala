@@ -1,9 +1,9 @@
 package com.alexb.main
 
 import akka.actor.{ actorRef2Scala, Actor, ActorSystem, Props }
-import cc.spray.can.server.HttpServer
-import cc.spray.io.{ IOBridge, SingletonHandler }
-import cc.spray.routing.HttpService
+import spray.can.server.HttpServer
+import spray.io.{ IOBridge, SingletonHandler }
+import spray.routing.HttpService
 import akka.util.Timeout
 import akka.util.duration._
 import com.alexb.calculator.{ CalculatorModule, AddCommandListener, AddCommand }

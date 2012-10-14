@@ -1,9 +1,9 @@
 package com.alexb.orders
 
-import cc.spray.routing.directives.PathMatchers._
-import cc.spray.routing.HttpService
-import cc.spray.http.StatusCodes
-import cc.spray.httpx.SprayJsonSupport
+import spray.routing.directives.PathMatchers._
+import spray.routing.HttpService
+import spray.http.StatusCodes
+import spray.httpx.SprayJsonSupport
 import akka.util.Timeout
 import akka.actor.ActorRef
 import akka.pattern.ask

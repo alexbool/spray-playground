@@ -2,7 +2,7 @@ package com.alexb.orders
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
-import cc.spray.json._
+import spray.json._
 import com.alexb.utils.FutureUtils
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders._

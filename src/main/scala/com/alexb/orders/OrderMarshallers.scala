@@ -1,9 +1,9 @@
 package com.alexb.orders
 
-import cc.spray.http._
-import cc.spray.httpx._
-import cc.spray.http.MediaTypes._
-import cc.spray.json.DefaultJsonProtocol
+import spray.http._
+import spray.httpx._
+import spray.http.MediaTypes._
+import spray.json.DefaultJsonProtocol
 
 trait OrderMarshallers extends DefaultJsonProtocol {
 	implicit val orderItemFormat = jsonFormat2(OrderItem)

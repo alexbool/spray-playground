@@ -1,12 +1,12 @@
 package com.alexb.calculator
 
-import cc.spray.routing.HttpService
-import cc.spray.routing.directives.PathMatchers._
-import cc.spray.httpx.SprayJsonSupport
+import spray.routing.HttpService
+import spray.routing.directives.PathMatchers._
+import spray.httpx.SprayJsonSupport
 import akka.util.Timeout
 import akka.actor.ActorRef
 import akka.pattern.ask
-import cc.spray.json.DefaultJsonProtocol
+import spray.json.DefaultJsonProtocol
 
 trait CalculatorService
 	extends HttpService

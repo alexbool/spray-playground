@@ -3,9 +3,9 @@ package com.alexb.calculator
 import akka.actor.{ ActorSystem, Props }
 import akka.util.Timeout
 import akka.util.duration._
-import cc.spray.http._
-import cc.spray.http.HttpMethods._
-import cc.spray.testkit._
+import spray.http._
+import spray.http.HttpMethods._
+import spray.testkit._
 import org.scalatest._
 
 class CalculatorServiceSpec extends WordSpec with MustMatchers with CalculatorService with CalculatorServiceContext with ScalatestRouteTest {
