@@ -42,10 +42,8 @@ trait OrderService
 					}
 				} ~
 				path("search-by-notes") {
-					parameter('query.as[String]) { query => 
-						pageInfo { page =>
-							complete((orderSearchActor ? SearchOrdersByNotesQuery(query, page)).mapTo[Seq[Order]])
-						}
+					(parameter('query.as[String]) & pageInfo) { (query, page) => 
+						complete((orderSearchActor ? SearchOrdersByNotesQuery(query, page)).mapTo[Seq[Order]])
 					}
 				}
 			} ~
