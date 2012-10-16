@@ -32,20 +32,16 @@ trait OrderService
 					}
 				}
 			} ~
-			path("orders" / PathElement) { orderId =>
-				get {
+			get {
+				path("orders" / PathElement) { orderId =>
 					complete((orderActor ? OrderByIdQuery(orderId)).mapTo[Option[Order]])
-				}
-			} ~
-			path("orders-by-client" / PathElement) { clientId =>
-				get {
+				} ~
+				path("orders-by-client" / PathElement) { clientId =>
 					pageInfo { page =>
 						complete((orderActor ? OrdersByClientIdQuery(clientId, page)).mapTo[List[Order]])
 					}
-				}
-			} ~
-			path("search-by-notes") {
-				get {
+				} ~
+				path("search-by-notes") {
 					parameter('query.as[String]) { query =>
 						complete((orderSearchActor ? SearchOrdersByNotesQuery(query)).mapTo[Seq[Order]])
 					}
