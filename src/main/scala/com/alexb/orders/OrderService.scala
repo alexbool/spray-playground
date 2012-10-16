@@ -7,9 +7,11 @@ import spray.httpx.SprayJsonSupport
 import akka.util.Timeout
 import akka.actor.ActorRef
 import akka.pattern.ask
+import com.alexb.utils.PageDirectives
 
 trait OrderService
 	extends HttpService
+	with PageDirectives
 	with SprayJsonSupport
 	with OrderMarshallers {
 	
@@ -32,12 +34,16 @@ trait OrderService
 			} ~
 			path("orders" / PathElement) { orderId =>
 				get {
-					complete((orderActor ? OrderByIdQuery(orderId)).mapTo[Option[Order]])
+					pageInfo { page =>
+						complete((orderActor ? OrderByIdQuery(orderId, page)).mapTo[Option[Order]])
+					}
 				}
 			} ~
 			path("orders-by-client" / PathElement) { clientId =>
 				get {
-					complete((orderActor ? OrdersByClientIdQuery(clientId)).mapTo[List[Order]])
+					pageInfo { page =>
+						complete((orderActor ? OrdersByClientIdQuery(clientId, page)).mapTo[List[Order]])
+					}
 				}
 			} ~
 			path("search-by-notes") {
