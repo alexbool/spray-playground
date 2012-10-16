@@ -34,9 +34,7 @@ trait OrderService
 			} ~
 			path("orders" / PathElement) { orderId =>
 				get {
-					pageInfo { page =>
-						complete((orderActor ? OrderByIdQuery(orderId, page)).mapTo[Option[Order]])
-					}
+					complete((orderActor ? OrderByIdQuery(orderId)).mapTo[Option[Order]])
 				}
 			} ~
 			path("orders-by-client" / PathElement) { clientId =>
