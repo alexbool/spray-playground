@@ -22,8 +22,8 @@ trait OrderService
 
 	val orderRoute = {
 		pathPrefix("orders") {
-			path("save-order") {
-				post {
+			post {
+				path("save-order") {
 					entity(as[AddOrderCommand]) { cmd =>
 						orderActor ! cmd
 						respondWithStatus(StatusCodes.Accepted) {
