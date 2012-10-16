@@ -4,7 +4,7 @@ import akka.actor.Actor
 import akka.dispatch.Future
 import com.mongodb.casbah.Imports._
 import java.util.UUID
-import com.alexb.utils.FutureUtils
+import com.alexb.utils.{ FutureUtils, PageInfo }
 
 class OrderActor(collection: MongoCollection) extends Actor with FutureUtils {
 
@@ -12,7 +12,7 @@ class OrderActor(collection: MongoCollection) extends Actor with FutureUtils {
 		case cmd: AddOrderCommand => wrapInFuture { saveOrder(Order(UUID.randomUUID.toString, cmd.clientId, List(), cmd.notes)) }
 		case cmd: DeleteOrderCommand => wrapInFuture { deleteOrder(cmd.orderId) }
 		case cmd: OrderByIdQuery => answerWithFutureResult { findOrder(cmd.orderId) }
-		case cmd: OrdersByClientIdQuery => answerWithFutureResult { findOrdersByClient(cmd.clientId) }
+		case cmd: OrdersByClientIdQuery => answerWithFutureResult { findOrdersByClient(cmd.clientId, cmd.page) }
 	}
 
 	private def saveOrder(order: Order) = {
@@ -31,9 +31,11 @@ class OrderActor(collection: MongoCollection) extends Actor with FutureUtils {
 			.findOne(MongoDBObject("_id" -> orderId))
 			.map(toOrder)
 
-	private def findOrdersByClient(clientId: String) =
+	private def findOrdersByClient(clientId: String, page: PageInfo) =
 		collection
 			.find(MongoDBObject("clientId" -> clientId))
+			.skip(page.skip)
+			.limit(page.size)
 			.map(toOrder)
 			.toList
 
