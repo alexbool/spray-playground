@@ -8,4 +8,4 @@ case class DeleteOrderCommand(orderId: String)
 case class OrderByIdQuery(orderId: String) 
 case class OrdersByClientIdQuery(clientId: String, page: PageInfo)
 
-case class SearchOrdersByNotesQuery(query: String)
+case class SearchOrdersByNotesQuery(query: String, page: PageInfo)
