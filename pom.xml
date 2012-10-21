@@ -8,7 +8,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spray-version>1.0-M3</spray-version>
 		<akka-version>2.0.3</akka-version>
-		<infinispan-version>5.2.0.Beta1</infinispan-version>
+		<infinispan-version>5.2.0.Beta2</infinispan-version>
 		<elasticsearch-version>0.19.10</elasticsearch-version>
 	</properties>
 	<repositories>
