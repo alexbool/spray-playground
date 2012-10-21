@@ -1,0 +1,9 @@
+Package: spray-playground
+Version: 1.0.0-SNAPSHOT
+Section: misc
+Priority: optional
+Architecture: all
+Depends: jdk (>= 1.6)
+Maintainer: Alexander Bulaev <aleks.bulaev@gmail.com>
+Description: Spray playground server
+Distribution: development

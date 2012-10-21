@@ -221,6 +221,33 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- jdeb -->
+			<plugin>
+				<artifactId>jdeb</artifactId>
+				<groupId>org.vafer</groupId>
+				<version>0.11</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jdeb</goal>
+						</goals>
+						<configuration>
+							<dataSet>
+								<data>
+									<src>${project.build.directory}/appassembler</src>
+									<type>directory</type>
+									<mapper>
+										<type>perm</type>
+										<user>spray</user>
+										<group>spray</group>
+									</mapper>
+								</data>
+							</dataSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
