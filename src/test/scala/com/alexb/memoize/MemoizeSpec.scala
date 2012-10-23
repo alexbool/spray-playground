@@ -8,6 +8,11 @@ class MemoizeSpec extends WordSpec with MustMatchers {
 	implicit val cacheManager = new ConcurrentHashMapCacheManager
 	
 	"Memoize function" must {
+		"cache no-arg functions" in {
+			def memoized = memoize { () => 1 }
+			memoized() must equal(1)
+			memoized() must equal(1)
+		}
 		"cache one-arg functions" in {
 			def memoized = memoize { a: Int => a + 1 }
 			memoized(1) must equal(2)
