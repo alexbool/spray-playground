@@ -18,7 +18,7 @@ trait CalculatorService
 
 	def calculator: ActorRef
 
-	val calculatorRoute = {
+	val calculatorRoute =
 		pathPrefix("calculator") {
 			get {
 				path("add" / DoubleNumber / DoubleNumber) { (a, b) =>
@@ -34,5 +34,4 @@ trait CalculatorService
 				}
 			}
 		}
-	}
 }
