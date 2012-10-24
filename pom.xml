@@ -9,7 +9,7 @@
 		<spray-version>1.0-M4.1</spray-version>
 		<akka-version>2.0.3</akka-version>
 		<infinispan-version>5.2.0.Beta2</infinispan-version>
-		<elasticsearch-version>0.19.10</elasticsearch-version>
+		<elasticsearch-version>0.19.11</elasticsearch-version>
 	</properties>
 	<repositories>
 		<repository>
