@@ -3,10 +3,9 @@ package com.alexb.memoize
 trait Memoize {
 
 	private val defaultCache = ""
-	private val defaultKey = "default"
 	
 	def memoize[R](f: () => R)(implicit cacheManager: CacheManager): () => R = memoize[R](defaultCache)(f)
-	def memoize[R](cacheName: String)(f: () => R)(implicit cacheManager: CacheManager): () => R = memoize[R](cacheName, defaultKey)(f)
+	def memoize[R](cacheName: String)(f: () => R)(implicit cacheManager: CacheManager): () => R = memoize[R](cacheName, f.getClass.getName)(f)
 	def memoize[R](cacheName: String, key: String)(f: () => R)(implicit cacheManager: CacheManager): () => R =
 		() => memoize[String, R](cacheName)(arg => f())(cacheManager)(key)
 	
