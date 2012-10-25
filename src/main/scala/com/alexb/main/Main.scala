@@ -8,6 +8,8 @@ import akka.util.Timeout
 import akka.util.duration._
 import com.alexb.calculator.{ CalculatorModule, AddCommandListener, AddCommand }
 import com.alexb.orders.{ OrderService, OrderActor, OrderModule }
+import com.alexb.statics.StaticsModule
+import com.alexb.memoize.ConcurrentHashMapCacheManager
 
 object Main extends App {
 
@@ -16,7 +18,7 @@ object Main extends App {
 	
 	// create the service instance, supplying all required dependencies
 	// val calculatorModule = new CalculatorModule
-	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with MongoContext with ElasticSearchContext {
+	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with StaticsModule with MongoContext with ElasticSearchContext {
 		def actorSystem = system
 		def config = system.settings.config
 		
@@ -29,8 +31,12 @@ object Main extends App {
 		// this actor only runs our route, but you could add
 		// other things here, like request stream processing
 		// or timeout handling
-	 	def receive = runRoute(calculatorRoute ~ orderRoute)
+	 	def receive = runRoute(calculatorRoute ~ orderRoute ~ staticsRoute)
 		def collection = mongoConn("spray_playground")("orders")
+		def countryCollection = mongoConn("spray_playground")("countries")
+		
+		private lazy val cache = new ConcurrentHashMapCacheManager
+		def cacheManager = cache
 	}
 
 	// create and start the HttpService actor running our service as well as the root actor
