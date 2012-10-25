@@ -1,8 +1,5 @@
 package com.alexb.orders
 
-import spray.http._
-import spray.httpx._
-import spray.http.MediaTypes._
 import spray.json.DefaultJsonProtocol
 
 trait OrderMarshallers extends DefaultJsonProtocol {
