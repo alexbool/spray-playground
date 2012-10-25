@@ -33,5 +33,10 @@ class MemoizeSpec extends WordSpec with MustMatchers {
 			memoized(1, 1, 1, 1) must equal(4)
 			memoized(1, 1, 1, 1) must equal(4)
 		}
+		"cache no-arg functions with cache name and key" in {
+			def memoized = memoize("Cache name", "key", () => 1)
+			memoized() must equal(1)
+			memoized() must equal(1)
+		}
 	}
 }
