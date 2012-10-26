@@ -8,8 +8,5 @@ trait InfinispanContext {
 	
 	def config: Config
 	
-	private lazy val cache =
-		new InfinispanCacheManager(new DefaultCacheManager(config.getString("infinispan.config")))
-	
-	def cacheManager = cache
+	val cacheManager = new InfinispanCacheManager(new DefaultCacheManager(config.getString("infinispan.config")))
 }
