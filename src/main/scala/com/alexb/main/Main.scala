@@ -18,7 +18,7 @@ object Main extends App {
 	
 	// create the service instance, supplying all required dependencies
 	// val calculatorModule = new CalculatorModule
-	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with StaticsModule with MongoContext with ElasticSearchContext {
+	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with StaticsModule with MongoContext with ElasticSearchContext with InfinispanContext {
 		def actorSystem = system
 		def config = system.settings.config
 		
@@ -34,9 +34,6 @@ object Main extends App {
 	 	def receive = runRoute(calculatorRoute ~ orderRoute ~ staticsRoute)
 		def collection = mongoConn("spray_playground")("orders")
 		def countryCollection = mongoConn("spray_playground")("countries")
-		
-		private lazy val cache = new ConcurrentHashMapCacheManager
-		def cacheManager = cache
 	}
 
 	// create and start the HttpService actor running our service as well as the root actor
