@@ -14,7 +14,6 @@ trait MongoCountryDao extends CountryDao {
 	
 	def findCountries =
 		countryCollection
-			.find
 			.map(d => Country(d.getAs[Number]("_id").get.intValue, d.getAs[String]("name").get,
 				d.getAs[Seq[DBObject]]("cities").get.map(c => City(c.getAs[Number]("id").get.intValue, c.getAs[String]("name").get)))
 			)
