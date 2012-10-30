@@ -18,7 +18,6 @@ object Main extends App {
 	val system = ActorSystem("SprayPlayground")
 	
 	// create the service instance, supplying all required dependencies
-	// val calculatorModule = new CalculatorModule
 	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with StaticsModule with UserModule
 		with MongoContext with ElasticSearchContext with InfinispanContext {
 		
