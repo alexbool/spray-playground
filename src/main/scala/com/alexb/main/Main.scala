@@ -11,7 +11,7 @@ import com.alexb.orders.{ OrderService, OrderActor, OrderModule }
 import com.alexb.statics.StaticsModule
 import com.alexb.user.UserModule
 import com.alexb.memoize.ConcurrentHashMapCacheManager
-import context.{ ElasticSearchContext, OAuthContext, MongoContext, InfinispanContext }
+import context._
 
 object Main extends App {
 
@@ -23,7 +23,7 @@ object Main extends App {
 	val ioBridge = new IOBridge(system).start()
 	
 	// create the service instance, supplying all required dependencies
-	class SprayPlaygroundService extends Actor
+	class SprayPlaygroundService extends Actor with ActorSystemContext with ConfigContext with IOBridgeContext
 		with OAuthContext with MongoContext with ElasticSearchContext with InfinispanContext
 		with CalculatorModule with OrderModule with StaticsModule with UserModule {
 		

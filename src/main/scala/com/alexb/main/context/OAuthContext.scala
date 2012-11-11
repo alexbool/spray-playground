@@ -1,18 +1,13 @@
 package com.alexb.main
 package context
 
-import akka.actor.{ActorSystem, Props}
-import com.typesafe.config.Config
+import akka.actor.Props
 import spray.can.client.HttpClient
 import spray.client.HttpConduit
-import spray.io.IOBridge
 import com.alexb.oauth.OAuthdTokenValidator
 
 trait OAuthContext {
-
-	def actorSystem: ActorSystem
-	def config: Config
-	def ioBridge: IOBridge
+	this: ActorSystemContext with ConfigContext with IOBridgeContext =>
 
 	val httpClient = actorSystem.actorOf(
 		props = Props(new HttpClient(ioBridge)),

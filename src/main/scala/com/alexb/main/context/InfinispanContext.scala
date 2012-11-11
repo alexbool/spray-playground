@@ -3,11 +3,9 @@ package context
 
 import com.alexb.infinispan.InfinispanCacheManager
 import org.infinispan.manager.DefaultCacheManager
-import com.typesafe.config.Config
 
 trait InfinispanContext {
-	
-	def config: Config
+	this: ConfigContext =>
 	
 	val cacheManager = new InfinispanCacheManager(new DefaultCacheManager(config.getString("infinispan.config")))
 }
