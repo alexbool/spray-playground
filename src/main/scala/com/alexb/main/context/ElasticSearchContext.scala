@@ -1,4 +1,5 @@
 package com.alexb.main
+package context
 
 import com.typesafe.config.Config
 import org.elasticsearch.client.Client

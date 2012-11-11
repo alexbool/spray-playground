@@ -11,6 +11,7 @@ import com.alexb.orders.{ OrderService, OrderActor, OrderModule }
 import com.alexb.statics.StaticsModule
 import com.alexb.user.UserModule
 import com.alexb.memoize.ConcurrentHashMapCacheManager
+import context.{ ElasticSearchContext, OAuthContext, MongoContext, InfinispanContext }
 
 object Main extends App {
 

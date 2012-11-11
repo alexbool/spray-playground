@@ -1,4 +1,5 @@
 package com.alexb.main
+package context
 
 import com.mongodb.casbah.Imports._
 import com.typesafe.config.Config

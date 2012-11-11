@@ -2,7 +2,7 @@ package com.alexb.user
 
 import org.scalatest._
 import com.alexb.test.Config
-import com.alexb.main.MongoContext
+import com.alexb.main.context.MongoContext
 import com.mongodb.casbah.Imports._
 import org.joda.time.Instant
 

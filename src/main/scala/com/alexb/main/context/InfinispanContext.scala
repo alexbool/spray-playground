@@ -1,4 +1,5 @@
 package com.alexb.main
+package context
 
 import com.alexb.infinispan.InfinispanCacheManager
 import org.infinispan.manager.DefaultCacheManager

@@ -1,6 +1,7 @@
 package com.alexb.main
+package context
 
-import akka.actor.{ Actor, ActorSystem, Props }
+import akka.actor.{ActorSystem, Props}
 import com.typesafe.config.Config
 import spray.can.client.HttpClient
 import spray.client.HttpConduit
