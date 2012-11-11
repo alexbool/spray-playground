@@ -8,17 +8,19 @@ import akka.util.Timeout
 import akka.actor.ActorRef
 import akka.pattern.ask
 import com.alexb.utils.PageDirectives
+import com.alexb.oauth.{ OAuth, OAuthTokenValidator, User }
 
 trait OrderService
 	extends HttpService
 	with PageDirectives
 	with SprayJsonSupport
 	with OrderMarshallers {
-	
+
 	implicit val timeout: Timeout // needed for `?` below
 
 	def orderActor: ActorRef
 	def orderSearchActor: ActorRef
+	def tokenValidator: OAuthTokenValidator[User]
 
 	val orderRoute = {
 		pathPrefix("orders") {
@@ -48,7 +50,9 @@ trait OrderService
 				}
 			} ~
 			path("test") {
-				complete(Order("1", "1", List(OrderItem("Trololo", 2)), "Some notes"))
+				authenticate(OAuth(tokenValidator)) { user =>
+					complete(Order("1", "1", List(OrderItem("Trololo", 2)), "Some notes"))
+				}
 			}
 		} 
 	}

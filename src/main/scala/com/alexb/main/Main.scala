@@ -17,12 +17,18 @@ object Main extends App {
 	// we need an ActorSystem to host our application in
 	val system = ActorSystem("SprayPlayground")
 	
+	// every spray-can HttpServer (and HttpClient) needs an IOBridge for low-level network IO
+	// (but several servers and/or clients can share one)
+	val ioBridge = new IOBridge(system).start()
+	
 	// create the service instance, supplying all required dependencies
-	class SprayPlaygroundService extends Actor with CalculatorModule with OrderModule with StaticsModule with UserModule
-		with MongoContext with ElasticSearchContext with InfinispanContext {
+	class SprayPlaygroundService extends Actor
+		with OAuthContext with MongoContext with ElasticSearchContext with InfinispanContext
+		with CalculatorModule with OrderModule with StaticsModule with UserModule {
 		
 		def actorSystem = system
 		def config = system.settings.config
+		def ioBridge = Main.ioBridge
 		
 		val timeout = Timeout(5 seconds) // needed for `?`
 		
@@ -49,10 +55,6 @@ object Main extends App {
 	val addCommandListener = system.actorOf(Props[AddCommandListener])
 	system.eventStream.subscribe(addCommandListener, classOf[AddCommand])
 	///////////////////////////////////////////////////////////////////////////
-
-	// every spray-can HttpServer (and HttpClient) needs an IOBridge for low-level network IO
-	// (but several servers and/or clients can share one)
-	val ioBridge = new IOBridge(system).start()
 
 	// create and start the spray-can HttpServer, telling it that we want requests to be
 	// handled by the root service actor
