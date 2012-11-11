@@ -24,7 +24,7 @@ object Main extends App {
 	
 	// create the service instance, supplying all required dependencies
 	class SprayPlaygroundService extends Actor with ActorSystemContext with ConfigContext with IOBridgeContext
-		with OAuthContext with MongoContext with ElasticSearchContext with InfinispanContext
+		with OAuthdContext with MongoContext with ElasticSearchContext with InfinispanContext
 		with CalculatorModule with OrderModule with StaticsModule with UserModule {
 		
 		def actorSystem = system

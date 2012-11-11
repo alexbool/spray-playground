@@ -4,9 +4,13 @@ package context
 import akka.actor.Props
 import spray.can.client.HttpClient
 import spray.client.HttpConduit
-import com.alexb.oauth.OAuthdTokenValidator
+import com.alexb.oauth._
 
 trait OAuthContext {
+	def tokenValidator: OAuthTokenValidator[User]
+}
+
+trait OAuthdContext extends OAuthContext {
 	this: ActorSystemContext with ConfigContext with IOBridgeContext =>
 
 	val httpClient = actorSystem.actorOf(
