@@ -4,12 +4,10 @@ import akka.dispatch.Future
 import com.mongodb.casbah.Imports._
 
 trait CountryDao {
-
 	def findCountries: Seq[Country]
 }
 
 trait MongoCountryDao extends CountryDao {
-	
 	def countryCollection: MongoCollection
 	
 	def findCountries =
