@@ -1,12 +1,14 @@
 package com.alexb.calculator
 
 import akka.actor.{ ActorSystem, Props }
+import com.alexb.main.context.ActorSystemContext
 
-trait CalculatorModule extends CalculatorService with CalculatorServiceContext
+trait CalculatorModule extends CalculatorService with CalculatorServiceContext {
+	this: ActorSystemContext =>
+}
 
 trait CalculatorServiceContext {
-	
-	def actorSystem: ActorSystem
+	this: ActorSystemContext =>
 	
 	// Creating calculator actor
 	private lazy val calculatorActor = actorSystem.actorOf(

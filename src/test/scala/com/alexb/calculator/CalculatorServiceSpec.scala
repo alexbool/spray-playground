@@ -7,8 +7,10 @@ import spray.http._
 import spray.http.HttpMethods._
 import spray.testkit._
 import org.scalatest._
+import com.alexb.main.context.ActorSystemContext
 
-class CalculatorServiceSpec extends WordSpec with MustMatchers with CalculatorService with CalculatorServiceContext with ScalatestRouteTest {
+class CalculatorServiceSpec extends WordSpec with MustMatchers with CalculatorService with CalculatorServiceContext
+	with ActorSystemContext with ScalatestRouteTest {
 
 	val timeout = Timeout(5 seconds) // needed for `?`
 	def actorSystem: ActorSystem = system
