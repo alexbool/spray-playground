@@ -1,9 +1,8 @@
 Package: spray-playground
-Version: 1.0.0-SNAPSHOT
-Section: misc
+Version: [[version]]
+Section: web
 Priority: optional
 Architecture: all
-Depends: jdk (>= 1.6)
+Depends: libc6, adduser, java7-runtime-headless | java6-runtime-headless | java7-runtime | java6-runtime
 Maintainer: Alexander Bulaev <aleks.bulaev@gmail.com>
-Description: Spray playground server
-Distribution: development
+Description: Playground with RESTful services on Scala
