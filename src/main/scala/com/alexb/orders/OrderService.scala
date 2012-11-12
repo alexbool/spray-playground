@@ -2,7 +2,7 @@ package com.alexb.orders
 
 import spray.routing.directives.PathMatchers._
 import spray.routing.HttpService
-import spray.http.StatusCodes
+import spray.http.{ StatusCodes, EmptyEntity}
 import spray.httpx.SprayJsonSupport
 import akka.util.Timeout
 import akka.actor.ActorRef
@@ -29,7 +29,7 @@ trait OrderService
           entity(as[AddOrderCommand]) { cmd =>
             orderActor ! cmd
             respondWithStatus(StatusCodes.Accepted) {
-              complete("")
+              complete(EmptyEntity)
             }
           }
         }
