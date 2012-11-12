@@ -9,9 +9,10 @@ import com.alexb.memoize.{ Memoize, CacheManager }
 trait StaticsService
 	extends HttpService
 	with SprayJsonSupport
-	with CountryDao
 	with StaticsMarshallers
 	with Memoize {
+
+	this: CountryDao =>
 
 	implicit def actorSystem: ActorSystem
 	implicit def cacheManager: CacheManager
