@@ -23,7 +23,7 @@ object Main extends App {
 	val ioBridge = new IOBridge(system).start()
 	
 	// create the service instance, supplying all required dependencies
-	class SprayPlaygroundService extends Actor with ActorSystemContext with ConfigContext with IOBridgeContext
+	class SprayPlaygroundActor extends Actor with ActorSystemContext with ConfigContext with IOBridgeContext
 		with OAuthdContext with MongoContext with ElasticSearchContext with InfinispanContext
 		with CalculatorModule with OrderModule with StaticsModule with UserModule {
 		
@@ -48,7 +48,7 @@ object Main extends App {
 
 	// create and start the HttpService actor running our service as well as the root actor
 	val httpService = system.actorOf(
-		props = Props[SprayPlaygroundService],
+		props = Props[SprayPlaygroundActor],
 		name = "service")
 
 	///////////////////////////////////////////////////////////////////////////
