@@ -6,8 +6,8 @@ import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 
 trait ElasticSearchContext {
-	this: ConfigContext =>
+  this: ConfigContext =>
 
-	val elasticSearchClient: Client =
-		new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString("elasticsearch.host"), 9300))
+  val elasticSearchClient: Client =
+    new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString("elasticsearch.host"), 9300))
 }

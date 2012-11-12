@@ -7,9 +7,9 @@ import org.elasticsearch.search.SearchHit
 
 class ElasticSearchIndex(request: SearchRequestBuilder) extends Iterable[SearchHit] {
 
-	val iterator = new LazyIterator(request)
-	
-	def find(query: QueryBuilder) = new ElasticSearchIndex(request.setQuery(query))
-	override def drop(n: Int) = new ElasticSearchIndex(request.setFrom(n))
-	override def take(n: Int) = new ElasticSearchIndex(request.setSize(n))
+  val iterator = new LazyIterator(request)
+
+  def find(query: QueryBuilder) = new ElasticSearchIndex(request.setQuery(query))
+  override def drop(n: Int) = new ElasticSearchIndex(request.setFrom(n))
+  override def take(n: Int) = new ElasticSearchIndex(request.setSize(n))
 }

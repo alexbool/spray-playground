@@ -5,11 +5,11 @@ import spray.http.HttpCredentials
 
 package object oauth {
 
-	type Token = String
-	type OAuthTokenValidator[T] = Option[Token] => Future[Option[T]]
+  type Token = String
+  type OAuthTokenValidator[T] = Option[Token] => Future[Option[T]]
 }
 
 package oauth {
-	
-	case class User(username: String, authorities: Seq[String])
+
+  case class User(username: String, authorities: Seq[String])
 }

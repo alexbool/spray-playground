@@ -7,30 +7,30 @@ import spray.httpx.SprayJsonSupport
 import com.alexb.memoize.{ Memoize, CacheManager }
 
 trait StaticsService
-	extends HttpService
-	with SprayJsonSupport
-	with StaticsMarshallers
-	with Memoize {
+  extends HttpService
+  with SprayJsonSupport
+  with StaticsMarshallers
+  with Memoize {
 
-	this: CountryDao =>
+  this: CountryDao =>
 
-	implicit def actorSystem: ActorSystem
-	implicit def cacheManager: CacheManager
-	
-	val staticsRoute =
-		pathPrefix("static") {
-			get {
-				path("countries") {
-					dynamic {
-						complete {
-							Future { countries }
-						}
-					}
-				}
-			}
-		}
-	
-	def countries = memoize("statics", "countries", findCountries)
+  implicit def actorSystem: ActorSystem
+  implicit def cacheManager: CacheManager
+
+  val staticsRoute =
+    pathPrefix("static") {
+      get {
+        path("countries") {
+          dynamic {
+            complete {
+              Future { countries }
+            }
+          }
+        }
+      }
+    }
+
+  def countries = memoize("statics", "countries", findCountries)
 }
 
 trait StaticsModule extends StaticsService with MongoCountryDao
