@@ -6,9 +6,7 @@ import com.alexb.main.context.MongoContext
 import com.mongodb.casbah.Imports._
 import org.joda.time.Instant
 
-class MongoUserDaoSpec extends WordSpec with MustMatchers with MongoUserDao with Config with MongoContext with BeforeAndAfterEach {
-	
-	val userCollection = mongoConn("spray_playground")("users")
+class MongoUserDaoSpec extends WordSpec with MustMatchers with Config with MongoContext with MongoUserDao with BeforeAndAfterEach {
 	
 	override def beforeEach {
 		userCollection remove MongoDBObject()

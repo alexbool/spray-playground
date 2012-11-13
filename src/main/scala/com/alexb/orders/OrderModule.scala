@@ -7,10 +7,9 @@ import com.alexb.main.context._
 
 trait OrderModule extends OrderService {
   this: MongoContext with ElasticSearchContext with OAuthContext =>
-  def collection: MongoCollection
 
   private lazy val orderActorRef = actorSystem.actorOf(
-    props = Props(new OrderActor(collection)))
+    props = Props(new OrderActor(mongoDb("orders"))))
 
   def orderActor = orderActorRef
 

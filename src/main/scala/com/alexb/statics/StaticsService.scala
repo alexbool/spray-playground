@@ -5,6 +5,7 @@ import akka.dispatch.Future
 import spray.routing.HttpService
 import spray.httpx.SprayJsonSupport
 import com.alexb.memoize.{ Memoize, CacheManager }
+import com.alexb.main.context.MongoContext
 
 trait StaticsService
   extends HttpService
@@ -33,4 +34,6 @@ trait StaticsService
   def countries = memoize("statics", "countries", findCountries)
 }
 
-trait StaticsModule extends StaticsService with MongoCountryDao
+trait StaticsModule extends StaticsService with MongoCountryDao {
+  this: MongoContext =>
+}

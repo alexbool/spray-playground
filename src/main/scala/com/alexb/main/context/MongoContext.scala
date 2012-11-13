@@ -6,6 +6,6 @@ import com.mongodb.casbah.Imports._
 trait MongoContext {
   this: ConfigContext =>
 
-  // MongoDB connection instance
-  def mongoConn = MongoConnection(config.getString("mongo.host"))
+  // MongoDB database instance
+  val mongoDb = MongoConnection(config.getString("mongo.host"))(config.getString("mongo.db"))
 }

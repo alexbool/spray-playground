@@ -41,9 +41,6 @@ object Main extends App {
     // other things here, like request stream processing
     // or timeout handling
     def receive = runRoute(calculatorRoute ~ orderRoute ~ staticsRoute ~ userRoute)
-    def collection = mongoConn("spray_playground")("orders")
-    def countryCollection = mongoConn("spray_playground")("countries")
-    def userCollection = mongoConn("spray_playground")("users")
   }
 
   // create and start the HttpService actor running our service as well as the root actor
