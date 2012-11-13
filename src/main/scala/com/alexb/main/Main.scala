@@ -23,7 +23,7 @@ object Main extends App {
   val ioBridge = new IOBridge(system).start()
 
   // create the service instance, supplying all required dependencies
-  class SprayPlaygroundActor extends Actor with ActorSystemContext with ConfigContext with IOBridgeContext
+  class SprayPlaygroundActor extends Actor with ActorSystemContext with Configuration with IOBridgeContext
     with OAuthdContext with MongoContext with ElasticSearchContext with InfinispanContext
     with CalculatorModule with OrderModule with StaticsModule with UserModule {
 

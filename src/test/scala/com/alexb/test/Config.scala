@@ -1,9 +1,9 @@
 package com.alexb.test
 
 import com.typesafe.config.ConfigFactory
-import com.alexb.main.context.ConfigContext
+import com.alexb.main.context.Configuration
 
-trait Config extends ConfigContext {
+trait Config extends Configuration {
 	val config = ConfigFactory.load("application.conf")
 }
 

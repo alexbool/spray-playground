@@ -11,7 +11,7 @@ trait OAuthContext {
 }
 
 trait OAuthdContext extends OAuthContext {
-  this: ActorSystemContext with ConfigContext with IOBridgeContext =>
+  this: ActorSystemContext with Configuration with IOBridgeContext =>
 
   val httpClient = actorSystem.actorOf(
     props = Props(new HttpClient(ioBridge)),

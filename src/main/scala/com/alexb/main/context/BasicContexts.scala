@@ -9,7 +9,7 @@ trait ActorSystemContext {
   def actorSystem: ActorSystem
 }
 
-trait ConfigContext {
+trait Configuration {
   def config: Config
 }
 
