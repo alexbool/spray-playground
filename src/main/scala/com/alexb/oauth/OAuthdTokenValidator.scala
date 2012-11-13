@@ -15,8 +15,8 @@ class OAuthdTokenValidator(conduit: ActorRef)(implicit executor: ExecutionContex
 
   val pipeline: Token => HttpRequest => Future[User] = { token =>
     addHeader(RawHeader("Authorization", "Bearer " + token)) ~>
-      sendReceive(conduit) ~>
-      unmarshal[User]
+    sendReceive(conduit) ~>
+    unmarshal[User]
   }
 
   def apply(token: Option[Token]) = token match {
