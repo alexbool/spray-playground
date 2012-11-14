@@ -3,8 +3,6 @@ package com.alexb.calculator
 import akka.actor.{ ActorSystem, Props }
 import akka.util.Timeout
 import akka.util.duration._
-import spray.http._
-import spray.http.HttpMethods._
 import spray.testkit._
 import org.scalatest._
 import com.alexb.main.context.ActorSystemContext
