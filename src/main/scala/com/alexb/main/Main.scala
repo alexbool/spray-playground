@@ -3,14 +3,12 @@ package com.alexb.main
 import akka.actor.{ actorRef2Scala, Actor, ActorSystem, Props }
 import spray.can.server.HttpServer
 import spray.io.{ IOBridge, SingletonHandler }
-import spray.routing.HttpService
 import akka.util.Timeout
 import akka.util.duration._
 import com.alexb.calculator.{ CalculatorModule, AddCommandListener, AddCommand }
-import com.alexb.orders.{ OrderService, OrderActor, OrderModule }
+import com.alexb.orders.OrderModule
 import com.alexb.statics.StaticsModule
 import com.alexb.user.UserModule
-import com.alexb.memoize.ConcurrentHashMapCacheManager
 import context._
 
 object Main extends App {
