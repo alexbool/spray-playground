@@ -4,8 +4,8 @@ import akka.actor.ActorSystem
 import akka.dispatch.Future
 import spray.routing.HttpService
 import spray.httpx.SprayJsonSupport
-import com.alexb.memoize.{ Memoize, CacheManager }
-import com.alexb.main.context.MongoSupport
+import com.alexb.memoize.Memoize
+import com.alexb.main.context.{Caching, MongoSupport}
 
 trait StaticsService
   extends HttpService
@@ -13,10 +13,10 @@ trait StaticsService
   with StaticsMarshallers
   with Memoize {
 
-  this: CountryDao =>
+  this: CountryDao with Caching =>
 
   implicit def actorSystem: ActorSystem
-  implicit def cacheManager: CacheManager
+  implicit val cache = cacheManager
 
   val staticsRoute =
     pathPrefix("static") {
@@ -35,5 +35,5 @@ trait StaticsService
 }
 
 trait StaticsModule extends StaticsService with MongoCountryDao {
-  this: MongoSupport =>
+  this: MongoSupport with Caching =>
 }
