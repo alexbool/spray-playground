@@ -14,8 +14,8 @@ class MongoUserDaoSpec extends WordSpec with MustMatchers with Config with Mongo
 	}
 	
 	val user = User("alexb", "changeme", Instant.now)
-	
-	"MongoUserDao" must {
+
+	"MongoUserDao" ignore {
 		"save and find users" in {
 			find("alexb") must equal (Some(user))
 		}
