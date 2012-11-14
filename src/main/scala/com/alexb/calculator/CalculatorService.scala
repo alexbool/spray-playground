@@ -1,7 +1,6 @@
 package com.alexb.calculator
 
 import spray.routing.HttpService
-import spray.routing.directives.PathMatchers._
 import spray.httpx.SprayJsonSupport
 import akka.util.Timeout
 import akka.actor.ActorRef
