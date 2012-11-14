@@ -10,7 +10,7 @@ trait CountryRepository {
 trait MongoCountryRepository extends CountryRepository {
   this: MongoSupport =>
 
-  val countryCollection = mongoDb("countries")
+  private val countryCollection = mongoDb("countries")
 
   def findCountries =
     countryCollection

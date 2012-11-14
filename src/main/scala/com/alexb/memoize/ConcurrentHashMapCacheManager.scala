@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 class ConcurrentHashMapCacheManager extends CacheManager {
 
-  val caches = new ConcurrentHashMap[String, ConcurrentHashMap[Any, Any]]
+  private val caches = new ConcurrentHashMap[String, ConcurrentHashMap[Any, Any]]
 
   def get(cacheName: String, key: Any): Option[Any] = {
     val cache = getOrCreateCache(cacheName)

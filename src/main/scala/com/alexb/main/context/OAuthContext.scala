@@ -13,15 +13,15 @@ trait OAuthContext {
 trait OAuthdContext extends OAuthContext {
   this: ActorSystemContext with Configuration with IOBridgeContext =>
 
-  val httpClient = actorSystem.actorOf(
+  private val httpClient = actorSystem.actorOf(
     props = Props(new HttpClient(ioBridge)),
     name = "oauth-http-client")
 
-  val conduit = actorSystem.actorOf(
+  private val conduit = actorSystem.actorOf(
     props = Props(new HttpConduit(httpClient, config.getString("oauth.host"), config.getInt("oauth.port"))),
     name = "oauth-http-conduit"
   )
 
-  val tokenValidatorInstance = new OAuthdTokenValidator(conduit)(actorSystem.dispatcher)
+  private val tokenValidatorInstance = new OAuthdTokenValidator(conduit)(actorSystem.dispatcher)
   def tokenValidator = tokenValidatorInstance
 }

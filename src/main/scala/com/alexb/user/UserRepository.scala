@@ -9,7 +9,6 @@ import com.alexb.main.context.MongoSupport
 class DuplicateUsernameException extends IllegalArgumentException("Cannot create user with duplicate username")
 
 trait UserRepository {
-
   def find(username: String): Option[User]
   def checkUsernameFree(username: String): Boolean
   def checkCredentials(username: String, password: String): Boolean
@@ -19,9 +18,9 @@ trait UserRepository {
 trait MongoUserRepository extends UserRepository {
   this: MongoSupport =>
 
-  implicit val writeConcern = WriteConcern.Safe
+  implicit private val writeConcern = WriteConcern.Safe
 
-  val userCollection = mongoDb("users")
+  private val userCollection = mongoDb("users")
 
   def find(username: String) =
     userCollection
