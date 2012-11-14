@@ -4,7 +4,7 @@ import com.mongodb.casbah.Imports._
 import org.scala_tools.time.Imports._
 import org.joda.time.Instant
 import com.mongodb.MongoException
-import com.alexb.main.context.MongoContext
+import com.alexb.main.context.MongoSupport
 
 class DuplicateUsernameException extends IllegalArgumentException("Cannot create user with duplicate username")
 
@@ -17,7 +17,7 @@ trait UserDao {
 }
 
 trait MongoUserDao extends UserDao {
-  this: MongoContext =>
+  this: MongoSupport =>
 
   implicit val writeConcern = WriteConcern.Safe
 

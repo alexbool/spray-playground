@@ -5,7 +5,7 @@ import akka.dispatch.Future
 import spray.routing.HttpService
 import spray.httpx.SprayJsonSupport
 import com.alexb.memoize.{ Memoize, CacheManager }
-import com.alexb.main.context.MongoContext
+import com.alexb.main.context.MongoSupport
 
 trait StaticsService
   extends HttpService
@@ -35,5 +35,5 @@ trait StaticsService
 }
 
 trait StaticsModule extends StaticsService with MongoCountryDao {
-  this: MongoContext =>
+  this: MongoSupport =>
 }

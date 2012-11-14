@@ -2,11 +2,11 @@ package com.alexb.user
 
 import org.scalatest._
 import com.alexb.test.Config
-import com.alexb.main.context.MongoContext
+import com.alexb.main.context.MongoSupport
 import com.mongodb.casbah.Imports._
 import org.joda.time.Instant
 
-class MongoUserDaoSpec extends WordSpec with MustMatchers with Config with MongoContext with MongoUserDao with BeforeAndAfterEach {
+class MongoUserDaoSpec extends WordSpec with MustMatchers with Config with MongoSupport with MongoUserDao with BeforeAndAfterEach {
 	
 	override def beforeEach {
 		userCollection remove MongoDBObject()

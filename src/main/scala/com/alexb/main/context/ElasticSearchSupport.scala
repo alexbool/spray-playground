@@ -5,7 +5,7 @@ import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 
-trait ElasticSearchContext {
+trait ElasticSearchSupport {
   this: Configuration =>
 
   val elasticSearchClient: Client =

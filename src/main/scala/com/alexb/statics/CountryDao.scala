@@ -2,14 +2,14 @@ package com.alexb.statics
 
 import akka.dispatch.Future
 import com.mongodb.casbah.Imports._
-import com.alexb.main.context.MongoContext
+import com.alexb.main.context.MongoSupport
 
 trait CountryDao {
   def findCountries: Seq[Country]
 }
 
 trait MongoCountryDao extends CountryDao {
-  this: MongoContext =>
+  this: MongoSupport =>
 
   val countryCollection = mongoDb("countries")
 

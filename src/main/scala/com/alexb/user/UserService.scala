@@ -8,7 +8,7 @@ import spray.http.HttpResponse
 import spray.http.StatusCodes._
 import org.joda.time.Instant
 import com.alexb.utils.{ ErrorDescription, ErrorDescriptionMarshallers }
-import com.alexb.main.context.MongoContext
+import com.alexb.main.context.MongoSupport
 
 trait UserService
   extends HttpService
@@ -56,6 +56,6 @@ trait UserService
 }
 
 trait UserModule extends UserService with MongoUserDao {
-  this: MongoContext =>
+  this: MongoSupport =>
 }
 

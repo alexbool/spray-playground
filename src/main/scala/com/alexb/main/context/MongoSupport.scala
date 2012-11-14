@@ -3,7 +3,7 @@ package context
 
 import com.mongodb.casbah.Imports._
 
-trait MongoContext {
+trait MongoSupport {
   this: Configuration =>
 
   // MongoDB database instance
