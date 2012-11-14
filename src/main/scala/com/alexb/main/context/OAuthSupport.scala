@@ -22,6 +22,5 @@ trait OAuthdSupport extends OAuthSupport {
     name = "oauth-http-conduit"
   )
 
-  private val tokenValidatorInstance = new OAuthdTokenValidator(conduit)(actorSystem.dispatcher)
-  def tokenValidator = tokenValidatorInstance
+  val tokenValidator = new OAuthdTokenValidator(conduit)(actorSystem.dispatcher)
 }
