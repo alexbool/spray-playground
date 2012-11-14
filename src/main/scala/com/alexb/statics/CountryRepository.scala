@@ -1,6 +1,5 @@
 package com.alexb.statics
 
-import akka.dispatch.Future
 import com.mongodb.casbah.Imports._
 import com.alexb.main.context.MongoSupport
 
