@@ -9,7 +9,7 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import com.alexb.utils.PageDirectives
 import com.alexb.oauth.OAuth
-import com.alexb.main.context.OAuthContext
+import com.alexb.main.context.OAuthSupport
 
 trait OrderService
   extends HttpService
@@ -17,7 +17,7 @@ trait OrderService
   with SprayJsonSupport
   with OrderMarshallers {
 
-  this: OAuthContext =>
+  this: OAuthSupport =>
 
   implicit val timeout: Timeout // needed for `?` below
 

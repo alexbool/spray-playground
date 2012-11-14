@@ -6,11 +6,11 @@ import spray.can.client.HttpClient
 import spray.client.HttpConduit
 import com.alexb.oauth._
 
-trait OAuthContext {
+trait OAuthSupport {
   def tokenValidator: OAuthTokenValidator[User]
 }
 
-trait OAuthdContext extends OAuthContext {
+trait OAuthdSupport extends OAuthSupport {
   this: ActorSystemContext with Configuration with IOBridgeContext =>
 
   private val httpClient = actorSystem.actorOf(
