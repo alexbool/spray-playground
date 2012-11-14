@@ -6,7 +6,7 @@ import com.alexb.main.context.MongoSupport
 import com.mongodb.casbah.Imports._
 import org.joda.time.Instant
 
-class MongoUserDaoSpec extends WordSpec with MustMatchers with Config with MongoSupport with MongoUserDao with BeforeAndAfterEach {
+class MongoUserRepositorySpec extends WordSpec with MustMatchers with Config with MongoSupport with MongoUserRepository with BeforeAndAfterEach {
 	
 	override def beforeEach {
 		userCollection remove MongoDBObject()
@@ -15,7 +15,7 @@ class MongoUserDaoSpec extends WordSpec with MustMatchers with Config with Mongo
 	
 	val user = User("alexb", "changeme", Instant.now)
 
-	"MongoUserDao" ignore {
+	"MongoUserRepository" ignore {
 		"save and find users" in {
 			find("alexb") must equal (Some(user))
 		}

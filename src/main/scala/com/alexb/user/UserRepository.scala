@@ -8,7 +8,7 @@ import com.alexb.main.context.MongoSupport
 
 class DuplicateUsernameException extends IllegalArgumentException("Cannot create user with duplicate username")
 
-trait UserDao {
+trait UserRepository {
 
   def find(username: String): Option[User]
   def checkUsernameFree(username: String): Boolean
@@ -16,7 +16,7 @@ trait UserDao {
   def save(user: User)
 }
 
-trait MongoUserDao extends UserDao {
+trait MongoUserRepository extends UserRepository {
   this: MongoSupport =>
 
   implicit val writeConcern = WriteConcern.Safe
