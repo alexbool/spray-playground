@@ -13,6 +13,7 @@ trait UserRepository {
   def checkUsernameFree(username: String): Boolean
   def checkCredentials(username: String, password: String): Boolean
   def save(user: User)
+  def clear()
 }
 
 trait MongoUserRepository extends UserRepository {
@@ -44,5 +45,9 @@ trait MongoUserRepository extends UserRepository {
     catch {
       case e: MongoException.DuplicateKey => throw new DuplicateUsernameException
     }
+  }
+
+  def clear() {
+    userCollection remove MongoDBObject()
   }
 }

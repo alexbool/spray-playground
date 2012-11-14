@@ -7,12 +7,12 @@ import com.mongodb.casbah.Imports._
 import org.joda.time.Instant
 
 class MongoUserRepositorySpec extends WordSpec with MustMatchers with Config with MongoSupport with MongoUserRepository with BeforeAndAfterEach {
-	
+
 	override def beforeEach {
-		userCollection remove MongoDBObject()
+		clear()
 		save(user)
 	}
-	
+
 	val user = User("alexb", "changeme", Instant.now)
 
 	"MongoUserRepository" ignore {
