@@ -16,7 +16,7 @@ trait UserService
   with UserMarshallers
   with ErrorDescriptionMarshallers {
 
-  this: UserDao =>
+  this: UserRepository =>
 
   implicit def actorSystem: ActorSystem
 
@@ -55,7 +55,7 @@ trait UserService
     }
 }
 
-trait UserModule extends UserService with MongoUserDao {
+trait UserModule extends UserService with MongoUserRepository {
   this: MongoSupport =>
 }
 

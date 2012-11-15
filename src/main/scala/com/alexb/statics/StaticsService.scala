@@ -13,7 +13,7 @@ trait StaticsService
   with StaticsMarshallers
   with Memoize {
 
-  this: CountryDao with Caching =>
+  this: CountryRepository with Caching =>
 
   implicit def actorSystem: ActorSystem
   implicit val cache = cacheManager
@@ -34,6 +34,6 @@ trait StaticsService
   def countries = memoize("statics", "countries", findCountries)
 }
 
-trait StaticsModule extends StaticsService with MongoCountryDao {
+trait StaticsModule extends StaticsService with MongoCountryRepository {
   this: MongoSupport with Caching =>
 }
