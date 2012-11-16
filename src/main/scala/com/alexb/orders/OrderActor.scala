@@ -1,7 +1,6 @@
 package com.alexb.orders
 
 import akka.actor.Actor
-import akka.dispatch.Future
 import com.mongodb.casbah.Imports._
 import java.util.UUID
 import com.alexb.utils.{ FutureUtils, PageInfo }

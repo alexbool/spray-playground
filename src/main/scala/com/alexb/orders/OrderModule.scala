@@ -1,8 +1,6 @@
 package com.alexb.orders
 
-import akka.actor.{ ActorSystem, Props }
-import com.mongodb.casbah.MongoCollection
-import org.elasticsearch.client.Client
+import akka.actor.Props
 import com.alexb.main.context._
 
 trait OrderModule extends OrderService {
