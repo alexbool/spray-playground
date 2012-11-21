@@ -1,12 +1,12 @@
 package com.alexb.utils
 
 import akka.actor.Actor
-import akka.dispatch.Future
+import scala.concurrent.Future
 
 trait FutureUtils {
   this: Actor =>
 
-  import context.system
+  import context.dispatcher
 
   def wrapInFuture[T](body: => T) {
     Future {

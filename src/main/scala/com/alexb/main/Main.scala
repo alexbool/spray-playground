@@ -1,10 +1,10 @@
 package com.alexb.main
 
 import akka.actor.{ actorRef2Scala, Actor, ActorSystem, Props }
+import akka.util.Timeout
+import scala.concurrent.duration._
 import spray.can.server.HttpServer
 import spray.io.{ IOBridge, SingletonHandler }
-import akka.util.Timeout
-import akka.util.duration._
 import com.alexb.calculator.{ CalculatorModule, AddCommandListener, AddCommand }
 import com.alexb.orders.OrderModule
 import com.alexb.statics.StaticsModule

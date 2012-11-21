@@ -1,7 +1,7 @@
 package com.alexb.statics
 
 import akka.actor.ActorSystem
-import akka.dispatch.Future
+import scala.concurrent.Future
 import spray.routing.HttpService
 import spray.httpx.SprayJsonSupport
 import com.alexb.memoize.Memoize

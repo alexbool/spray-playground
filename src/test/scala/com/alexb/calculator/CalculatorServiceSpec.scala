@@ -1,8 +1,8 @@
 package com.alexb.calculator
 
-import akka.actor.{ ActorSystem, Props }
+import akka.actor.ActorSystem
 import akka.util.Timeout
-import akka.util.duration._
+import scala.concurrent.duration._
 import spray.testkit._
 import org.scalatest._
 import com.alexb.main.context.ActorSystemContext

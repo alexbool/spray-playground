@@ -1,7 +1,7 @@
 package com.alexb.user
 
 import akka.actor.ActorSystem
-import akka.dispatch.Future
+import scala.concurrent.Future
 import spray.routing.{ HttpService, ExceptionHandler }
 import spray.httpx.SprayJsonSupport
 import spray.http.HttpResponse

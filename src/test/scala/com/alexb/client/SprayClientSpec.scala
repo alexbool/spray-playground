@@ -2,8 +2,8 @@ package com.alexb.client
 
 import org.scalatest._
 import akka.actor.{ ActorSystem, Props }
-import akka.dispatch.Await
-import akka.util.duration._
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import spray.io.IOBridge
 import spray.can.client.HttpClient
 import spray.client.HttpConduit

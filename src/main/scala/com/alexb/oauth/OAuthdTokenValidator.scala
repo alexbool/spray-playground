@@ -6,7 +6,7 @@ import spray.httpx.UnsuccessfulResponseException
 import spray.httpx.SprayJsonSupport._
 import spray.client.HttpConduit._
 import spray.json.DefaultJsonProtocol._
-import akka.dispatch.{ Future, ExecutionContext }
+import scala.concurrent.{ Future, ExecutionContext }
 import akka.actor.ActorRef
 
 class OAuthdTokenValidator(conduit: ActorRef)(implicit executor: ExecutionContext) extends OAuthTokenValidator[User] {
