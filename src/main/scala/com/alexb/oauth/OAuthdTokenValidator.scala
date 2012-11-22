@@ -14,7 +14,7 @@ class OAuthdTokenValidator(conduit: ActorRef)(implicit executor: ExecutionContex
   implicit val userFormat = jsonFormat2(User)
 
   val pipeline: Token => HttpRequest => Future[User] = { token =>
-    addHeader(RawHeader("Authorization", "Bearer " + token)) ~>
+    addHeader(RawHeader("Authorization", s"Bearer $token")) ~>
     sendReceive(conduit) ~>
     unmarshal[User]
   }
