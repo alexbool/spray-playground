@@ -1,11 +1,10 @@
 package com.alexb.statics
 
-import akka.actor.ActorSystem
 import scala.concurrent.Future
 import spray.routing.HttpService
 import spray.httpx.SprayJsonSupport
 import com.alexb.memoize.Memoize
-import com.alexb.main.context.{Caching, MongoSupport}
+import com.alexb.main.context.{ActorSystemContext, Caching, MongoSupport}
 
 trait StaticsService
   extends HttpService
@@ -13,10 +12,9 @@ trait StaticsService
   with StaticsMarshallers
   with Memoize {
 
-  this: CountryRepository with Caching =>
+  this: CountryRepository with Caching with ActorSystemContext =>
 
-  implicit def actorSystem: ActorSystem
-  implicit val cache = cacheManager
+  implicit private val cache = cacheManager
 
   val staticsRoute =
     pathPrefix("static") {
@@ -31,9 +29,9 @@ trait StaticsService
       }
     }
 
-  val countries = memoize("statics", "countries", () => findCountries)
+  private val countries = memoize("statics", "countries", () => findCountries)
 }
 
 trait StaticsModule extends StaticsService with MongoCountryRepository {
-  this: MongoSupport with Caching =>
+  this: MongoSupport with Caching with ActorSystemContext =>
 }
