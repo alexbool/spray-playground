@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+APP_NAME=spray-playground
+
+if [ -x "/etc/init.d/$APP_NAME" ]; then
+    if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+        invoke-rc.d $APP_NAME stop || true
+    else
+        /etc/init.d/$APP_NAME stop || true
+    fi
+fi

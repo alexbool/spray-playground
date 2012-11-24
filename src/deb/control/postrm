@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+APP_DIR=spray-playround
+
+case "$1" in
+    remove)
+        # Remove logs
+        rm -rf /var/log/$APP_DIR
+        
+        # remove **only** empty data dir
+        # rmdir -p --ignore-fail-on-non-empty /var/lib/$APP_DIR
+    ;;
+
+    purge)
+        # Remove service
+        update-rc.d $APP_DIR remove >/dev/null || true
+    
+        # Remove logs and data
+        # rm -rf /var/log/$APP_DIR /var/lib/$APP_DIR
+
+        # Remove user/group
+        deluser spray || true
+        delgroup spray || true
+    ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        # Nothing to do here
+    ;;
+
+    *)
+        echo "$0 called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac

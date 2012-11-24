@@ -1,0 +1,39 @@
+#!/bin/sh
+set -e
+
+APP_DIR=spray-playground
+
+case "$1" in
+    configure)
+    [ -f /etc/default/$APP_DIR ] && . /etc/default/$APP_DIR
+    [ -z "$APP_USER" ] && APP_USER="spray"
+    [ -z "$APP_GROUP" ] && APP_GROUP="spray"
+    if ! getent group "$APP_GROUP" > /dev/null 2>&1 ; then
+        addgroup --system "$APP_GROUP" --quiet
+    fi
+    if ! id $APP_USER > /dev/null 2>&1 ; then
+        adduser --system --home /usr/share/$APP_DIR --no-create-home \
+        --ingroup "$APP_GROUP" --disabled-password --shell /bin/false \
+        "$APP_USER"
+    fi
+
+    # Set user permissions on /var/log/$APP_DIR and /var/lib/$APP_DIR
+    mkdir -p /var/log/$APP_DIR /var/lib/$APP_DIR
+    chown -R $APP_USER:$APP_GROUP /var/log/$APP_DIR /var/lib/$APP_DIR
+    chmod 755 /var/log/$APP_DIR /var/lib/$APP_DIR
+
+    # configuration files should not be modifiable by $APP_DIR user, as this can be a security issue
+    [ -e /etc/$APP_DIR/* ] && chown -Rh root:root /etc/$APP_DIR/*
+    [ -e /etc/$APP_DIR ] && chmod 755 /etc/$APP_DIR
+    [ -e /etc/$APP_DIR/* ] && chmod 644 /etc/$APP_DIR/*
+    ;;
+esac
+
+if [ -x "/etc/init.d/$APP_DIR" ]; then
+    update-rc.d $APP_DIR defaults 95 10 >/dev/null
+    if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
+        invoke-rc.d $APP_DIR start || true
+    else
+        /etc/init.d/$APP_DIR start || true
+    fi
+fi
