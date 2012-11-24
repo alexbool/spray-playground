@@ -24,14 +24,14 @@ trait StaticsService
         path("countries") {
           dynamic {
             complete {
-              Future { countries }
+              Future { countries() }
             }
           }
         }
       }
     }
 
-  def countries = memoize("statics", "countries", findCountries)
+  val countries = memoize("statics", "countries", () => findCountries)
 }
 
 trait StaticsModule extends StaticsService with MongoCountryRepository {

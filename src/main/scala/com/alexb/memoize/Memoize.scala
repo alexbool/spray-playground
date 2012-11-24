@@ -4,10 +4,10 @@ trait Memoize {
 
   private val defaultCache = ""
 
-  def memoize[R](f: => R)(implicit cacheManager: CacheManager): R = memoize[R](defaultCache, f)
-  def memoize[R](cacheName: String, f: => R)(implicit cacheManager: CacheManager): R = memoize[R](cacheName, f.getClass.getName, f)
-  def memoize[R](cacheName: String, key: String, f: => R)(implicit cacheManager: CacheManager): R =
-    memoize(cacheName, (arg: String) => f)(cacheManager)(key)
+  def memoize[R](f: () => R)(implicit cacheManager: CacheManager): () => R = memoize[R](defaultCache, f)
+  def memoize[R](cacheName: String, f: () => R)(implicit cacheManager: CacheManager): () => R = memoize[R](cacheName, f.getClass.getName, f)
+  def memoize[R](cacheName: String, key: String, f: () => R)(implicit cacheManager: CacheManager): () => R =
+    () => memoize(cacheName, (arg: String) => f())(cacheManager)(key)
 
   def memoize[A1, R](f: A1 => R)(implicit cacheManager: CacheManager): A1 => R = memoize[A1, R](defaultCache, f)
   def memoize[A1, R](cacheName: String, f: A1 => R)(implicit cacheManager: CacheManager): A1 => R =
