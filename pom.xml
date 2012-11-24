@@ -29,6 +29,10 @@
             <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
         </repository>
         <repository>
+            <id>Sonatype Releases</id>
+            <url>https://oss.sonatype.org/content/repositories/releases/</url>
+        </repository>
+        <repository>
             <id>Sonatype Snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
@@ -106,6 +110,12 @@
             <groupId>org.specs2</groupId>
             <artifactId>specs2_2.10.0-RC2</artifactId>
             <version>1.12.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scalamock</groupId>
+            <artifactId>scalamock-scalatest-support_2.10.0-RC2</artifactId>
+            <version>3.0-M6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
