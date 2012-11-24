@@ -24,5 +24,5 @@ class OrderSearchActor(client: Client, index: String) extends Actor with Elastic
       .map(_.getSourceAsString()
         .replace("\"_id\"", "\"orderId\"") // Bad hack
         .asJson.convertTo[Order])
-      .toSeq
+      .to[Seq]
 }
