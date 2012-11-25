@@ -36,12 +36,12 @@ class OrderActor(collection: MongoCollection) extends Actor with FutureUtils {
       .skip(page.skip)
       .limit(page.size)
       .map(toOrder)
-      .toList
+      .to[List]
 
   private def toOrder(d: DBObject): Order =
     Order(d.getAs[String]("_id").get,
       d.getAs[String]("clientId").get,
-      d.getAs[Iterable[DBObject]]("items").get.toList.map(toOrderItem),
+      d.getAs[Iterable[DBObject]]("items").get.to[List].map(toOrderItem),
       d.getAs[String]("notes").getOrElse(""))
 
   private def toOrderItem(d: DBObject): OrderItem =
