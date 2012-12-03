@@ -1,24 +1,16 @@
 package com.alexb.main
 
-import akka.actor.{ actorRef2Scala, Actor, ActorSystem, Props }
+import akka.actor.{actorRef2Scala, Actor, Props}
 import akka.util.Timeout
 import scala.concurrent.duration._
-import spray.can.server.HttpServer
-import spray.io.{ IOBridge, SingletonHandler }
+import spray.can.server.SprayCanHttpServerApp
 import com.alexb.calculator.{ CalculatorModule, AddCommandListener, AddCommand }
 import com.alexb.orders.OrderModule
 import com.alexb.statics.StaticsModule
 import com.alexb.user.UserModule
 import context._
 
-object Main extends App {
-
-  // we need an ActorSystem to host our application in
-  val system = ActorSystem("SprayPlayground")
-
-  // every spray-can HttpServer (and HttpClient) needs an IOBridge for low-level network IO
-  // (but several servers and/or clients can share one)
-  val ioBridge = new IOBridge(system).start()
+object Main extends App with SprayCanHttpServerApp {
 
   // create the service instance, supplying all required dependencies
   class SprayPlaygroundActor extends Actor with ActorSystemContext with Configuration with IOBridgeContext
@@ -52,21 +44,8 @@ object Main extends App {
   system.eventStream.subscribe(addCommandListener, classOf[AddCommand])
   ///////////////////////////////////////////////////////////////////////////
 
-  // create and start the spray-can HttpServer, telling it that we want requests to be
-  // handled by the root service actor
-  val sprayCanServer = system.actorOf(
-    Props(new HttpServer(ioBridge, SingletonHandler(httpService))),
-    name = "http-server")
-
-  // a running HttpServer can be bound, unbound and rebound
-  // initially to need to tell it where to bind to
-  sprayCanServer ! HttpServer.Bind(
-    system.settings.config.getString("application.host"),
-    system.settings.config.getInt("application.port"))
-
-  // finally we drop the main thread but hook the shutdown of
-  // our IOBridge into the shutdown of the applications ActorSystem
-  system.registerOnTermination {
-    ioBridge.stop()
-  }
+  // create a new HttpServer using our handler tell it where to bind to
+  newHttpServer(httpService) ! Bind(
+    interface = system.settings.config.getString("application.host"),
+    port = system.settings.config.getInt("application.port"))
 }

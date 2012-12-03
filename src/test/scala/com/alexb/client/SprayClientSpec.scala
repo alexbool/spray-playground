@@ -4,14 +4,14 @@ import org.scalatest._
 import akka.actor.{ ActorSystem, Props }
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import spray.io.IOBridge
+import spray.io.IOExtension
 import spray.can.client.HttpClient
 import spray.client.HttpConduit
 import spray.client.HttpConduit._
 
 class SprayClientSpec extends WordSpec with MustMatchers {
   val system = ActorSystem("test")
-  val ioBridge = new IOBridge(system).start()
+  val ioBridge = IOExtension(system).ioBridge
   val httpClient = system.actorOf(
     props = Props(new HttpClient(ioBridge)),
     name = "test-http-client")

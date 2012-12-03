@@ -1,9 +1,8 @@
 package com.alexb.main
 package context
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem}
 import com.typesafe.config.Config
-import spray.io.IOBridge
 import com.alexb.memoize.CacheManager
 
 trait ActorSystemContext {
@@ -19,5 +18,5 @@ trait Caching {
 }
 
 trait IOBridgeContext {
-  def ioBridge: IOBridge
+  def ioBridge: ActorRef
 }

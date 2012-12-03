@@ -1,7 +1,7 @@
 package com.alexb.oauth
 
-import spray.http.HttpRequest
-import spray.http.HttpHeaders.RawHeader
+import spray.http.{OAuth2BearerToken, HttpRequest}
+import spray.http.HttpHeaders.Authorization
 import spray.httpx.UnsuccessfulResponseException
 import spray.httpx.SprayJsonSupport._
 import spray.client.HttpConduit._
@@ -14,7 +14,7 @@ class OAuthdTokenValidator(conduit: ActorRef)(implicit executor: ExecutionContex
   implicit val userFormat = jsonFormat2(User)
 
   val pipeline: Token => HttpRequest => Future[User] = { token =>
-    addHeader(RawHeader("Authorization", s"Bearer $token")) ~>
+    addHeader(Authorization(OAuth2BearerToken(token))) ~>
     sendReceive(conduit) ~>
     unmarshal[User]
   }

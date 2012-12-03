@@ -1,10 +1,9 @@
 package com.alexb.oauth
 
 import scala.concurrent.ExecutionContext
-import spray.http.HttpCredentials
+import spray.http.{OAuth2BearerToken, HttpCredentials}
 import spray.routing.RequestContext
 import spray.routing.authentication.HttpAuthenticator
-import spray.http.OtherHttpCredentials
 
 class OAuthAuthenticator[U](tokenValidator: OAuthTokenValidator[U])(implicit ctx: ExecutionContext)
   extends HttpAuthenticator[U] {
@@ -18,7 +17,7 @@ class OAuthAuthenticator[U](tokenValidator: OAuthTokenValidator[U])(implicit ctx
   def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
     tokenValidator {
       credentials.flatMap {
-        case OtherHttpCredentials(_, params: Map[String, String]) => params.headOption.map(_._2)
+        case OAuth2BearerToken(token) => Some(token)
         case _ => None
       }
     }
