@@ -13,6 +13,11 @@ trait Configuration {
   def config: Config
 }
 
+trait ActorSystemConfiguration extends Configuration {
+  this: ActorSystemContext =>
+  def config = actorSystem.settings.config
+}
+
 trait Caching {
   def cacheManager: CacheManager
 }
