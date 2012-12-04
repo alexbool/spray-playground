@@ -13,12 +13,11 @@ import context._
 object Main extends App with SprayCanHttpServerApp {
 
   // create the service instance, supplying all required dependencies
-  class SprayPlaygroundActor extends Actor with ActorSystemContext with Configuration with IOBridgeContext
+  class SprayPlaygroundActor extends Actor with ActorSystemContext with ActorSystemConfiguration with IOBridgeContext
     with OAuthdSupport with MongoSupport with ElasticSearchSupport with InfinispanSupport
     with CalculatorModule with OrderModule with StaticsModule with UserModule {
 
     def actorSystem = system
-    def config = system.settings.config
     def ioBridge = Main.ioBridge
 
     val timeout = Timeout(5 seconds) // needed for `?`
