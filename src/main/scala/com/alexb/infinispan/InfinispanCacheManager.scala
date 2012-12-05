@@ -6,7 +6,7 @@ import org.infinispan.api.BasicCacheContainer
 class InfinispanCacheManager(cacheContainer: BasicCacheContainer) extends CacheManager {
 
   def get[T](cacheName: String, key: Any): Option[T] =
-    Option(cacheContainer.getCache(cacheName).get(key).asInstanceOf[T])
+    Option(cacheContainer.getCache[Any, T](cacheName).get(key))
 
   def put(cacheName: String, key: Any, value: Any) {
     cacheContainer.getCache(cacheName).put(key, value)
