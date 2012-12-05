@@ -16,6 +16,10 @@ class ConcurrentHashMapCacheManager extends CacheManager {
     getOrCreateCache(cacheName).put(key, value)
   }
 
+  def clear(cacheName: String) {
+    Option(caches.get(cacheName)) foreach { _.clear() }
+  }
+
   private def getOrCreateCache(cacheName: String) =
     if (caches.containsKey(cacheName))
       caches.get(cacheName)

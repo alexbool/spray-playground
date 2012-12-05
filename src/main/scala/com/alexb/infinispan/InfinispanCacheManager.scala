@@ -28,4 +28,8 @@ class InfinispanCacheManager(cacheContainer: BasicCacheContainer) extends CacheM
   def put(cacheName: String, key: Any, value: Any) {
     cache[Any](cacheName).put(key, value)
   }
+
+  def clear(cacheName: String) {
+    cache(cacheName).clear()
+  }
 }

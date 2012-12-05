@@ -10,4 +10,6 @@ trait CacheManager {
     Future { get[T](cacheName, key) }
 
   def put(cacheName: String, key: Any, value: Any)
+
+  def clear(cacheName: String)
 }
