@@ -26,6 +26,6 @@ class InfinispanCacheManager(cacheContainer: BasicCacheContainer) extends CacheM
   }
 
   def put(cacheName: String, key: Any, value: Any) {
-    cacheContainer.getCache(cacheName).put(key, value)
+    cache[Any](cacheName).put(key, value)
   }
 }
