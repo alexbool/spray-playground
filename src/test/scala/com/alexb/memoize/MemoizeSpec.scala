@@ -10,6 +10,7 @@ import Memoize._
 class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach with MockFactory {
 
 	implicit val cacheManager = new ConcurrentHashMapCacheManager
+  val specialCacheName = "other cache"
   val timeout = 10 seconds
 
 	"Memoize function" ignore {
@@ -51,26 +52,28 @@ class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach wit
 		"cache no-arg functions with cache name and key" in {
       val m = mockFunction[Int]
       m.expects().returns(1).once
-			def memoized = memoize("Cache name", "key", m)
+			def memoized = memoize(specialCacheName, "key", m)
 			memoized() must equal(1)
 			memoized() must equal(1)
 		}
 	}
 
   "Async memoize function" must {
-    "cache no-arg functions" in {
-      val m = mockFunction[Int]
-      m.expects().returns(1).once
-      val memoized = memoizeAsync(m)
+    /*"cache no-arg functions" in {
+      val f = stubFunction[Int]
+      f.when().returns(1)
+      val memoized = memoizeAsync(f)
       Await.result(memoized(), timeout) must equal(1)
       Await.result(memoized(), timeout) must equal(1)
-    }
+      f.verify().once()
+    }*/
     "cache one-arg functions" in {
-      val m = mockFunction[Int, Int]
-      m.expects(*).returns(2).once
-      val memoized = memoizeAsync(m)
+      val f = stubFunction[Int, Int]
+      f.when(*).returns(2)
+      val memoized = memoizeAsync(f)
       Await.result(memoized(1), timeout) must equal(2)
       Await.result(memoized(1), timeout) must equal(2)
+      f.verify(*).once()
     }
     /*"cache two-arg functions" in {
       val m = mockFunction[Int, Int, Int]
@@ -104,5 +107,6 @@ class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach wit
 
   override protected def beforeEach() {
     cacheManager.clear("")
+    cacheManager.clear(specialCacheName)
   }
 }
