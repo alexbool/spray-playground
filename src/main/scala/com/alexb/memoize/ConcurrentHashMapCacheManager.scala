@@ -8,6 +8,7 @@ class ConcurrentHashMapCacheManager extends CacheManager {
 
   def get[T](cacheName: String, key: Any): Option[T] = {
     val cache = getOrCreateCache(cacheName)
+    System.out.println(s"Cache '$cacheName' contents: " + Map(cache))
     if (cache.containsKey(key)) Some(cache.get(key).asInstanceOf[T])
     else None
   }
