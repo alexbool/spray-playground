@@ -1,6 +1,7 @@
 package com.alexb.memoize
 
 import java.util.concurrent.ConcurrentHashMap
+import scala.collection.JavaConversions._
 
 class ConcurrentHashMapCacheManager extends CacheManager {
 
@@ -8,7 +9,7 @@ class ConcurrentHashMapCacheManager extends CacheManager {
 
   def get[T](cacheName: String, key: Any): Option[T] = {
     val cache = getOrCreateCache(cacheName)
-    System.out.println(s"Cache '$cacheName' contents: " + Map(cache))
+    System.out.println(s"Cache '$cacheName' contents: " + cache.map(e => e._1.toString + " = " + e._2.toString).mkString(", "))
     if (cache.containsKey(key)) Some(cache.get(key).asInstanceOf[T])
     else None
   }
