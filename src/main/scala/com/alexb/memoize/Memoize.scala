@@ -8,13 +8,8 @@ trait Memoize {
   private val defaultCache = ""
 
   private def getOrPut[A, R](res: Option[R], cacheManager: CacheManager, f: A => R, cacheName: String, key: A) = res match {
-    case Some(value) => {
-      System.out.println(s"Cache hit in cache '$cacheName', '$key' = '$value'")
-      value
-    }
+    case Some(value) => value
     case None => {
-      System.out.println(s"Cache miss in cache '$cacheName' for key '$key'")
-      System.out.println(s"About to call function '${f.toString}' with argument '$key'")
       val result = f(key)
       cacheManager.put(cacheName, key, result)
       result
