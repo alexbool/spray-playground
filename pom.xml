@@ -208,6 +208,22 @@
                     <repositoryName>lib</repositoryName>
                 </configuration>
             </plugin>
+            <!-- Disable maven-compiler-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Disable surefire -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
