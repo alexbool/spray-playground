@@ -6,11 +6,7 @@ class ConcurrentHashMapCacheManager extends CacheManager {
 
   private val caches = new ConcurrentHashMap[String, ConcurrentHashMap[Any, Any]]
 
-  def get[T](cacheName: String, key: Any): Option[T] = {
-    val cache = getOrCreateCache(cacheName)
-    if (cache.containsKey(key)) Some(cache.get(key).asInstanceOf[T])
-    else None
-  }
+  def get[T](cacheName: String, key: Any) = Option(getOrCreateCache(cacheName).get(key)).map(_.asInstanceOf[T])
 
   def put(cacheName: String, key: Any, value: Any) {
     getOrCreateCache(cacheName).put(key, value)
