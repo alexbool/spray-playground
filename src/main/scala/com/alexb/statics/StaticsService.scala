@@ -20,10 +20,8 @@ trait StaticsService
     pathPrefix("static") {
       get {
         path("countries") {
-          dynamic {
-            complete {
-              Future { countries() }
-            }
+          complete {
+            Future { countries() }
           }
         }
       }
