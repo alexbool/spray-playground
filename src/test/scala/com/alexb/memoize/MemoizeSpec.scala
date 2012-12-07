@@ -66,15 +66,20 @@ class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach wit
       Await.result(memoized(), timeout) must equal(1)
       Await.result(memoized(), timeout) must equal(1)
       f.verify().once()
-    }*/
+    }
     "cache one-arg functions" in {
       val f = stubFunction[Int, Int]
       f.when(*).returns(2)
       val memoized = memoizeAsync(f)
-      Await.result(memoized(1), timeout) must equal(2)
-      Await.result(memoized(1), timeout) must equal(2)
+      val f1 = memoized(1)
+      val f2 = memoized(1)
+      val future = for {
+        a <- f1.mapTo[Int]
+        b <- f2.mapTo[Int]
+      } yield (a, b)
+      Await.result(future, timeout) must equal((2, 2))
       f.verify(*).once()
-    }
+    }*/
     /*"cache two-arg functions" in {
       val m = mockFunction[Int, Int, Int]
       m.expects(*, *).returns(3).once
@@ -103,6 +108,24 @@ class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach wit
       memoized() must equal(1)
       memoized() must equal(1)
     }*/
+  }
+
+  "ScalaMock stub" must {
+    import scala.concurrent.Future
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    "pass this test" in {
+      val s = stubFunction[Int]
+      s.when().returns(1)
+      Await.result(Future { s() }, 10 seconds)
+      s.verify().once()
+    }
+    "pass this test once more" in {
+      val s = stubFunction[Int]
+      s.when().returns(1)
+      Await.result(Future { s() }, 10 seconds)
+      s.verify().once()
+    }
   }
 
   override protected def beforeEach() {
