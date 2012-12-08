@@ -27,7 +27,7 @@ trait StaticsService
       }
     }
 
-  private val countries = memoizeAsync("statics", "countries", () => Future(findCountries))
+  private val countries = memoizeAsyncValue("statics", "countries", Future(findCountries))
 }
 
 trait StaticsModule extends StaticsService with MongoCountryRepository {
