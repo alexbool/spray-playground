@@ -58,8 +58,7 @@ class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach wit
 		}
 	}
 
-  // This spec is broken until ScalaMock is able to work with futures correctly
-  "Async memoize function" ignore {
+  "Async memoize function" must {
     "cache no-arg functions" in {
       val f = stubFunction[Int]
       f.when().returns(1)
@@ -107,24 +106,6 @@ class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach wit
       memoized() must equal(1)
       memoized() must equal(1)
       f.verify().once()
-    }
-  }
-
-  "ScalaMock stub" ignore {
-    import scala.concurrent.Future
-    import scala.concurrent.ExecutionContext.Implicits.global
-
-    "pass this test" in {
-      val s = stubFunction[Int]
-      s.when().returns(1)
-      Await.result(Future { s() }, 10 seconds)
-      s.verify().once()
-    }
-    "pass this test once more" in {
-      val s = stubFunction[Int]
-      s.when().returns(1)
-      Await.result(Future { s() }, 10 seconds)
-      s.verify().once()
     }
   }
 

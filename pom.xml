@@ -15,7 +15,7 @@
         <scalaj-time-version>0.6</scalaj-time-version>
         <scalatest-version>2.0.M5-B1</scalatest-version>
         <specs2-version>1.12.3</specs2-version>
-        <scalamock-version>3.0-M6</scalamock-version>
+        <scalamock-version>3.0-M7</scalamock-version>
     </properties>
     <repositories>
         <repository>
@@ -125,7 +125,7 @@
         </dependency>
         <dependency>
             <groupId>org.scalamock</groupId>
-            <artifactId>scalamock-scalatest-support_2.10.0-RC3</artifactId>
+            <artifactId>scalamock-scalatest-support_2.10.0-RC5</artifactId>
             <version>${scalamock-version}</version>
             <scope>test</scope>
         </dependency>
