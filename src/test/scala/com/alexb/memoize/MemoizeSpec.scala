@@ -15,13 +15,20 @@ class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach wit
   val sleep = 10
 
 	"Memoize function" must {
-		"cache no-arg functions" in {
+		"cache by-name value" in {
       val m = mockFunction[Int]
       m.expects().returns(1).once()
-			val memoized = memoize(m)
+			val memoized = memoizeValue("a key", m())
 			memoized() must equal(1)
 			memoized() must equal(1)
 		}
+    "cache no-arg functions" in {
+      val m = mockFunction[Int]
+      m.expects().returns(1).once()
+      val memoized = memoize(m)
+      memoized() must equal(1)
+      memoized() must equal(1)
+    }
 		"cache one-arg functions" in {
       val m = mockFunction[Int, Int]
       m.expects(*).returns(2).once()
@@ -60,6 +67,15 @@ class MemoizeSpec extends WordSpec with MustMatchers with BeforeAndAfterEach wit
 	}
 
   "Async memoize function" must {
+    "cache by-name values" in {
+      val f = stubFunction[Int]
+      f.when().returns(1)
+      val memoized = memoizeAsyncValue("a key", Future(f()))
+      Await.result(memoized(), timeout) must equal(1)
+      Thread.sleep(sleep)
+      Await.result(memoized(), timeout) must equal(1)
+      f.verify().once()
+    }
     "cache no-arg functions" in {
       val f = stubFunction[Int]
       f.when().returns(1)
