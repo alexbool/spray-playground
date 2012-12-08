@@ -6,15 +6,6 @@ trait Memoize {
 
   private val defaultCache = ""
 
-  /*private def getOrPut[A, R](res: Option[R], cacheManager: CacheManager, f: A => R, cacheName: String, key: A) = res match {
-    case Some(value) => value
-    case None => {
-      val result = f(key)
-      cacheManager.put(cacheName, key, result)
-      result
-    }
-  }*/
-
   // Synchronous memoize functions
   def memoize[R](f: () => R)(implicit cacheManager: CacheManager): () => R = memoize[R](defaultCache, f)
   def memoize[R](cacheName: String, f: () => R)(implicit cacheManager: CacheManager): () => R = memoize[R](cacheName, f.getClass.getName, f)
