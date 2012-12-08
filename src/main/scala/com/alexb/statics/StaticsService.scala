@@ -1,6 +1,5 @@
 package com.alexb.statics
 
-import scala.concurrent.Future
 import spray.routing.HttpService
 import spray.httpx.SprayJsonSupport
 import com.alexb.memoize.Memoize
@@ -21,13 +20,13 @@ trait StaticsService
       get {
         path("countries") {
           complete {
-            Future { countries() }
+            countries()
           }
         }
       }
     }
 
-  private val countries = memoize("statics", "countries", () => findCountries)
+  private val countries = memoizeAsync("statics", "countries", () => findCountries)
 }
 
 trait StaticsModule extends StaticsService with MongoCountryRepository {
