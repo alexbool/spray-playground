@@ -16,21 +16,24 @@ class SwiftClient(authUrl: String, credentials: SwiftCredentials, httpClient: Ac
     addHeader("X-Auth-Key", credentials.key) ~>
     sendReceive(authConduit)
 
+  private var isAuthenticated = false
   private var authToken: Option[String] = None
   private var storageUrl: Option[String] = None
 
-  private def getToken = authToken match {
-    case Some(token) => token
-    case None => {
-      authenticate()
-      authToken.get
-    }
+  private def getToken = {
+    if (!isAuthenticated) authenticate()
+    authToken.get
   }
 
   private def authenticate() {
     val res = Await.result(Get("/v1.0") ~> authPipeline, 10 seconds)
-    authToken = res.headers.find(_.name == "X-Auth-Token").map(_.value)
-    storageUrl = res.headers.find(_.name == "X-Storage-Url").map(_.value)
+    var success = res.status.isSuccess
+    if (success) {
+      authToken = res.headers.find(_.name == "X-Auth-Token").map(_.value)
+      storageUrl = res.headers.find(_.name == "X-Storage-Url").map(_.value)
+      if (authToken.isEmpty || storageUrl.isEmpty) success = false
+    }
+    isAuthenticated = success
   }
 
   def receive = ???
