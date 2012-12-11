@@ -22,12 +22,12 @@ class SwiftClient(authUrl: String, credentials: SwiftCredentials, httpClient: Ac
   private def getToken = authToken match {
     case Some(token) => token
     case None => {
-      authenticate
+      authenticate()
       authToken.get
     }
   }
 
-  private def authenticate {
+  private def authenticate() {
     val res = Await.result(Get("/v1.0") ~> authPipeline, 10 seconds)
     authToken = res.headers.find(_.name == "X-Auth-Token").map(_.value)
     storageUrl = res.headers.find(_.name == "X-Storage-Url").map(_.value)
