@@ -12,11 +12,13 @@ private[swift] case class Authenticate(credentials: SwiftCredentials)
 private[swift] case class AuthenticationResult(token: String, storageHost: String)
 
 private[swift] class Authenticator(authUrl: String,
+                                   authPort: Int,
+                                   authSslEnabled: Boolean,
                                    httpClient: ActorRef)
   extends Actor with ActorLogging {
 
   implicit val ctx = context.dispatcher
-  private val conduit = context.actorOf(Props(new HttpConduit(httpClient, authUrl)))
+  private val conduit = context.actorOf(Props(new HttpConduit(httpClient, authUrl, authPort, authSslEnabled)))
 
   private def authPipeline(credentials: SwiftCredentials) =
     addHeader("X-Auth-User", credentials.user) ~>
