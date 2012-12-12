@@ -1,10 +1,10 @@
 package com.alexb.swift
 
 import akka.actor.{ActorLogging, Props, ActorRef, Actor}
-import akka.pattern.ask
-import scala.concurrent.Future
-import scala.util.Try
+import akka.pattern.{ask, pipe}
+import scala.concurrent.duration._
 import spray.client.HttpConduit
+import akka.util.Timeout
 
 class SwiftClient(authUrl: String,
                   credentials: SwiftCredentials,
@@ -12,26 +12,21 @@ class SwiftClient(authUrl: String,
   extends Actor with ActorLogging
   with AccountActions {
 
-  private var authentication: Option[Try[AuthenticationResult]] = None
-  private var httpConduit: Option[ActorRef] = None
+  implicit val timeout = Timeout(10 seconds)
+  implicit val ctx = context.dispatcher
+  private val authenticator = context.actorOf(Props(new Authenticator(authUrl, httpClient)))
 
   def receive = {
-    case msg: ListContainers => authResult().map()
+    case ListContainers =>
+      authentication
+      .flatMap(auth => {
+        val conduit = context.actorOf(Props(new HttpConduit(httpClient, auth.storageHost)))
+        val result = listContainers(credentials.user, auth.token, conduit)
+        context.stop(conduit)
+        result
+      })
+      .pipeTo(sender)
   }
 
-  private def authResult() =
-    if (authentication.isEmpty || authentication.get.isFailure) {
-      val future = authenticate
-      future onComplete { res =>
-        authentication = Some(res)
-      }
-      future
-    } else Future.successful(authentication.get.get)
-
-  private def authenticate = {
-    val authenticator = context.system.actorOf(Props(new Authenticator(authUrl, httpClient)))
-    val authFuture = (authenticator ? Authenticate(credentials)).mapTo[AuthenticationResult]
-    context.stop(authenticator)
-    authFuture
-  }
+  private def authentication = (authenticator ? Authenticate(credentials)).mapTo[AuthenticationResult]
 }
