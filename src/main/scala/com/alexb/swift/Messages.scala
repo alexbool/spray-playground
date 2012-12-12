@@ -1,5 +1,6 @@
 package com.alexb.swift
 
+// External API messages
 case object ListContainers
 
 case class ListObjects(container: String)
