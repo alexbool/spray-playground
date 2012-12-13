@@ -25,7 +25,9 @@ class SwiftClient(httpClient: ActorRef,
         val conduit = context.actorOf(Props(
           new HttpConduit(httpClient, auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)))
         val result = listContainers(auth.storageUrl.path, credentials.user, auth.token, conduit)
-        context.stop(conduit)
+        result onComplete { r =>
+          context.stop(conduit)
+        }
         result
       })
       .pipeTo(sender)
