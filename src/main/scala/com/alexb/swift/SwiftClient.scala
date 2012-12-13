@@ -6,11 +6,11 @@ import scala.concurrent.duration._
 import spray.client.HttpConduit
 import akka.util.Timeout
 
-class SwiftClient(authUrl: String,
+class SwiftClient(httpClient: ActorRef,
+                  authUrl: String,
                   authPort: Int = 80,
                   authSslEnabled: Boolean = false,
-                  credentials: SwiftCredentials,
-                  httpClient: ActorRef)
+                  credentials: SwiftCredentials)
   extends Actor with ActorLogging
   with AccountActions {
 
