@@ -7,7 +7,7 @@ import spray.client.HttpConduit
 import akka.util.Timeout
 
 class SwiftClient(httpClient: ActorRef,
-                  authUrl: String,
+                  authHost: String,
                   authPort: Int = 80,
                   authSslEnabled: Boolean = false,
                   credentials: SwiftCredentials)
@@ -16,7 +16,7 @@ class SwiftClient(httpClient: ActorRef,
 
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
-  private val authenticator = context.actorOf(Props(new Authenticator(httpClient, authUrl, authPort, authSslEnabled)))
+  private val authenticator = context.actorOf(Props(new Authenticator(httpClient, authHost, authPort, authSslEnabled)))
 
   def receive = {
     case ListContainers =>
