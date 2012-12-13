@@ -26,14 +26,15 @@ private[swift] class Authenticator(httpClient: ActorRef,
     sendReceive(conduit)
 
   def receive = {
-    case msg: Authenticate => {
+    case msg: Authenticate =>
+      log.debug(s"About to make authentication request: $msg")
       (Get("/v1.0") ~> authPipeline(msg.credentials))
         .map { resp =>
+          log.debug(s"Recieved authentication response: $resp")
           AuthenticationResult(
             resp.headers.find(_.name == "X-Auth-Token").map(_.value).get,
             resp.headers.find(_.name == "X-Storage-Url").map(h => Url(h.value)).get)
         }
         .pipeTo(sender)
-    }
   }
 }
