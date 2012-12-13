@@ -1,8 +1,9 @@
 package com.alexb.swift
 
-import akka.actor.{ActorLogging, Props, Actor}
+import akka.actor.{ActorRef, ActorLogging, Props, Actor}
 import akka.pattern.{ask, pipe}
 import scala.concurrent.duration._
+import scala.concurrent.Future
 import spray.client.HttpConduit
 import akka.util.Timeout
 import spray.can.client.HttpClient
@@ -23,18 +24,22 @@ class SwiftClient(authHost: String,
 
   def receive = {
     case ListContainers =>
-      authentication
-      .flatMap(auth => {
-        val conduit = context.actorOf(Props(
-          new HttpConduit(httpClient, auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)))
-        val result = listContainers(auth.storageUrl.path, auth.token, conduit)
-        result onComplete { r =>
-          context.stop(conduit)
-        }
-        result
-      })
-      .pipeTo(sender)
+      executeRequest((auth, conduit) => listContainers(auth.storageUrl.path, auth.token, conduit))
   }
 
   private def authentication = (authenticator ? Authenticate(credentials)).mapTo[AuthenticationResult]
+
+  private def executeRequest[R](f: (AuthenticationResult, ActorRef) => Future[R]) {
+    authentication
+    .flatMap(auth => {
+      val conduit = context.actorOf(Props(
+        new HttpConduit(httpClient, auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)))
+      val result = f(auth, conduit)
+      result onComplete { r =>
+        context.stop(conduit)
+      }
+      result
+    })
+    .pipeTo(sender)
+  }
 }
