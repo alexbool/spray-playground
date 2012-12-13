@@ -1,13 +1,14 @@
 package com.alexb.swift
 
-import akka.actor.{ActorLogging, Props, ActorRef, Actor}
+import akka.actor.{ActorLogging, Props, Actor}
 import akka.pattern.{ask, pipe}
 import scala.concurrent.duration._
 import spray.client.HttpConduit
 import akka.util.Timeout
+import spray.can.client.HttpClient
+import spray.io.IOExtension
 
-class SwiftClient(httpClient: ActorRef,
-                  authHost: String,
+class SwiftClient(authHost: String,
                   authPort: Int = 80,
                   authSslEnabled: Boolean = false,
                   credentials: SwiftCredentials)
@@ -16,6 +17,8 @@ class SwiftClient(httpClient: ActorRef,
 
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
+
+  private val httpClient = context.actorOf(Props(new HttpClient(IOExtension(context.system).ioBridge)))
   private val authenticator = context.actorOf(Props(new Authenticator(httpClient, authHost, authPort, authSslEnabled)))
 
   def receive = {
