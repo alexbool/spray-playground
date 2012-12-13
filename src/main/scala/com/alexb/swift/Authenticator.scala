@@ -9,7 +9,7 @@ case class SwiftCredentials(user: String, key: String)
 
 // Messages
 private[swift] case class Authenticate(credentials: SwiftCredentials)
-private[swift] case class AuthenticationResult(token: String, storageHost: String)
+private[swift] case class AuthenticationResult(token: String, storageUrl: Url)
 
 private[swift] class Authenticator(authUrl: String,
                                    authPort: Int,
@@ -31,7 +31,7 @@ private[swift] class Authenticator(authUrl: String,
         .map { resp =>
           AuthenticationResult(
             resp.headers.find(_.name == "X-Auth-Token").map(_.value).get,
-            resp.headers.find(_.name == "X-Storage-Url").map(_.value).get)
+            resp.headers.find(_.name == "X-Storage-Url").map(h => Url(h.value)).get)
         }
         .pipeTo(sender)
     }

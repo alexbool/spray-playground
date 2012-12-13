@@ -22,7 +22,8 @@ class SwiftClient(authUrl: String,
     case ListContainers =>
       authentication
       .flatMap(auth => {
-        val conduit = context.actorOf(Props(new HttpConduit(httpClient, auth.storageHost)))
+        val conduit = context.actorOf(Props(
+          new HttpConduit(httpClient, auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)))
         val result = listContainers(credentials.user, auth.token, conduit)
         context.stop(conduit)
         result
