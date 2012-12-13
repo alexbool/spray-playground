@@ -14,7 +14,7 @@ class SwiftClient(authHost: String,
                   authSslEnabled: Boolean = false,
                   credentials: SwiftCredentials)
   extends Actor with ActorLogging
-  with AccountActions {
+  with AccountActions with ContainerActions {
 
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
@@ -25,6 +25,9 @@ class SwiftClient(authHost: String,
   def receive = {
     case ListContainers =>
       executeRequest((auth, conduit) => listContainers(auth.storageUrl.path, auth.token, conduit))
+
+    case ListObjects(container) =>
+      executeRequest((auth, conduit) => listObjects(auth.storageUrl.path, container, auth.token, conduit))
   }
 
   private def authentication = (authenticator ? Authenticate(credentials)).mapTo[AuthenticationResult]
