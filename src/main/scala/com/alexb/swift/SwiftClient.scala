@@ -16,7 +16,7 @@ class SwiftClient(authUrl: String,
 
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
-  private val authenticator = context.actorOf(Props(new Authenticator(authUrl, authPort, authSslEnabled, httpClient)))
+  private val authenticator = context.actorOf(Props(new Authenticator(httpClient, authUrl, authPort, authSslEnabled)))
 
   def receive = {
     case ListContainers =>

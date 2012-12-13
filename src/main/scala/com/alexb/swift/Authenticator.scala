@@ -11,10 +11,10 @@ case class SwiftCredentials(user: String, key: String)
 private[swift] case class Authenticate(credentials: SwiftCredentials)
 private[swift] case class AuthenticationResult(token: String, storageUrl: Url)
 
-private[swift] class Authenticator(authUrl: String,
+private[swift] class Authenticator(httpClient: ActorRef,
+                                   authUrl: String,
                                    authPort: Int,
-                                   authSslEnabled: Boolean,
-                                   httpClient: ActorRef)
+                                   authSslEnabled: Boolean)
   extends Actor with ActorLogging {
 
   implicit val ctx = context.dispatcher
