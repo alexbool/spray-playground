@@ -18,7 +18,9 @@ private[swift] class Authenticator(httpClient: ActorRef,
   extends Actor with ActorLogging {
 
   implicit val ctx = context.dispatcher
-  private val conduit = context.actorOf(Props(new HttpConduit(httpClient, authUrl, port, sslEnabled)))
+  private val conduit = context.actorOf(
+    props = Props(new HttpConduit(httpClient, authUrl, port, sslEnabled)),
+    name = "auth-http-conduit")
 
   private def authPipeline(credentials: SwiftCredentials) =
     addHeader("X-Auth-User", credentials.user) ~>
