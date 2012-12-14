@@ -8,7 +8,7 @@ private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshal
   def listObjects(rootPath: String, container: String, token: String, httpConduit: ActorRef)(implicit ctx: ExecutionContext) =
     Get(mkUrlJson(rootPath, container)) ~> (
       authHeader(token) ~>
-        sendReceive(httpConduit) ~>
-        unmarshal[Seq[ObjectMetadata]]
-      )
+      sendReceive(httpConduit) ~>
+      unmarshal[Seq[ObjectMetadata]]
+    )
 }
