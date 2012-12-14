@@ -20,8 +20,11 @@ class ConduitFactory(httpClient: ActorRef) extends Actor with ActorLogging {
     conduitHolder.get(id) match {
       case Some(conduit) => conduit
       case None =>
-        log.debug(s"Cannot find existing HttpConduit for host=${id.host}, port=${id.port}, sslEnabled=${id.sslEnabled}, creating new")
-        val conduit = context.actorOf(Props(new HttpConduit(httpClient, id.host, id.port, id.sslEnabled)))
+        log.debug(s"Cannot find existing HttpConduit for host=${id.host}, port=${id.port}, sslEnabled=${id.sslEnabled}" +
+          ", creating new")
+        val conduit = context.actorOf(
+          props = Props(new HttpConduit(httpClient, id.host, id.port, id.sslEnabled)),
+          name = s"http-conduit-${id.host}-${id.port}-${ if (id.sslEnabled) "ssl" else "nossl"}")
         conduitHolder.values.foreach { conduit =>
           // Shutting down existing conduits after a reasonable timeout
           log.debug(s"Scheduling existing HttpConduit ${conduit.toString()} shutdown")
