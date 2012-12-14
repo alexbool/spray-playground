@@ -21,6 +21,7 @@ class SwiftClient(authHost: String,
 
   private val httpClient = context.actorOf(Props(new HttpClient(IOExtension(context.system).ioBridge)))
   private val authenticator = context.actorOf(Props(new Authenticator(httpClient, authHost, authPort, authSslEnabled)))
+  private val conduitFactory = context.actorOf(Props(new ConduitFactory(httpClient)))
 
   def receive = {
     case ListContainers =>
@@ -38,14 +39,10 @@ class SwiftClient(authHost: String,
   private def executeRequest[R](f: (AuthenticationResult, ActorRef) => Future[R]) {
     authentication
     .flatMap(auth => {
-      val conduit = context.actorOf(Props(
-        new HttpConduit(httpClient, auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)))
-      val result = f(auth, conduit)
-      result onComplete { r =>
-        context.stop(conduit)
-      }
-      result
+      val conduit = (conduitFactory ? HttpConduitId(auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)).mapTo[ActorRef]
+      conduit.map(readyConduit => (auth, readyConduit))
     })
+    .flatMap(t => f(t._1, t._2))
     .pipeTo(sender)
   }
 }
