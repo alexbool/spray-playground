@@ -37,6 +37,9 @@ class SwiftClient(authHost: String,
 
     case CreateContainer(container) =>
       executeRequest((auth, conduit) => createContainer(auth.storageUrl.path, container, auth.token, conduit))
+
+    case DeleteContainer(container) =>
+      executeRequest((auth, conduit) => deleteContainer(auth.storageUrl.path, container, auth.token, conduit))
   }
 
   private def authentication = (authenticator ? Authenticate(credentials)).mapTo[AuthenticationResult]

@@ -19,4 +19,12 @@ private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshal
     ) map { resp =>
       OperationResult(resp.status.isSuccess)
     }
+
+  def deleteContainer(rootPath: String, container: String, token: String, httpConduit: ActorRef)(implicit ctx: ExecutionContext) =
+    Delete(mkUrl(rootPath, container)) ~> (
+      authHeader(token) ~>
+      sendReceive(httpConduit)
+    ) map { resp =>
+      OperationResult(resp.status.isSuccess)
+    }
 }
