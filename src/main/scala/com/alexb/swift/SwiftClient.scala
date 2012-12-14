@@ -4,7 +4,6 @@ import akka.actor.{ActorRef, ActorLogging, Props, Actor}
 import akka.pattern.{ask, pipe}
 import scala.concurrent.duration._
 import scala.concurrent.Future
-import spray.client.HttpConduit
 import akka.util.Timeout
 import spray.can.client.HttpClient
 import spray.io.IOExtension
