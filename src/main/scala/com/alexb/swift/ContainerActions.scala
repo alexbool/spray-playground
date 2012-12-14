@@ -9,6 +9,6 @@ private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshal
     Get(mkUrlJson(rootPath, container)) ~> (
       authHeader(token) ~>
         sendReceive(httpConduit) ~>
-        unmarshal[Seq[Object]]
+        unmarshal[Seq[ObjectMetadata]]
       )
 }
