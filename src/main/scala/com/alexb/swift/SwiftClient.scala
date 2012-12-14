@@ -28,6 +28,9 @@ class SwiftClient(authHost: String,
 
     case ListObjects(container) =>
       executeRequest((auth, conduit) => listObjects(auth.storageUrl.path, container, auth.token, conduit))
+
+    case CreateContainer(container) =>
+      executeRequest((auth, conduit) => createContainer(auth.storageUrl.path, container, auth.token, conduit))
   }
 
   private def authentication = (authenticator ? Authenticate(credentials)).mapTo[AuthenticationResult]

@@ -11,4 +11,12 @@ private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshal
       sendReceive(httpConduit) ~>
       unmarshal[Seq[ObjectMetadata]]
     )
+
+  def createContainer(rootPath: String, container: String, token: String, httpConduit: ActorRef)(implicit ctx: ExecutionContext) =
+    Put(mkUrl(rootPath, container)) ~> (
+      authHeader(token) ~>
+      sendReceive(httpConduit)
+    ) map { resp =>
+      OperationResult(resp.status.isSuccess)
+    }
 }
