@@ -19,9 +19,15 @@ class SwiftClient(authHost: String,
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
 
-  private val httpClient = context.actorOf(Props(new HttpClient(IOExtension(context.system).ioBridge)))
-  private val authenticator = context.actorOf(Props(new Authenticator(httpClient, authHost, authPort, authSslEnabled)))
-  private val conduitFactory = context.actorOf(Props(new ConduitFactory(httpClient)))
+  private val httpClient = context.actorOf(
+    props = Props(new HttpClient(IOExtension(context.system).ioBridge)),
+    name = "http-client")
+  private val authenticator = context.actorOf(
+    props = Props(new Authenticator(httpClient, authHost, authPort, authSslEnabled)),
+    name = "authenticator")
+  private val conduitFactory = context.actorOf(
+    props = Props(new ConduitFactory(httpClient)),
+    name = "http-conduit-factory")
 
   def receive = {
     case ListContainers =>
