@@ -2,6 +2,7 @@ package com.alexb.swift
 
 import akka.actor.{Props, ActorRef, ActorLogging, Actor}
 import akka.pattern.pipe
+import scala.concurrent.Future
 import spray.client.HttpConduit
 import spray.client.HttpConduit._
 
@@ -18,6 +19,26 @@ private[swift] class Authenticator(httpClient: ActorRef,
   extends Actor with ActorLogging {
 
   implicit val ctx = context.dispatcher
+
+  private val cache = collection.mutable.Map[SwiftCredentials, Future[AuthenticationResult]]()
+
+  def receive = {
+    case msg: Authenticate =>
+      if (!cache.contains(msg.credentials)) cache.put(msg.credentials, authenticate(msg))
+      cache.get(msg.credentials).get.pipeTo(sender)
+  }
+
+  private def authenticate(msg: Authenticate) = {
+    log.debug(s"About to make authentication request: $msg")
+    (Get("/v1.0") ~> authPipeline(msg.credentials))
+      .map { resp =>
+      log.debug(s"Recieved authentication response: $resp")
+      AuthenticationResult(
+        resp.headers.find(_.lowercaseName == "x-auth-token").map(_.value).get,
+        resp.headers.find(_.lowercaseName == "x-storage-url").map(h => Url(h.value)).get)
+    }
+  }
+
   private val conduit = context.actorOf(
     props = Props(new HttpConduit(httpClient, authUrl, port, sslEnabled)),
     name = "auth-http-conduit")
@@ -26,17 +47,4 @@ private[swift] class Authenticator(httpClient: ActorRef,
     addHeader("X-Auth-User", credentials.user) ~>
     addHeader("X-Auth-Key", credentials.key) ~>
     sendReceive(conduit)
-
-  def receive = {
-    case msg: Authenticate =>
-      log.debug(s"About to make authentication request: $msg")
-      (Get("/v1.0") ~> authPipeline(msg.credentials))
-        .map { resp =>
-          log.debug(s"Recieved authentication response: $resp")
-          AuthenticationResult(
-            resp.headers.find(_.lowercaseName == "x-auth-token").map(_.value).get,
-            resp.headers.find(_.lowercaseName == "x-storage-url").map(h => Url(h.value)).get)
-        }
-        .pipeTo(sender)
-  }
 }
