@@ -13,7 +13,7 @@ class SwiftClient(authHost: String,
                   authSslEnabled: Boolean = false,
                   credentials: SwiftCredentials)
   extends Actor with ActorLogging
-  with AccountActions with ContainerActions {
+  with AccountActions with ContainerActions with ObjectActions {
 
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
@@ -40,6 +40,9 @@ class SwiftClient(authHost: String,
 
     case DeleteContainer(container) =>
       executeRequest((auth, conduit) => deleteContainer(auth.storageUrl.path, container, auth.token, conduit))
+
+    case GetObject(container, name) =>
+      executeRequest((auth, conduit) => getObject(auth.storageUrl.path, container, name, auth.token, conduit))
   }
 
   private def authentication = (authenticator ? Authenticate(credentials)).mapTo[AuthenticationResult]
