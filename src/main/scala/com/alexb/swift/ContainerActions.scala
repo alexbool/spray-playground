@@ -26,6 +26,6 @@ private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshal
       authHeader(token) ~>
       sendReceive(httpConduit)
     ) map { resp =>
-      DeleteResult(resp.status.isSuccess || resp.status == StatusCodes.NotFound, resp.status == StatusCodes.NotFound)
+      DeleteContainerResult(resp.status.isSuccess || resp.status == StatusCodes.NotFound, resp.status == StatusCodes.NotFound)
     }
 }
