@@ -4,6 +4,7 @@ import akka.actor.ActorRef
 import scala.concurrent.ExecutionContext
 import spray.client.HttpConduit._
 import spray.http.{StatusCodes, MediaType, HttpBody}
+import spray.http.HttpHeaders.`Content-Type`
 
 private[swift] trait ObjectActions extends SwiftApiUtils {
   def getObject(rootPath: String,
@@ -16,7 +17,7 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
       authHeader(token) ~>
       sendReceive(httpConduit)
     ) map { resp =>
-      Object(`object`, resp.entity.buffer)
+      Object(`object`, resp.header[`Content-Type`].get.contentType.mediaType, resp.entity.buffer)
     }
 
   def putObject(rootPath: String,
