@@ -12,3 +12,4 @@ case class PutObject(container: String, name: String, data: Array[Byte])
 case class DeleteObject(container: String, name: String)
 
 case class OperationResult(success: Boolean)
+case class DeleteResult(success: Boolean, alreadyDeleted: Boolean)

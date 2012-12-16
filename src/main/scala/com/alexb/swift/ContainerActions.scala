@@ -3,6 +3,7 @@ package com.alexb.swift
 import akka.actor.ActorRef
 import scala.concurrent.ExecutionContext
 import spray.client.HttpConduit._
+import spray.http.StatusCodes
 
 private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshallers {
   def listObjects(rootPath: String, container: String, token: String, httpConduit: ActorRef)(implicit ctx: ExecutionContext) =
@@ -25,6 +26,6 @@ private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshal
       authHeader(token) ~>
       sendReceive(httpConduit)
     ) map { resp =>
-      OperationResult(resp.status.isSuccess)
+      DeleteResult(resp.status.isSuccess || resp.status == StatusCodes.NotFound, resp.status == StatusCodes.NotFound)
     }
 }
