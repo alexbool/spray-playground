@@ -4,9 +4,9 @@ import akka.actor.{ActorLogging, Props, ActorRef, Actor}
 import scala.concurrent.duration._
 import spray.client.HttpConduit
 
-case class HttpConduitId(host: String, port: Int, sslEnabled: Boolean)
+private[swift] case class HttpConduitId(host: String, port: Int, sslEnabled: Boolean)
 
-class ConduitFactory(httpClient: ActorRef) extends Actor with ActorLogging {
+private[swift] class ConduitFactory(httpClient: ActorRef) extends Actor with ActorLogging {
 
   import context.dispatcher
 
