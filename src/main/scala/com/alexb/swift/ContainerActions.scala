@@ -18,7 +18,7 @@ private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshal
       authHeader(token) ~>
       sendReceive(httpConduit)
     ) map { resp =>
-      OperationResult(resp.status.isSuccess)
+      CreateResult(resp.status.isSuccess, resp.status == StatusCodes.Accepted)
     }
 
   def deleteContainer(rootPath: String, container: String, token: String, httpConduit: ActorRef)(implicit ctx: ExecutionContext) =
