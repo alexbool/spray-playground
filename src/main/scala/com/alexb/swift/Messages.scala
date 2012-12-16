@@ -3,7 +3,9 @@ package com.alexb.swift
 import spray.http.{MediaTypes, MediaType}
 import spray.http.MediaTypes.CustomMediaType
 
-// External API messages
+///////////////////////////// External API messages /////////////////////////////
+
+// Command messages
 case object ListContainers
 
 case class ListObjects(container: String)
@@ -27,6 +29,7 @@ object PutObject {
     new PutObject(container, name, mediaType, data)
 }
 
+// Response messages
 case class DeleteObject(container: String, name: String)
 
 case class CreateContainerResult(success: Boolean, alreadyExists: Boolean)
