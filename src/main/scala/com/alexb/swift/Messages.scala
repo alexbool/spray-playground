@@ -11,5 +11,5 @@ case class GetObject(container: String, name: String)
 case class PutObject(container: String, name: String, data: Array[Byte])
 case class DeleteObject(container: String, name: String)
 
-case class CreateResult(success: Boolean, alreadyExists: Boolean)
+case class CreateContainerResult(success: Boolean, alreadyExists: Boolean)
 case class DeleteResult(success: Boolean, alreadyDeleted: Boolean)
