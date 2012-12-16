@@ -3,7 +3,7 @@ package com.alexb.swift
 import akka.actor.ActorRef
 import scala.concurrent.ExecutionContext
 import spray.client.HttpConduit._
-import spray.http.{MediaType, HttpBody}
+import spray.http.{StatusCodes, MediaType, HttpBody}
 
 private[swift] trait ObjectActions extends SwiftApiUtils {
   def getObject(rootPath: String,
@@ -32,5 +32,20 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
       sendReceive(httpConduit)
     ) map { resp =>
       CreateObjectResult(resp.status.isSuccess)
+    }
+
+  def deleteObject(rootPath: String,
+                   container: String,
+                   `object`: String,
+                   token: String,
+                   httpConduit: ActorRef)
+                  (implicit ctx: ExecutionContext) =
+    Delete(mkUrl(rootPath, container, `object`)) ~> (
+      authHeader(token) ~>
+      sendReceive(httpConduit)
+    ) map { resp =>
+      DeleteObjectResult(
+        resp.status.isSuccess || resp.status == StatusCodes.NotFound,
+        resp.status == StatusCodes.NotFound)
     }
 }
