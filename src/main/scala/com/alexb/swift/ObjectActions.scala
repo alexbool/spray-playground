@@ -17,7 +17,9 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
       authHeader(token) ~>
       sendReceive(httpConduit)
     ) map { resp =>
-      Object(`object`, resp.header[`Content-Type`].get.contentType.mediaType, resp.entity.buffer)
+      if (resp.status.isSuccess)
+        Object(`object`, resp.header[`Content-Type`].get.contentType.mediaType, resp.entity.buffer)
+      else None
     }
 
   def putObject(rootPath: String,
