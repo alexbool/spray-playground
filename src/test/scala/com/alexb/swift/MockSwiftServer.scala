@@ -4,13 +4,16 @@ import spray.routing.{RequestContext, HttpService}
 import spray.http.{EmptyEntity, HttpResponse, StatusCodes}
 import spray.http.HttpHeaders.RawHeader
 import collection.convert.Wrappers.JSetWrapper
+import akka.actor.Actor
 
-trait MockSwiftServer extends HttpService with SwiftApiMarshallers {
+class MockSwiftServer extends Actor with HttpService with SwiftApiMarshallers {
 
-  def port: Int
-  def token: String
+  val token = "some_token"
 
   val containers = new java.util.concurrent.CopyOnWriteArraySet[Container]
+
+  def receive = runRoute(authRoute ~ storageRoute)
+  def actorRefFactory = context.system
 
   val authRoute =
     path("v1.0") {
@@ -22,7 +25,7 @@ trait MockSwiftServer extends HttpService with SwiftApiMarshallers {
             HttpResponse(
               StatusCodes.OK,
               EmptyEntity,
-              RawHeader("X-Storage-Url", s"http://$host:$port/v1/rootpath") :: RawHeader("X-Auth-Token", token) :: Nil))
+              RawHeader("X-Storage-Url", s"http://$host/v1/rootpath") :: RawHeader("X-Auth-Token", token) :: Nil))
         } else {
           ctx.complete(StatusCodes.Unauthorized)
         }
@@ -40,7 +43,7 @@ trait MockSwiftServer extends HttpService with SwiftApiMarshallers {
       } ~
       path(PathElement) { container =>
         put {
-          val alreadyExists = containers.add(Container(container, 0, 0))
+          val alreadyExists = !containers.add(Container(container, 0, 0))
           complete(if (alreadyExists) StatusCodes.Accepted else StatusCodes.Created)
         }
       }
