@@ -3,14 +3,14 @@ package com.alexb.swift
 import spray.routing.{RequestContext, HttpService}
 import spray.http.{EmptyEntity, HttpResponse, StatusCodes}
 import spray.http.HttpHeaders.RawHeader
-import collection.convert.Wrappers.JSetWrapper
 import akka.actor.Actor
+import collection.concurrent.TrieMap
 
 class MockSwiftServer extends Actor with HttpService with SwiftApiMarshallers {
 
   val token = "some_token"
 
-  val containers = new java.util.concurrent.CopyOnWriteArraySet[Container]
+  val containers = TrieMap[Container, TrieMap[String, Object]]()
 
   def receive = runRoute(authRoute ~ storageRoute)
   def actorRefFactory = context.system
@@ -37,13 +37,13 @@ class MockSwiftServer extends Actor with HttpService with SwiftApiMarshallers {
       path("") {
         get {
           complete {
-            JSetWrapper(containers).to[Seq]
+            containers.keys
           }
         }
       } ~
       path(PathElement) { container =>
         put {
-          val alreadyExists = !containers.add(Container(container, 0, 0))
+          val alreadyExists = containers.putIfAbsent(Container(container, 0, 0), TrieMap[String, Object]()).isDefined
           complete(if (alreadyExists) StatusCodes.Accepted else StatusCodes.Created)
         }
       }
