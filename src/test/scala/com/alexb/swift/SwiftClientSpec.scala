@@ -2,13 +2,13 @@ package com.alexb.swift
 
 import akka.actor.Props
 import akka.pattern.ask
+import akka.util.Timeout
 import org.scalatest.WordSpec
 import org.scalatest.matchers.MustMatchers
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.Random
 import spray.can.server.SprayCanHttpServerApp
-import akka.util.Timeout
 
 class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServerApp {
   val timeout = 20 seconds
