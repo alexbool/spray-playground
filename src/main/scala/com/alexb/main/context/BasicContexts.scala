@@ -4,6 +4,7 @@ package context
 import akka.actor.{ActorRef, ActorSystem}
 import com.typesafe.config.Config
 import com.alexb.memoize.CacheManager
+import spray.io.IOExtension
 
 trait ActorSystemContext {
   def actorSystem: ActorSystem
@@ -23,5 +24,6 @@ trait Caching {
 }
 
 trait IOBridgeContext {
-  def ioBridge: ActorRef
+  this: ActorSystemContext =>
+  def ioBridge: ActorRef = IOExtension(actorSystem).ioBridge()
 }

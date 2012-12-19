@@ -19,7 +19,7 @@ class SwiftClient(authHost: String,
   implicit val ctx = context.dispatcher
 
   private val httpClient = context.actorOf(
-    props = Props(new HttpClient(IOExtension(context.system).ioBridge)),
+    props = Props(new HttpClient(IOExtension(context.system).ioBridge())),
     name = "http-client")
   private val authenticator = context.actorOf(
     props = Props(new Authenticator(httpClient, authHost, authPort, authSslEnabled)),

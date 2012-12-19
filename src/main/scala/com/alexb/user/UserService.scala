@@ -21,7 +21,7 @@ trait UserService
   implicit def actorSystem: ActorSystem
 
   implicit def exceptionHandler = ExceptionHandler.fromPF {
-    case e: DuplicateUsernameException => log => ctx =>
+    case e: DuplicateUsernameException => ctx =>
       ctx.complete(BadRequest, ErrorDescription("Duplicate username"))
   }
 

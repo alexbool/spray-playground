@@ -11,7 +11,7 @@ import spray.client.HttpConduit._
 
 class SprayClientSpec extends WordSpec with MustMatchers {
   val system = ActorSystem("test")
-  val ioBridge = IOExtension(system).ioBridge
+  val ioBridge = IOExtension(system).ioBridge()
   val httpClient = system.actorOf(
     props = Props(new HttpClient(ioBridge)),
     name = "test-http-client")

@@ -18,7 +18,6 @@ object Main extends App with SprayCanHttpServerApp {
     with CalculatorModule with OrderModule with StaticsModule with UserModule {
 
     def actorSystem = system
-    def ioBridge = Main.ioBridge
 
     val timeout = Timeout(5 seconds) // needed for `?`
 
