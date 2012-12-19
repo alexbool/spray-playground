@@ -31,5 +31,8 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
     "list containers" in {
       Await.result(client ? ListContainers, timeout) must be (Seq(Container("new_container", 0, 0)))
     }
+    "list objects" in {
+      Await.result(client ? ListObjects("new_conatiner"), timeout) must be (Seq())
+    }
   }
 }

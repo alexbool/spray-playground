@@ -5,6 +5,7 @@ import spray.http.{EmptyEntity, HttpResponse, StatusCodes}
 import spray.http.HttpHeaders.RawHeader
 import akka.actor.Actor
 import collection.concurrent.TrieMap
+import org.joda.time.Instant
 
 class MockSwiftServer extends Actor with HttpService with SwiftApiMarshallers {
 
@@ -45,6 +46,14 @@ class MockSwiftServer extends Actor with HttpService with SwiftApiMarshallers {
         put {
           val alreadyExists = containers.putIfAbsent(Container(container, 0, 0), TrieMap[String, Object]()).isDefined
           complete(if (alreadyExists) StatusCodes.Accepted else StatusCodes.Created)
+        } ~
+        get {
+          complete {
+            containers.find(_._1.name == container)
+              .map(_._2.values)
+              .getOrElse(Iterable[Object]())
+              .map(o => ObjectMetadata(o.name, "some_hash", 100, "text/plain", new Instant))
+          }
         }
       }
     }

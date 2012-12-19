@@ -14,6 +14,9 @@ private[swift] trait SwiftApiMarshallers extends SprayJsonSupport with DefaultJs
           ObjectMetadata(name, hash, bytes.toLong, contentType, new Instant(lastModified))
         case _ => deserializationError("Cannot deserialize ObjectMetadata")
     }
-    def write(obj: ObjectMetadata) = serializationError("Serialization is not implemented")
+    def write(obj: ObjectMetadata) = JsObject("name" -> JsString(obj.name), "hash" -> JsString(obj.hash),
+                                              "bytes" -> JsNumber(obj.bytes),
+                                              "content_type" -> JsString(obj.contentType),
+                                              "last_modofied" -> JsString(obj.lastModified.toString))
   }
 }
