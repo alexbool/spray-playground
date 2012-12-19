@@ -34,8 +34,8 @@ private[swift] class Authenticator(httpClient: ActorRef,
       .map { resp =>
       log.debug(s"Recieved authentication response: $resp")
       AuthenticationResult(
-        resp.headers.find(_.lowercaseName == "x-auth-token").map(_.value).get,
-        resp.headers.find(_.lowercaseName == "x-storage-url").map(h => Url(h.value)).get)
+        resp.headers.find(_.is("x-auth-token")).map(_.value).get,
+        resp.headers.find(_.is("x-storage-url")).map(h => Url(h.value)).get)
     }
   }
 
