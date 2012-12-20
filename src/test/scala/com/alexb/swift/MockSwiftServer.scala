@@ -11,7 +11,7 @@ class MockSwiftServer extends Actor with HttpService with SwiftApiMarshallers {
 
   val token = "some_token"
 
-  val containers = TrieMap[Container, TrieMap[String, Object]]()
+  val containers = TrieMap[Container, TrieMap[String, (ObjectMetadata, Object)]]()
 
   def receive = runRoute(authRoute ~ storageRoute)
   def actorRefFactory = context.system
@@ -44,15 +44,17 @@ class MockSwiftServer extends Actor with HttpService with SwiftApiMarshallers {
       } ~
       path(PathElement) { container =>
         put {
-          val alreadyExists = containers.putIfAbsent(Container(container, 0, 0), TrieMap[String, Object]()).isDefined
+          val alreadyExists = containers.putIfAbsent(
+            Container(container, 0, 0),
+            TrieMap[String, (ObjectMetadata, Object)]()).isDefined
           complete(if (alreadyExists) StatusCodes.Accepted else StatusCodes.Created)
         } ~
         get {
           complete {
             containers.find(_._1.name == container)
               .map(_._2.values)
-              .getOrElse(Iterable[Object]())
-              .map(o => ObjectMetadata(o.name, "some_hash", 100, "text/plain", new Instant))
+              .getOrElse(Iterable[(ObjectMetadata, Object)]())
+              .map(_._1)
           }
         }
       }
