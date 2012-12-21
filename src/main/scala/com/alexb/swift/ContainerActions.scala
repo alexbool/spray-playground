@@ -5,7 +5,7 @@ import scala.concurrent.ExecutionContext
 import spray.client.HttpConduit._
 import spray.http.StatusCodes
 
-private[swift] trait ContainerActions extends SwiftApiUtils with SwiftApiMarshallers {
+private[swift] trait ContainerActions extends SwiftApiUtils with SwiftMarshallers {
   def listObjects(rootPath: String,
                   container: String,
                   token: String,

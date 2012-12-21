@@ -7,7 +7,7 @@ import akka.actor.Actor
 import collection.concurrent.TrieMap
 import org.joda.time.Instant
 
-class MockSwiftServer extends Actor with HttpService with SwiftApiMarshallers {
+class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
 
   val token = "some_token"
 

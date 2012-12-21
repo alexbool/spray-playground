@@ -4,7 +4,7 @@ import spray.json._
 import spray.httpx.SprayJsonSupport
 import org.joda.time.Instant
 
-private[swift] trait SwiftApiMarshallers extends SprayJsonSupport with DefaultJsonProtocol {
+private[swift] trait SwiftMarshallers extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val containerFormat = jsonFormat3(Container)
 
   implicit def objectMetadataFormat = new RootJsonFormat[ObjectMetadata] {
