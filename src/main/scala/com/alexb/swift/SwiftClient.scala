@@ -8,10 +8,10 @@ import scala.concurrent.Future
 import spray.can.client.HttpClient
 import spray.io.IOExtension
 
-class SwiftClient(authHost: String,
+class SwiftClient(credentials: SwiftCredentials,
+                  authHost: String,
                   authPort: Int = 80,
-                  authSslEnabled: Boolean = false,
-                  credentials: SwiftCredentials)
+                  authSslEnabled: Boolean = false)
   extends Actor with ActorLogging
   with AccountActions with ContainerActions with ObjectActions {
 

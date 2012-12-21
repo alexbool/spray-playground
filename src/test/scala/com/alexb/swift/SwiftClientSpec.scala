@@ -18,8 +18,8 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
   val server = newHttpServer(system.actorOf(Props(new MockSwiftServer)))
   Await.ready(server ? Bind("localhost", port), timeout)
 
-  val client = system.actorOf(Props(new SwiftClient("localhost", port, false,
-    SwiftCredentials("some_account", "some_auth_key"))))
+  val client = system.actorOf(Props(new SwiftClient(SwiftCredentials("some_account", "some_auth_key"),
+    "localhost", port)))
 
   "Swift client" must {
     "create containers" in {
