@@ -35,5 +35,5 @@ case class DeleteObject(container: String, name: String)
 case class CreateContainerResult(success: Boolean, alreadyExists: Boolean)
 case class DeleteContainerResult(success: Boolean, alreadyDeleted: Boolean)
 
-case class CreateObjectResult(success: Boolean)
+case class PutObjectResult(success: Boolean)
 case class DeleteObjectResult(success: Boolean, alreadyDeleted: Boolean)

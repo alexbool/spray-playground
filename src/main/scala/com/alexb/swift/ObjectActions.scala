@@ -34,7 +34,7 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
       authHeader(token) ~>
       sendReceive(httpConduit)
     ) map { resp =>
-      CreateObjectResult(resp.status.isSuccess)
+      PutObjectResult(resp.status.isSuccess)
     }
 
   def deleteObject(rootPath: String,
