@@ -47,5 +47,8 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
       obj.mediaType must be (MediaTypes.forExtension("png").get)
       obj.data.deep must be (bytes.deep)
     }
+    "delete objects" in {
+      Await.result(client ? DeleteObject("new_conatiner", "sample.png"), timeout) must be (DeleteObjectResult(true, false))
+    }
   }
 }
