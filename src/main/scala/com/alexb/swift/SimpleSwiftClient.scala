@@ -18,7 +18,7 @@ class SimpleSwiftClient(credentials: SwiftCredentials,
   def listObjects(container: String) = (client ? ListObjects(container)).mapTo[Seq[ObjectMetadata]]
   def createContainer(container: String) = (client ? CreateContainer(container)).mapTo[CreateContainerResult]
   def deleteContainer(container: String) = (client ? DeleteContainer(container)).mapTo[DeleteContainerResult]
-  def getObject(container: String, name: String) = (client ? GetObject(container, name)).mapTo[Object]
+  def getObject(container: String, name: String) = (client ? GetObject(container, name)).mapTo[Option[Object]]
   def putObject(container: String, name: String, mediaType: MediaType, data: Array[Byte]) = (client ? PutObject(container, name, mediaType, data)).mapTo[PutObjectResult]
   def putObject(container: String, name: String, mediaType: String, data: Array[Byte]) = (client ? PutObject(container, name, mediaType, data)).mapTo[PutObjectResult]
   def putObject(container: String, name: String, data: Array[Byte]) = (client ? PutObject(container, name, data)).mapTo[PutObjectResult]
