@@ -18,7 +18,7 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
       sendReceive(httpConduit)
     ) map { resp =>
       if (resp.status.isSuccess)
-        Object(`object`, resp.header[`Content-Type`].get.contentType.mediaType, resp.entity.buffer)
+        Some(Object(`object`, resp.header[`Content-Type`].get.contentType.mediaType, resp.entity.buffer))
       else None
     }
 

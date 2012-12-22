@@ -42,7 +42,7 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
       Await.result(client ? PutObject("new_conatiner", "sample.png", bytes), timeout) must be (PutObjectResult(true))
     }
     "get objects" in {
-      val obj = Await.result((client ? GetObject("new_conatiner", "sample.png")).mapTo[Object], timeout)
+      val obj = Await.result((client ? GetObject("new_conatiner", "sample.png")).mapTo[Option[Object]], timeout).get
       obj.name must be ("sample.png")
       obj.mediaType must be (MediaTypes.forExtension("png").get)
       obj.data.deep must be (bytes.deep)
