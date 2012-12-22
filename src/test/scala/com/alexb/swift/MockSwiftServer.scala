@@ -79,9 +79,9 @@ class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
         } ~
         get { ctx =>
           val containerEntry = containers.find(_._1.name == container)
-          if (containerEntry.isEmpty) complete(StatusCodes.NotFound)
+          if (containerEntry.isEmpty) ctx.complete(StatusCodes.NotFound)
           val objectEntry = containerEntry.get._2.get(name)
-          if (objectEntry.isEmpty) complete(StatusCodes.NotFound)
+          if (objectEntry.isEmpty) ctx.complete(StatusCodes.NotFound)
           val response = HttpResponse(StatusCodes.OK,
                                       HttpBody(ContentType(objectEntry.get._2.mediaType), objectEntry.get._2.data))
           ctx.complete(response)
