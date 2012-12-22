@@ -3,9 +3,11 @@ package com.alexb.swift
 import spray.routing.{RequestContext, HttpService}
 import spray.http.{EmptyEntity, HttpResponse, StatusCodes}
 import spray.http.HttpHeaders.RawHeader
+import spray.http.HttpHeaders.{`Content-Length`, `Content-Type`}
 import akka.actor.Actor
 import collection.concurrent.TrieMap
 import org.joda.time.Instant
+import java.security.MessageDigest
 
 class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
 
@@ -56,6 +58,24 @@ class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
               .getOrElse(Iterable[(ObjectMetadata, Object)]())
               .map(_._1)
           }
+        }
+      } ~
+      path(PathElement / PathElement) { (container, name) =>
+        put { ctx =>
+          val contentLength = ctx.request.headers.find(_.is("content-length")).map(_.asInstanceOf[`Content-Length`])
+          val contentType = ctx.request.headers.find(_.is("content-type")).map(_.asInstanceOf[`Content-Type`])
+          if (contentLength.isEmpty || contentType.isEmpty) ctx.complete(StatusCodes.LengthRequired)
+          val entity = ctx.request.entity
+          val obj = Object(name, contentType.get.contentType.mediaType, entity.buffer)
+          val meta = ObjectMetadata(name,
+                                    new String(MessageDigest.getInstance("MD5").digest(entity.buffer)),
+                                    entity.buffer.size,
+                                    contentType.get.contentType.mediaType.toString,
+                                    new Instant)
+          val containerEntry = containers.find(_._1.name == container)
+          if (containerEntry.isEmpty) ctx.complete(StatusCodes.NotFound)
+          containerEntry.get._2.put(name, (meta, obj))
+          ctx.complete(StatusCodes.Created)
         }
       }
     }
