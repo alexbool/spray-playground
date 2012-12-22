@@ -7,7 +7,7 @@ import org.joda.time.Instant
 
 class MongoUserRepositorySpec extends WordSpec with MustMatchers with Config with MongoSupport with MongoUserRepository with BeforeAndAfterEach {
 
-  override def beforeEach {
+  override def beforeEach() {
     clear()
     save(user)
   }
