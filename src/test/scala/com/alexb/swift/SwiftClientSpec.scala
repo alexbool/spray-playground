@@ -9,6 +9,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.Random
 import spray.can.server.SprayCanHttpServerApp
+import spray.http.MediaTypes
 import scala.io.Source
 
 class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServerApp {
@@ -21,6 +22,8 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
 
   val client = system.actorOf(Props(new SwiftClient(SwiftCredentials("some_account", "some_auth_key"),
     "localhost", port)))
+
+  val bytes = Source.fromFile("src/test/resources/sample.png")(scala.io.Codec.ISO8859).map(_.toByte).toArray
 
   "Swift client" must {
     "create containers" in {
@@ -36,8 +39,13 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
       Await.result(client ? ListObjects("new_conatiner"), timeout) must be (Seq())
     }
     "put objects" in {
-      val bytes = Source.fromFile("src/test/resources/sample.png")(scala.io.Codec.ISO8859).map(_.toByte).toArray
       Await.result(client ? PutObject("new_conatiner", "sample.png", bytes), timeout) must be (PutObjectResult(true))
+    }
+    "get objects" in {
+      val obj = Await.result((client ? GetObject("new_conatiner", "sample.png")).mapTo[Object], timeout)
+      obj.name must be ("sample.png")
+      obj.mediaType must be (MediaTypes.forExtension("png").get)
+      obj.data.deep must be (bytes.deep)
     }
   }
 }

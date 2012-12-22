@@ -1,7 +1,7 @@
 package com.alexb.swift
 
 import spray.routing.{RequestContext, HttpService}
-import spray.http.{EmptyEntity, HttpResponse, StatusCodes}
+import spray.http.{HttpBody, EmptyEntity, HttpResponse, StatusCodes, ContentType}
 import spray.http.HttpHeaders.RawHeader
 import spray.http.HttpHeaders.{`Content-Length`, `Content-Type`}
 import akka.actor.Actor
@@ -76,6 +76,15 @@ class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
           if (containerEntry.isEmpty) ctx.complete(StatusCodes.NotFound)
           containerEntry.get._2.put(name, (meta, obj))
           ctx.complete(StatusCodes.Created)
+        } ~
+        get { ctx =>
+          val containerEntry = containers.find(_._1.name == container)
+          if (containerEntry.isEmpty) complete(StatusCodes.NotFound)
+          val objectEntry = containerEntry.get._2.get(name)
+          if (objectEntry.isEmpty) complete(StatusCodes.NotFound)
+          val response = HttpResponse(StatusCodes.OK,
+                                      HttpBody(ContentType(objectEntry.get._2.mediaType), objectEntry.get._2.data))
+          ctx.complete(response)
         }
       }
     }
