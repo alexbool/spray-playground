@@ -28,7 +28,7 @@ trait MongoUserRepository extends UserRepository {
       .findOne(MongoDBObject("_id" -> username))
       .map(d => User(d.getAs[String]("_id").get,
         d.getAs[String]("password").get,
-        new Instant(d.getAs[Number]("created").get.longValue)))
+        new Instant(d.getAs[String]("created").get)))
 
   def checkCredentials(username: String, password: String) =
     userCollection.count((MongoDBObject("_id" -> username, "password" -> password))) == 1L
@@ -40,7 +40,7 @@ trait MongoUserRepository extends UserRepository {
     try {
       userCollection insert MongoDBObject("_id" -> user.username,
         "password" -> user.password,
-        "created" -> user.created.millis)
+        "created" -> user.created.toDate)
     }
     catch {
       case e: MongoException.DuplicateKey => throw new DuplicateUsernameException
