@@ -6,16 +6,16 @@
     <version>1.0.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala-version>2.10.0-RC5</scala-version>
+        <scala-version>2.10.0</scala-version>
         <spray-version>1.1-M7</spray-version>
         <spray-json-version>1.2.3</spray-json-version>
-        <akka-version>2.1.0-RC6</akka-version>
+        <akka-version>2.1.0</akka-version>
         <infinispan-version>5.2.0.Beta6</infinispan-version>
         <elasticsearch-version>0.20.2</elasticsearch-version>
         <scalaj-time-version>0.6</scalaj-time-version>
-        <scalatest-version>2.0.M5-B1</scalatest-version>
-        <specs2-version>1.12.3</specs2-version>
-        <scalamock-version>3.0-M7</scalamock-version>
+        <scalatest-version>2.0.M5b</scalatest-version>
+        <specs2-version>1.13</specs2-version>
+        <scalamock-version>3.0</scalamock-version>
     </properties>
     <repositories>
         <repository>
@@ -71,7 +71,7 @@
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.10.0-RC5</artifactId>
+            <artifactId>akka-actor_2.10</artifactId>
             <version>${akka-version}</version>
         </dependency>
         <dependency>
@@ -107,7 +107,7 @@
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.10.0-RC5</artifactId>
+            <artifactId>scalatest_2.10</artifactId>
             <version>${scalatest-version}</version>
             <scope>test</scope>
         </dependency>
@@ -119,13 +119,13 @@
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2_2.10.0-RC5</artifactId>
+            <artifactId>specs2_2.10</artifactId>
             <version>${specs2-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.scalamock</groupId>
-            <artifactId>scalamock-scalatest-support_2.10.0-RC5</artifactId>
+            <artifactId>scalamock-scalatest-support_2.10</artifactId>
             <version>${scalamock-version}</version>
             <scope>test</scope>
         </dependency>
