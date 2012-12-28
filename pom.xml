@@ -11,7 +11,7 @@
         <spray-json-version>1.2.3</spray-json-version>
         <akka-version>2.1.0-RC6</akka-version>
         <infinispan-version>5.2.0.Beta6</infinispan-version>
-        <elasticsearch-version>0.20.1</elasticsearch-version>
+        <elasticsearch-version>0.20.2</elasticsearch-version>
         <scalaj-time-version>0.6</scalaj-time-version>
         <scalatest-version>2.0.M5-B1</scalatest-version>
         <specs2-version>1.12.3</specs2-version>
