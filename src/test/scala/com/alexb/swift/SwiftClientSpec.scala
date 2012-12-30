@@ -17,7 +17,8 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
   implicit val askTimeout = Timeout(timeout)
 
   val port = Stream.continually(Random.nextInt(65536)).find(_ > 49152).get
-  val server = newHttpServer(system.actorOf(Props(new MockSwiftServer)))
+  val mockSwiftServer = system.actorOf(Props(new MockSwiftServer))
+  val server = newHttpServer(mockSwiftServer)
   Await.ready(server ? Bind("localhost", port), timeout)
 
   val client = system.actorOf(Props(new SwiftClient(SwiftCredentials("some_account", "some_auth_key"),
@@ -55,6 +56,10 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
     }
     "delete nonexistent objects" in {
       Await.result(client ? DeleteObject("new_conatiner", "sample.png"), timeout) must be (DeleteObjectResult(true, true))
+    }
+    "handle authentication token expiration" in {
+      mockSwiftServer ! RegenerateToken
+      Await.result(client ? ListContainers, timeout)
     }
   }
 }
