@@ -12,10 +12,11 @@ import collection.concurrent.TrieMap
 import org.joda.time.Instant
 import java.security.MessageDigest
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
 
-  val token = "some_token"
+  val token = Stream.continually(Random.nextPrintableChar()).take(32).mkString
 
   val containers = TrieMap[Container, TrieMap[String, (ObjectMetadata, Object)]]()
 
