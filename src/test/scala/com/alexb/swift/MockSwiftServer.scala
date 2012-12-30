@@ -14,14 +14,22 @@ import java.security.MessageDigest
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
+case object RegenerateToken
+
 class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
 
-  val token = Stream.continually(Random.nextPrintableChar()).take(32).mkString
+  var token = generateToken
 
   val containers = TrieMap[Container, TrieMap[String, (ObjectMetadata, Object)]]()
 
-  def receive = runRoute(authRoute ~ storageRoute)
+  def receive = handleRegenerateToken orElse runRoute(authRoute ~ storageRoute)
   def actorRefFactory = context.system
+
+  def generateToken = Stream.continually(Random.nextPrintableChar()).take(32).mkString
+
+  def handleRegenerateToken: Actor.Receive = {
+    case RegenerateToken => token = generateToken
+  }
 
   val authRoute =
     path("v1.0") {
