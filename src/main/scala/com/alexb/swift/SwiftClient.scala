@@ -12,7 +12,7 @@ class SwiftClient(credentials: SwiftCredentials,
                   authHost: String,
                   authPort: Int = 80,
                   authSslEnabled: Boolean = false)
-  extends Actor with ActorLogging
+  extends Actor with ActorLogging with AuthenticationActions
   with AccountActions with ContainerActions with ObjectActions {
 
   implicit val timeout = Timeout(10 seconds)
@@ -21,12 +21,10 @@ class SwiftClient(credentials: SwiftCredentials,
   private val httpClient = context.actorOf(
     props = Props(new HttpClient(IOExtension(context.system).ioBridge())),
     name = "http-client")
-  private val authenticator = context.actorOf(
-    props = Props(new Authenticator(httpClient, authHost, authPort, authSslEnabled)),
-    name = "authenticator")
   private val conduitFactory = context.actorOf(
     props = Props(new ConduitFactory(httpClient)),
     name = "http-conduit-factory")
+  private var authenticationResult: Option[Future[AuthenticationResult]] = None
 
   def receive = {
     case ListContainers =>
@@ -51,10 +49,16 @@ class SwiftClient(credentials: SwiftCredentials,
       executeRequest((auth, conduit) => deleteObject(auth.storageUrl.path, container, name, auth.token, conduit))
   }
 
-  private def authentication = (authenticator ? Authenticate(credentials)).mapTo[AuthenticationResult]
+  private def authentication() = authenticationResult match {
+    case Some(auth) => auth
+    case None => {
+      authenticationResult = Some(authenticate(httpClient, credentials, authHost, authPort, authSslEnabled))
+      authenticationResult.get
+    }
+  }
 
   private def executeRequest[R](f: (AuthenticationResult, ActorRef) => Future[R]) {
-    authentication
+    authentication()
     .flatMap(auth => {
       val conduit = (conduitFactory ? HttpConduitId(auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)).mapTo[ActorRef]
       conduit.map(readyConduit => (auth, readyConduit))
@@ -63,3 +67,5 @@ class SwiftClient(credentials: SwiftCredentials,
     .pipeTo(sender)
   }
 }
+
+private[swift] case class AuthenticationResult(token: String, storageUrl: Url)
