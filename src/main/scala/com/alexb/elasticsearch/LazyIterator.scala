@@ -10,16 +10,16 @@ class LazyIterator(request: SearchRequestBuilder) extends Iterator[SearchHit] {
   var underlying: Option[Iterator[SearchHit]] = None
 
   def hasNext = {
-    evaluate
+    evaluate()
     underlying.get.hasNext
   }
 
-  def next = {
-    evaluate
-    underlying.get.next
+  def next() = {
+    evaluate()
+    underlying.get.next()
   }
 
-  private def evaluate {
+  private def evaluate() {
     if (underlying.isEmpty) {
       underlying = Some(request
         .execute
