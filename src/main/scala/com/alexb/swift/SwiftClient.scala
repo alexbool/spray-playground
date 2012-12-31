@@ -66,14 +66,14 @@ class SwiftClient(credentials: SwiftCredentials,
     }
   }
 
-  private def executeRequest[R](f: (AuthenticationResult, ActorRef) => Future[R]) {
+  private def executeRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]) {
     val currentRevision = authenticationRevision
     val resultFuture = authentication()
     .flatMap(auth => {
       val conduit = (conduitFactory ? HttpConduitId(auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)).mapTo[ActorRef]
       conduit.map(readyConduit => (auth, readyConduit))
     })
-    .flatMap(t => f(t._1, t._2))
+    .flatMap(t => action(t._1, t._2))
     .pipeTo(sender)
     resultFuture onFailure {
       case e: UnsuccessfulResponseException if e.responseStatus == StatusCodes.Unauthorized =>
