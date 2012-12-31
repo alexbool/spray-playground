@@ -13,6 +13,7 @@ import spray.http.MediaTypes
 import scala.io.Source
 
 class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServerApp {
+  import system.dispatcher
   val timeout = 20 seconds
   implicit val askTimeout = Timeout(timeout)
 
@@ -56,6 +57,17 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
     }
     "delete nonexistent objects" in {
       Await.result(client ? DeleteObject("new_container", "sample.png"), timeout) must be (DeleteObjectResult(true, true))
+    }
+    "handle interleaving requests" in {
+      val req1 = client ? ListContainers
+      val req2 = client ? ListContainers
+      val f = for {
+        res1 <- req1.mapTo[Seq[Container]]
+        res2 <- req2.mapTo[Seq[Container]]
+      } yield (res1, res2)
+      val readyResult = Await.result(f, timeout)
+      readyResult._1.length must be (1)
+      readyResult._2.length must be (1)
     }
     "handle authentication token expiration" in {
       mockSwiftServer ! RegenerateToken
