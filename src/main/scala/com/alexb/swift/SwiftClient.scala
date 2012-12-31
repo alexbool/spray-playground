@@ -6,7 +6,9 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.Future
 import spray.can.client.HttpClient
+import spray.client.UnsuccessfulResponseException
 import spray.io.IOExtension
+import spray.http.StatusCodes
 
 class SwiftClient(credentials: SwiftCredentials,
                   authHost: String,
@@ -14,6 +16,8 @@ class SwiftClient(credentials: SwiftCredentials,
                   authSslEnabled: Boolean = false)
   extends Actor with ActorLogging with AuthenticationActions
   with AccountActions with ContainerActions with ObjectActions {
+
+  private case class NotifyExpiredAuthentication(lastSeenRevision: Int)
 
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
@@ -25,6 +29,7 @@ class SwiftClient(credentials: SwiftCredentials,
     props = Props(new ConduitFactory(httpClient)),
     name = "http-conduit-factory")
   private var authenticationResult: Option[Future[AuthenticationResult]] = None
+  private var authenticationRevision = 0
 
   def receive = {
     case ListContainers =>
@@ -47,24 +52,33 @@ class SwiftClient(credentials: SwiftCredentials,
 
     case DeleteObject(container, name) =>
       executeRequest((auth, conduit) => deleteObject(auth.storageUrl.path, container, name, auth.token, conduit))
+
+    case NotifyExpiredAuthentication(rev) =>
+      if (authenticationRevision == rev) authenticationResult = None
   }
 
   private def authentication() = authenticationResult match {
     case Some(auth) => auth
     case None => {
       authenticationResult = Some(authenticate(httpClient, credentials, authHost, authPort, authSslEnabled))
+      authenticationRevision += 1
       authenticationResult.get
     }
   }
 
   private def executeRequest[R](f: (AuthenticationResult, ActorRef) => Future[R]) {
-    authentication()
+    val currentRevision = authenticationRevision
+    val resultFuture = authentication()
     .flatMap(auth => {
       val conduit = (conduitFactory ? HttpConduitId(auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)).mapTo[ActorRef]
       conduit.map(readyConduit => (auth, readyConduit))
     })
     .flatMap(t => f(t._1, t._2))
     .pipeTo(sender)
+    resultFuture onFailure {
+      case e: UnsuccessfulResponseException if e.responseStatus == StatusCodes.Unauthorized =>
+        self ! NotifyExpiredAuthentication(currentRevision)
+    }
   }
 }
 
