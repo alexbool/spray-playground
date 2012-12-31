@@ -37,25 +37,25 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
       Await.result(client ? ListContainers, timeout) must be (Seq(Container("new_container", 0, 0)))
     }
     "list objects" in {
-      Await.result(client ? ListObjects("new_conatiner"), timeout) must be (Seq())
+      Await.result(client ? ListObjects("new_container"), timeout) must be (Seq())
     }
     "put objects" in {
-      Await.result(client ? PutObject("new_conatiner", "sample.png", bytes), timeout) must be (PutObjectResult(true))
+      Await.result(client ? PutObject("new_container", "sample.png", bytes), timeout) must be (PutObjectResult(true))
     }
     "get objects" in {
-      val obj = Await.result((client ? GetObject("new_conatiner", "sample.png")).mapTo[Option[Object]], timeout).get
+      val obj = Await.result((client ? GetObject("new_container", "sample.png")).mapTo[Option[Object]], timeout).get
       obj.name must be ("sample.png")
       obj.mediaType must be (MediaTypes.forExtension("png").get)
       obj.data.deep must be (bytes.deep)
     }
     "get empty objects" in {
-      Await.result(client ? GetObject("new_conatiner", "some_nonexistent_object"), timeout) must be (None)
+      Await.result(client ? GetObject("new_container", "some_nonexistent_object"), timeout) must be (None)
     }
     "delete existent objects" in {
-      Await.result(client ? DeleteObject("new_conatiner", "sample.png"), timeout) must be (DeleteObjectResult(true, false))
+      Await.result(client ? DeleteObject("new_container", "sample.png"), timeout) must be (DeleteObjectResult(true, false))
     }
     "delete nonexistent objects" in {
-      Await.result(client ? DeleteObject("new_conatiner", "sample.png"), timeout) must be (DeleteObjectResult(true, true))
+      Await.result(client ? DeleteObject("new_container", "sample.png"), timeout) must be (DeleteObjectResult(true, true))
     }
     "handle authentication token expiration" in {
       mockSwiftServer ! RegenerateToken
