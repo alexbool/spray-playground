@@ -68,8 +68,9 @@ class SwiftClient(credentials: SwiftCredentials,
 
   private def executeRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]) {
     val currentRevision = authenticationRevision
+    val authFuture = authentication()
     val resultFuture = for {
-      auth <- authentication()
+      auth <- authFuture
       conduit <- (conduitFactory ? HttpConduitId(auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)).mapTo[ActorRef]
       result <- action(auth, conduit)
     } yield result
