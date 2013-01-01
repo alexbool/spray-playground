@@ -60,7 +60,7 @@ class SwiftClient(credentials: SwiftCredentials,
 
   private def refreshAuthentication(lastSeenRevision: Int) {
     if (authenticationRevision == lastSeenRevision) {
-      log.debug(s"About to refresh authentication. Current revision: ${authenticationRevision}")
+      log.debug(s"About to refresh authentication. Current revision: $authenticationRevision")
       authenticationResult = authenticate(httpClient, credentials, authHost, authPort, authSslEnabled)
       authenticationRevision += 1
       if (storageConduit != null) storageConduit onSuccess { case conduit: ActorRef =>
