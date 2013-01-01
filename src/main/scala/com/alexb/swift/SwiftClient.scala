@@ -4,10 +4,11 @@ import akka.actor._
 import akka.pattern.pipe
 import akka.util.Timeout
 import scala.concurrent.duration._
-import scala.concurrent.Future
+import scala.concurrent.{Promise, Future}
 import spray.can.client.HttpClient
-import spray.client.{HttpConduit, UnsuccessfulResponseException}
+import spray.client.HttpConduit
 import spray.io.IOExtension
+import spray.httpx.UnsuccessfulResponseException
 import spray.http.StatusCodes
 
 class SwiftClient(credentials: SwiftCredentials,
@@ -52,6 +53,8 @@ class SwiftClient(credentials: SwiftCredentials,
       executeRequest((auth, conduit) => deleteObject(auth.storageUrl.path, container, name, auth.token, conduit))
 
     case NotifyExpiredAuthentication(rev) => refreshAuthentication(rev)
+
+    case msg: RetryRequest[_] => retryRequest(msg)
   }
 
   override def preStart() {
@@ -84,19 +87,35 @@ class SwiftClient(credentials: SwiftCredentials,
 
   private def executeRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]) {
     val currentRevision = authenticationRevision
+    val resultFuture = doExecuteRequest(action)
+    val promise = Promise[R]()
+    resultFuture onFailure {
+      case e: UnsuccessfulResponseException if e.responseStatus == StatusCodes.Unauthorized => {
+        self ! NotifyExpiredAuthentication(currentRevision)
+        self ! RetryRequest(action, promise)
+      }
+    }
+    resultFuture onSuccess { case r =>
+      promise.success(r)
+    }
+    promise.future.pipeTo(sender)
+  }
+
+  private def retryRequest[R](req: RetryRequest[R]) {
+    log.debug("Retrying request due to expired authentication}")
+    req.promise.completeWith(doExecuteRequest(req.action))
+  }
+
+  private def doExecuteRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]): Future[R] = {
     val authFuture = authenticationResult
     val storageConduitFuture = storageConduit
-    val resultFuture = for {
+    for {
       auth <- authFuture
       conduit <- storageConduitFuture
       result <- action(auth, conduit)
     } yield result
-    resultFuture onFailure {
-      case e: UnsuccessfulResponseException if e.responseStatus == StatusCodes.Unauthorized =>
-        self ! NotifyExpiredAuthentication(currentRevision)
-    }
-    resultFuture.pipeTo(sender)
   }
 }
 
 private[swift] case class AuthenticationResult(token: String, storageUrl: Url)
+private[swift] case class RetryRequest[R](action: (AuthenticationResult, ActorRef) => Future[R], promise: Promise[R])
