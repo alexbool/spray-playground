@@ -113,7 +113,7 @@ class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
     }
 
   class Authenticator(implicit val executionContext: ExecutionContext) extends HttpAuthenticator[String] {
-    def scheme = ""
+    def scheme = "Swift"
     def realm = "Swift"
     def params(ctx: RequestContext) = Map.empty
 
