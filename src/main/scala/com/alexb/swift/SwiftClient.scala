@@ -60,6 +60,7 @@ class SwiftClient(credentials: SwiftCredentials,
 
   private def refreshAuthentication(lastSeenRevision: Int) {
     if (authenticationRevision == lastSeenRevision) {
+      log.debug(s"About to refresh authentication. Current revision: ${authenticationRevision}")
       authenticationResult = authenticate(httpClient, credentials, authHost, authPort, authSslEnabled)
       authenticationRevision += 1
       if (storageConduit != null) storageConduit onSuccess { case conduit: ActorRef =>
@@ -73,6 +74,7 @@ class SwiftClient(credentials: SwiftCredentials,
       val currentRev = authenticationRevision
       storageConduit = authenticationResult map { auth =>
         val u = auth.storageUrl
+        log.debug("Creating new HttpConduit")
         context.actorOf(
           props = Props(new HttpConduit(httpClient, u.host, u.port, u.sslEnabled)),
           name = s"http-conduit-${u.host}-${u.port}-${ if (u.sslEnabled) "ssl" else "nossl" }-$currentRev")
