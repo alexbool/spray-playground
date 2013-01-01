@@ -21,7 +21,7 @@ class OrderSearchActor(client: Client, index: String) extends Actor with Elastic
       .find(fuzzyQuery("notes", query))
       .drop(page.skip)
       .take(page.size)
-      .map(_.getSourceAsString()
+      .map(_.getSourceAsString
         .replace("\"_id\"", "\"orderId\"") // Bad hack
         .asJson.convertTo[Order])
       .to[Seq]
