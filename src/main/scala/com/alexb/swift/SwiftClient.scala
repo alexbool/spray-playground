@@ -1,12 +1,12 @@
 package com.alexb.swift
 
-import akka.actor.{ActorRef, ActorLogging, Props, Actor}
-import akka.pattern.{ask, pipe}
+import akka.actor._
+import akka.pattern.pipe
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.Future
 import spray.can.client.HttpClient
-import spray.client.UnsuccessfulResponseException
+import spray.client.{HttpConduit, UnsuccessfulResponseException}
 import spray.io.IOExtension
 import spray.http.StatusCodes
 
@@ -25,11 +25,9 @@ class SwiftClient(credentials: SwiftCredentials,
   private val httpClient = context.actorOf(
     props = Props(new HttpClient(IOExtension(context.system).ioBridge())),
     name = "http-client")
-  private val conduitFactory = context.actorOf(
-    props = Props(new ConduitFactory(httpClient)),
-    name = "http-conduit-factory")
   private var authenticationResult: Future[AuthenticationResult] = null
   private var authenticationRevision = 0
+  private var storageConduit: Future[ActorRef] = null
 
   def receive = {
     case ListContainers =>
@@ -64,15 +62,31 @@ class SwiftClient(credentials: SwiftCredentials,
     if (authenticationRevision == lastSeenRevision) {
       authenticationResult = authenticate(httpClient, credentials, authHost, authPort, authSslEnabled)
       authenticationRevision += 1
+      if (storageConduit != null) storageConduit onSuccess { case conduit: ActorRef =>
+        // Shutting down existing conduit after a reasonable timeout
+        log.debug(s"Scheduling existing HttpConduit ${conduit.toString()} shutdown")
+        context.system.scheduler.scheduleOnce(1 minute)({
+          log.debug(s"Shutting down HttpConduit ${conduit.toString()}")
+          context.stop(conduit)
+        })
+      }
+      val currentRev = authenticationRevision
+      storageConduit = authenticationResult map { auth =>
+        val u = auth.storageUrl
+        context.actorOf(
+          props = Props(new HttpConduit(httpClient, u.host, u.port, u.sslEnabled)),
+          name = s"http-conduit-${u.host}-${u.port}-${ if (u.sslEnabled) "ssl" else "nossl" }-$currentRev")
+      }
     }
   }
 
   private def executeRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]) {
     val currentRevision = authenticationRevision
     val authFuture = authenticationResult
+    val storageConduitFuture = storageConduit
     val resultFuture = for {
       auth <- authFuture
-      conduit <- (conduitFactory ? HttpConduitId(auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)).mapTo[ActorRef]
+      conduit <- storageConduitFuture
       result <- action(auth, conduit)
     } yield result
     resultFuture onFailure {
