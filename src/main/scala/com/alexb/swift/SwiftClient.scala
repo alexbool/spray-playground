@@ -28,7 +28,7 @@ class SwiftClient(credentials: SwiftCredentials,
   private val conduitFactory = context.actorOf(
     props = Props(new ConduitFactory(httpClient)),
     name = "http-conduit-factory")
-  private var authenticationResult: Option[Future[AuthenticationResult]] = None
+  private var authenticationResult: Future[AuthenticationResult] = null
   private var authenticationRevision = 0
 
   def receive = {
@@ -53,22 +53,23 @@ class SwiftClient(credentials: SwiftCredentials,
     case DeleteObject(container, name) =>
       executeRequest((auth, conduit) => deleteObject(auth.storageUrl.path, container, name, auth.token, conduit))
 
-    case NotifyExpiredAuthentication(rev) =>
-      if (authenticationRevision == rev) authenticationResult = None
+    case NotifyExpiredAuthentication(rev) => refreshAuthentication(rev)
   }
 
-  private def authentication() = authenticationResult match {
-    case Some(auth) => auth
-    case None => {
-      authenticationResult = Some(authenticate(httpClient, credentials, authHost, authPort, authSslEnabled))
+  override def preStart() {
+    refreshAuthentication(0)
+  }
+
+  private def refreshAuthentication(lastSeenRevision: Int) {
+    if (authenticationRevision == lastSeenRevision) {
+      authenticationResult = authenticate(httpClient, credentials, authHost, authPort, authSslEnabled)
       authenticationRevision += 1
-      authenticationResult.get
     }
   }
 
   private def executeRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]) {
     val currentRevision = authenticationRevision
-    val authFuture = authentication()
+    val authFuture = authenticationResult
     val resultFuture = for {
       auth <- authFuture
       conduit <- (conduitFactory ? HttpConduitId(auth.storageUrl.host, auth.storageUrl.port, auth.storageUrl.sslEnabled)).mapTo[ActorRef]
