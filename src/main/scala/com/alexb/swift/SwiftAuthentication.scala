@@ -24,7 +24,7 @@ trait SwiftAuthentication {
         resp.headers.find(_.is("x-auth-token")).map(_.value).get,
         resp.headers.find(_.is("x-storage-url")).map(h => Url(h.value)).get)
     }
-    auth onComplete { r =>
+    auth onComplete { _ =>
       context.stop(authConduit)
     }
     auth
