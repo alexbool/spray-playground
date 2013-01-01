@@ -7,4 +7,7 @@ object Join {
       leftElem <- left.map(e => (leftKey(e), e)) if rightMap.contains(leftElem._1)
     } yield (leftElem._2, rightMap.get(leftElem._1).get)
   }
+
+  def innerJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) =
+    join(left, right, leftKey, rightKey)
 }
