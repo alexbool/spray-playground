@@ -14,7 +14,7 @@ class SwiftClient(credentials: SwiftCredentials,
                   authHost: String,
                   authPort: Int = 80,
                   authSslEnabled: Boolean = false)
-  extends Actor with ActorLogging with AuthenticationActions
+  extends Actor with ActorLogging with SwiftAuthentication
   with AccountActions with ContainerActions with ObjectActions {
 
   private case class NotifyExpiredAuthentication(lastSeenRevision: Int)
