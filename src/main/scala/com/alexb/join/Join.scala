@@ -1,23 +1,21 @@
 package com.alexb.join
 
-import scala.collection.mutable
-
 object Join {
   def join[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) = {
-    val rightMultiMap = iterableToMultiMap(right.map(e => (rightKey(e), e)))
+    val rightGrouped = right.groupBy(rightKey(_))
     for {
-      leftElem <- left.map(e => (leftKey(e), e)) if rightMultiMap.contains(leftElem._1)
-    } yield (leftElem._2, rightMultiMap.get(leftElem._1).get.to[Seq])
+      leftElem <- left.map(e => (leftKey(e), e)) if rightGrouped.contains(leftElem._1)
+    } yield (leftElem._2, rightGrouped.get(leftElem._1).get.to[Seq])
   }
 
   def innerJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) =
     join(left, right, leftKey, rightKey)
 
   def leftJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) = {
-    val rightMultiMap = iterableToMultiMap(right.map(e => (rightKey(e), e)))
+    val rightGrouped = right.groupBy(rightKey(_))
     (for {
       leftElem <- left.map(e => (leftKey(e), e))
-    } yield (leftElem._2, rightMultiMap.get(leftElem._1)))
+    } yield (leftElem._2, rightGrouped.get(leftElem._1)))
     .map({ e =>
       e._2 match {
         case None => (e._1, Seq[B]())
@@ -42,19 +40,6 @@ object Join {
       leftElem <- left.map(e => (leftKey(e), e))
     } yield (leftElem._2, rightMap.get(leftElem._1))
   }
-
-  private def iterableToMultiMap[A, B](collection: Iterable[(A, B)]) =
-    collection.foldLeft(new mutable.HashMap[A, mutable.ListBuffer[B]]) { (acc, pair) =>
-      acc.get(pair._1) match {
-        case None =>
-          val list = mutable.ListBuffer[B]()
-          list += pair._2
-          acc.put(pair._1, list)
-        case Some(list) =>
-          list += pair._2
-      }
-      acc
-    }
 
   implicit class Joinable[A](left: Iterable[A]) {
     def join[B, K](right: Iterable[B], leftKey: A => K, rightKey: B => K) = Join.join(left, right, leftKey, rightKey)
