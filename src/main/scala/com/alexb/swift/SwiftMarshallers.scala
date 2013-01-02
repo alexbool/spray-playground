@@ -17,6 +17,6 @@ private[swift] trait SwiftMarshallers extends SprayJsonSupport with DefaultJsonP
     def write(obj: ObjectMetadata) = JsObject("name" -> JsString(obj.name), "hash" -> JsString(obj.hash),
                                               "bytes" -> JsNumber(obj.bytes),
                                               "content_type" -> JsString(obj.contentType),
-                                              "last_modofied" -> JsString(obj.lastModified.toString))
+                                              "last_modified" -> JsString(obj.lastModified.toString))
   }
 }
