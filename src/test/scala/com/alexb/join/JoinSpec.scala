@@ -2,7 +2,7 @@ package com.alexb.join
 
 import org.scalatest.WordSpec
 import org.scalatest.matchers.MustMatchers
-import Join._
+import Implicits._
 
 class JoinSpec extends WordSpec with MustMatchers {
   "Join class" must {
