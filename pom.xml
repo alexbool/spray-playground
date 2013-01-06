@@ -12,7 +12,7 @@
         <akka-version>2.1.0</akka-version>
         <infinispan-version>5.2.0.Beta6</infinispan-version>
         <elasticsearch-version>0.20.2</elasticsearch-version>
-        <scalaj-time-version>0.6</scalaj-time-version>
+        <nscala-time-version>0.2.0</nscala-time-version>
         <scalatest-version>2.0.M5b</scalatest-version>
         <specs2-version>1.13</specs2-version>
         <scalamock-version>3.0</scalamock-version>
@@ -78,12 +78,6 @@
             <groupId>org.mongodb</groupId>
             <artifactId>casbah-core_2.10</artifactId>
             <version>2.5.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.scalaj</groupId>
-                    <artifactId>scalaj-time_2.10.0-M7</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.infinispan</groupId>
@@ -101,9 +95,9 @@
             <version>0.3</version>
         </dependency>
         <dependency>
-            <groupId>org.scalaj</groupId>
-            <artifactId>scalaj-time_2.10.0-M7</artifactId>
-            <version>${scalaj-time-version}</version>
+            <groupId>com.github.nscala-time</groupId>
+            <artifactId>nscala-time_2.10</artifactId>
+            <version>${nscala-time-version}</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
