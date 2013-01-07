@@ -8,5 +8,5 @@ package object oauth {
 }
 
 package oauth {
-  case class User(username: String, authorities: Seq[String])
+case class User(uid: String, username: String, authorities: Seq[String])
 }

@@ -11,7 +11,7 @@ import akka.actor.ActorRef
 
 class OAuthdTokenValidator(conduit: ActorRef)(implicit executor: ExecutionContext) extends OAuthTokenValidator[User] {
 
-  implicit val userFormat = jsonFormat2(User)
+  implicit val userFormat = jsonFormat3(User)
 
   val pipeline: Token => HttpRequest => Future[User] = { token =>
     addHeader(Authorization(OAuth2BearerToken(token))) ~>
