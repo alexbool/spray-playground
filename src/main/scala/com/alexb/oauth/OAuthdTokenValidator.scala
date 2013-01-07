@@ -21,6 +21,6 @@ class OAuthdTokenValidator(conduit: ActorRef)(implicit executor: ExecutionContex
 
   def apply(token: Option[Token]) = token match {
     case Some(token) => pipeline(token)(Get("/user")).map(Some(_)).recover({ case e: UnsuccessfulResponseException => None })
-    case None        => Future { None }
+    case None        => Future.successful(None)
   }
 }
