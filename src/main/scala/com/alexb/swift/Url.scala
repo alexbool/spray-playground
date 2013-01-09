@@ -1,6 +1,14 @@
 package com.alexb.swift
 
-case class Url(host: String, port: Int, sslEnabled: Boolean, path: String)
+case class Url(host: String, port: Int, sslEnabled: Boolean, path: String) {
+  override def toString = {
+    val scheme = if (sslEnabled) "https" else "http"
+    val portStr =
+      if ((sslEnabled && port == 443) || (!sslEnabled && port == 80)) ""
+      else s":$port"
+    s"$scheme://$host$portStr$path"
+  }
+}
 
 object Url {
   private val pattern = """(http(s)?)://([\w\.]+)(:(\d+))?(/[\w/-]*)?""".r

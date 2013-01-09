@@ -17,5 +17,11 @@ class UrlSpec extends WordSpec with MustMatchers {
     "not parse malformed urls" in {
       evaluating { Url("ololo") } must produce [IllegalArgumentException]
     }
+    "serialize urls to string" in {
+      Url("google.com", 80, false, "/").toString must be ("http://google.com/")
+      Url("google.com", 8080, false, "/").toString must be ("http://google.com:8080/")
+      Url("google.com", 443, true, "/").toString must be ("https://google.com/")
+      Url("google.com", 8080, true, "/").toString must be ("https://google.com:8080/")
+    }
   }
 }
