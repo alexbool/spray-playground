@@ -2,7 +2,7 @@ package com.alexb.swift
 
 import akka.actor.ActorRef
 import scala.concurrent.ExecutionContext
-import spray.client.HttpConduit._
+import spray.client.pipelining._
 import spray.http.{StatusCodes, MediaType, HttpBody}
 import spray.http.HttpHeaders.`Content-Type`
 

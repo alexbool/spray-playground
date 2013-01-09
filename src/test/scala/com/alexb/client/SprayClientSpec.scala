@@ -4,26 +4,20 @@ import org.scalatest._
 import akka.actor.{ ActorSystem, Props }
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import spray.io.IOExtension
-import spray.can.client.HttpClient
-import spray.client.HttpConduit
-import spray.client.HttpConduit._
+import spray.client.HttpClient
+import spray.client.pipelining._
 
 class SprayClientSpec extends WordSpec with MustMatchers {
   val system = ActorSystem("test")
-  val ioBridge = IOExtension(system).ioBridge()
   val httpClient = system.actorOf(
-    props = Props(new HttpClient(ioBridge)),
+    props = Props(new HttpClient),
     name = "test-http-client")
-  val conduit = system.actorOf(
-    props = Props(new HttpConduit(httpClient, "173.194.32.134" /* this is google.com's IP */, 80)),
-    name = "test-http-conduit"
-  )
-  val pipeline = sendReceive(conduit)
+
+  val pipeline = sendReceive(httpClient)(system.dispatcher)
 
   "Spray client" ignore {
     "download content in reasonable time" in {
-      Await.result(pipeline(Get("/")), 3 seconds)
+      Await.result(pipeline(Get("http://173.194.32.134/" /* this is google.com's IP */)), 3 seconds)
     }
   }
 }

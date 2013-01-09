@@ -5,9 +5,7 @@ import akka.pattern.pipe
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.{Promise, Future}
-import spray.can.client.HttpClient
-import spray.client.HttpConduit
-import spray.io.IOExtension
+import spray.client.HttpClient
 import spray.httpx.UnsuccessfulResponseException
 import spray.http.StatusCodes
 
@@ -24,33 +22,32 @@ class SwiftClient(credentials: SwiftCredentials,
   implicit val ctx = context.dispatcher
 
   private val httpClient = context.actorOf(
-    props = Props(new HttpClient(IOExtension(context.system).ioBridge())),
+    props = Props(new HttpClient),
     name = "http-client")
   private var authenticationResult: Future[AuthenticationResult] = null
   private var authenticationRevision = 0
-  private var storageConduit: Future[ActorRef] = null
 
   def receive = {
     case ListContainers =>
-      executeRequest((auth, conduit) => listContainers(auth.storageUrl.path, auth.token, conduit))
+      executeRequest((auth, conduit) => listContainers(auth.storageUrl.toString, auth.token, conduit))
 
     case ListObjects(container) =>
-      executeRequest((auth, conduit) => listObjects(auth.storageUrl.path, container, auth.token, conduit))
+      executeRequest((auth, conduit) => listObjects(auth.storageUrl.toString, container, auth.token, conduit))
 
     case CreateContainer(container) =>
-      executeRequest((auth, conduit) => createContainer(auth.storageUrl.path, container, auth.token, conduit))
+      executeRequest((auth, conduit) => createContainer(auth.storageUrl.toString, container, auth.token, conduit))
 
     case DeleteContainer(container) =>
-      executeRequest((auth, conduit) => deleteContainer(auth.storageUrl.path, container, auth.token, conduit))
+      executeRequest((auth, conduit) => deleteContainer(auth.storageUrl.toString, container, auth.token, conduit))
 
     case GetObject(container, name) =>
-      executeRequest((auth, conduit) => getObject(auth.storageUrl.path, container, name, auth.token, conduit))
+      executeRequest((auth, conduit) => getObject(auth.storageUrl.toString, container, name, auth.token, conduit))
 
     case PutObject(container, name, mediaType, data) =>
-      executeRequest((auth, conduit) => putObject(auth.storageUrl.path, container, name, mediaType, data, auth.token, conduit))
+      executeRequest((auth, conduit) => putObject(auth.storageUrl.toString, container, name, mediaType, data, auth.token, conduit))
 
     case DeleteObject(container, name) =>
-      executeRequest((auth, conduit) => deleteObject(auth.storageUrl.path, container, name, auth.token, conduit))
+      executeRequest((auth, conduit) => deleteObject(auth.storageUrl.toString, container, name, auth.token, conduit))
 
     case NotifyExpiredAuthentication(rev) => refreshAuthentication(rev)
 
@@ -66,22 +63,6 @@ class SwiftClient(credentials: SwiftCredentials,
       log.debug(s"About to refresh authentication. Current revision: $authenticationRevision")
       authenticationResult = authenticate(httpClient, credentials, authHost, authPort, authSslEnabled)
       authenticationRevision += 1
-      if (storageConduit != null) storageConduit onSuccess { case conduit: ActorRef =>
-        // Shutting down existing conduit after a reasonable timeout
-        log.debug(s"Scheduling existing HttpConduit ${conduit.toString()} shutdown")
-        context.system.scheduler.scheduleOnce(1 minute)({
-          log.debug(s"Shutting down HttpConduit ${conduit.toString()}")
-          context.stop(conduit)
-        })
-      }
-      val currentRev = authenticationRevision
-      storageConduit = authenticationResult map { auth =>
-        val u = auth.storageUrl
-        log.debug("Creating new HttpConduit")
-        context.actorOf(
-          props = Props(new HttpConduit(httpClient, u.host, u.port, u.sslEnabled)),
-          name = s"http-conduit-${u.host}-${u.port}-${ if (u.sslEnabled) "ssl" else "nossl" }-$currentRev")
-      }
     }
   }
 
@@ -106,15 +87,8 @@ class SwiftClient(credentials: SwiftCredentials,
     req.promise.completeWith(doExecuteRequest(req.action))
   }
 
-  private def doExecuteRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]): Future[R] = {
-    val authFuture = authenticationResult
-    val storageConduitFuture = storageConduit
-    for {
-      auth <- authFuture
-      conduit <- storageConduitFuture
-      result <- action(auth, conduit)
-    } yield result
-  }
+  private def doExecuteRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]): Future[R] =
+    authenticationResult.flatMap(auth => action(auth, httpClient))
 }
 
 private[swift] case class AuthenticationResult(token: String, storageUrl: Url)

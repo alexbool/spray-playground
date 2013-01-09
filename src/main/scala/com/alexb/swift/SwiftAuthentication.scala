@@ -1,9 +1,8 @@
 package com.alexb.swift
 
-import spray.client.HttpConduit
-import spray.client.HttpConduit._
-import akka.actor.{Props, Actor, ActorRef, ActorLogging}
+import akka.actor.{Actor, ActorRef, ActorLogging}
 import scala.concurrent.ExecutionContext
+import spray.client.pipelining._
 
 trait SwiftAuthentication {
   this: Actor with ActorLogging =>
@@ -13,25 +12,18 @@ trait SwiftAuthentication {
                    host: String,
                    port: Int,
                    sslEnabled: Boolean)(implicit ctx: ExecutionContext) = {
-    val authConduit = context.actorOf(
-      props = Props(new HttpConduit(httpClient, host, port, sslEnabled)),
-      name = "auth-http-conduit")
     log.debug(s"About to make authentication request: $credentials")
-    val auth = (Get("/v1.0") ~> authPipeline(authConduit, credentials))
+    (Get(Url(host, port, sslEnabled, "/v1.0").toString) ~> authPipeline(httpClient, credentials))
       .map { resp =>
       log.debug(s"Recieved authentication response: $resp")
       AuthenticationResult(
         resp.headers.find(_.is("x-auth-token")).map(_.value).get,
         resp.headers.find(_.is("x-storage-url")).map(h => Url(h.value)).get)
     }
-    auth onComplete { _ =>
-      context.stop(authConduit)
-    }
-    auth
   }
 
-  private def authPipeline(conduit: ActorRef, credentials: SwiftCredentials) =
+  private def authPipeline(httpClient: ActorRef, credentials: SwiftCredentials) =
     addHeader("X-Auth-User", credentials.user) ~>
       addHeader("X-Auth-Key", credentials.key) ~>
-      sendReceive(conduit)
+      sendReceive(httpClient)(context.dispatcher)
 }

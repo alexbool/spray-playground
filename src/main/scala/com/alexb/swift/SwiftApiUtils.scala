@@ -1,6 +1,6 @@
 package com.alexb.swift
 
-import spray.client.HttpConduit._
+import spray.client.pipelining._
 
 private[swift] trait SwiftApiUtils {
   private val formatJson = "?format=json"

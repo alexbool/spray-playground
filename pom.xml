@@ -7,7 +7,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala-version>2.10.0</scala-version>
-        <spray-version>1.1-M7</spray-version>
+        <spray-version>1.1-20130108</spray-version>
         <spray-json-version>1.2.3</spray-json-version>
         <akka-version>2.1.0</akka-version>
         <infinispan-version>5.2.0.CR1</infinispan-version>
@@ -21,6 +21,10 @@
         <repository>
             <id>Spray Repository</id>
             <url>http://repo.spray.io/</url>
+        </repository>
+        <repository>
+            <id>Spray Nightlies Repository</id>
+            <url>http://nightlies.spray.io/</url>
         </repository>
         <repository>
             <id>Akka Releases</id>

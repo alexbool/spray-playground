@@ -2,13 +2,13 @@ package com.alexb.swift
 
 import akka.actor.ActorRef
 import scala.concurrent.ExecutionContext
-import spray.client.HttpConduit._
+import spray.client.pipelining._
 
 private[swift] trait AccountActions extends SwiftApiUtils with SwiftMarshallers {
-  def listContainers(rootPath: String, token: String, httpConduit: ActorRef)(implicit ctx: ExecutionContext) =
+  def listContainers(rootPath: String, token: String, httpClient: ActorRef)(implicit ctx: ExecutionContext) =
     Get(mkUrlJson(rootPath)) ~> (
       authHeader(token) ~>
-      sendReceive(httpConduit) ~>
+      sendReceive(httpClient) ~>
       unmarshal[Seq[Container]]
     )
 }
