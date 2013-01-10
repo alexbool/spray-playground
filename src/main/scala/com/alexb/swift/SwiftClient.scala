@@ -13,7 +13,7 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
   extends Actor with ActorLogging with SwiftAuthentication
   with AccountActions with ContainerActions with ObjectActions {
 
-  type Action[R] = (AuthenticationResult, ActorRef) => Future[R]
+  type Action[R] = AuthenticationResult => Future[R]
 
   private case class NotifyExpiredAuthentication(lastSeenRevision: Int)
   private case class RetryRequest[R](action: Action[R], promise: Promise[R])
@@ -29,25 +29,25 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
 
   def receive = {
     case ListContainers =>
-      executeRequest((auth, conduit) => listContainers(auth.storageUrl, auth.token, conduit))
+      executeRequest(auth => listContainers(auth.storageUrl, auth.token, httpClient))
 
     case ListObjects(container) =>
-      executeRequest((auth, conduit) => listObjects(auth.storageUrl, container, auth.token, conduit))
+      executeRequest(auth => listObjects(auth.storageUrl, container, auth.token, httpClient))
 
     case CreateContainer(container) =>
-      executeRequest((auth, conduit) => createContainer(auth.storageUrl, container, auth.token, conduit))
+      executeRequest(auth => createContainer(auth.storageUrl, container, auth.token, httpClient))
 
     case DeleteContainer(container) =>
-      executeRequest((auth, conduit) => deleteContainer(auth.storageUrl, container, auth.token, conduit))
+      executeRequest(auth => deleteContainer(auth.storageUrl, container, auth.token, httpClient))
 
     case GetObject(container, name) =>
-      executeRequest((auth, conduit) => getObject(auth.storageUrl, container, name, auth.token, conduit))
+      executeRequest(auth => getObject(auth.storageUrl, container, name, auth.token, httpClient))
 
     case PutObject(container, name, mediaType, data) =>
-      executeRequest((auth, conduit) => putObject(auth.storageUrl, container, name, mediaType, data, auth.token, conduit))
+      executeRequest(auth => putObject(auth.storageUrl, container, name, mediaType, data, auth.token, httpClient))
 
     case DeleteObject(container, name) =>
-      executeRequest((auth, conduit) => deleteObject(auth.storageUrl, container, name, auth.token, conduit))
+      executeRequest(auth => deleteObject(auth.storageUrl, container, name, auth.token, httpClient))
 
     case NotifyExpiredAuthentication(rev) => refreshAuthentication(rev)
 
@@ -88,7 +88,7 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
   }
 
   private def doExecuteRequest[R](action: Action[R]): Future[R] =
-    authenticationResult.flatMap(auth => action(auth, httpClient))
+    authenticationResult.flatMap(action(_))
 }
 
 private[swift] case class AuthenticationResult(token: String, storageUrl: String)
