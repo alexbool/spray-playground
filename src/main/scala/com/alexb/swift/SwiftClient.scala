@@ -13,7 +13,10 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
   extends Actor with ActorLogging with SwiftAuthentication
   with AccountActions with ContainerActions with ObjectActions {
 
+  type Action[R] = (AuthenticationResult, ActorRef) => Future[R]
+
   private case class NotifyExpiredAuthentication(lastSeenRevision: Int)
+  private case class RetryRequest[R](action: Action[R], promise: Promise[R])
 
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
@@ -63,7 +66,7 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
     }
   }
 
-  private def executeRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]) {
+  private def executeRequest[R](action: Action[R]) {
     val currentRevision = authenticationRevision
     val resultFuture = doExecuteRequest(action)
     val promise = Promise[R]()
@@ -84,9 +87,8 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
     req.promise.completeWith(doExecuteRequest(req.action))
   }
 
-  private def doExecuteRequest[R](action: (AuthenticationResult, ActorRef) => Future[R]): Future[R] =
+  private def doExecuteRequest[R](action: Action[R]): Future[R] =
     authenticationResult.flatMap(auth => action(auth, httpClient))
 }
 
 private[swift] case class AuthenticationResult(token: String, storageUrl: String)
-private[swift] case class RetryRequest[R](action: (AuthenticationResult, ActorRef) => Future[R], promise: Promise[R])
