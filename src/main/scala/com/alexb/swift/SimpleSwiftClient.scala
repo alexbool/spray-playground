@@ -6,13 +6,10 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import spray.http.MediaType
 
-class SimpleSwiftClient(credentials: SwiftCredentials,
-                        authHost: String,
-                        authPort: Int = 80,
-                        authSslEnabled: Boolean = false)
+class SimpleSwiftClient(credentials: SwiftCredentials, authUrl: String)
                        (implicit system: ActorSystem, timeout: Timeout = Timeout(20 seconds)) {
 
-  private val client = system.actorOf(props = Props(new SwiftClient(credentials, authHost, authPort, authSslEnabled)))
+  private val client = system.actorOf(props = Props(new SwiftClient(credentials, authUrl)))
 
   def listContainers = (client ? ListContainers).mapTo[Seq[Container]]
   def listObjects(container: String) = (client ? ListObjects(container)).mapTo[Seq[ObjectMetadata]]

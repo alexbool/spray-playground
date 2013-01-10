@@ -23,7 +23,7 @@ class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServer
   Await.ready(server ? Bind("localhost", port), timeout)
 
   val client = system.actorOf(Props(new SwiftClient(SwiftCredentials("some_account", "some_auth_key"),
-    "localhost", port)))
+    s"http://localhost:$port/v1.0")))
 
   val bytes = Source.fromFile("src/test/resources/sample.png")(scala.io.Codec.ISO8859).map(_.toByte).toArray
 

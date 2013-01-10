@@ -9,10 +9,7 @@ import spray.client.HttpClient
 import spray.httpx.UnsuccessfulResponseException
 import spray.http.StatusCodes
 
-class SwiftClient(credentials: SwiftCredentials,
-                  authHost: String,
-                  authPort: Int = 80,
-                  authSslEnabled: Boolean = false)
+class SwiftClient(credentials: SwiftCredentials, authUrl: String)
   extends Actor with ActorLogging with SwiftAuthentication
   with AccountActions with ContainerActions with ObjectActions {
 
@@ -29,25 +26,25 @@ class SwiftClient(credentials: SwiftCredentials,
 
   def receive = {
     case ListContainers =>
-      executeRequest((auth, conduit) => listContainers(auth.storageUrl.toString, auth.token, conduit))
+      executeRequest((auth, conduit) => listContainers(auth.storageUrl, auth.token, conduit))
 
     case ListObjects(container) =>
-      executeRequest((auth, conduit) => listObjects(auth.storageUrl.toString, container, auth.token, conduit))
+      executeRequest((auth, conduit) => listObjects(auth.storageUrl, container, auth.token, conduit))
 
     case CreateContainer(container) =>
-      executeRequest((auth, conduit) => createContainer(auth.storageUrl.toString, container, auth.token, conduit))
+      executeRequest((auth, conduit) => createContainer(auth.storageUrl, container, auth.token, conduit))
 
     case DeleteContainer(container) =>
-      executeRequest((auth, conduit) => deleteContainer(auth.storageUrl.toString, container, auth.token, conduit))
+      executeRequest((auth, conduit) => deleteContainer(auth.storageUrl, container, auth.token, conduit))
 
     case GetObject(container, name) =>
-      executeRequest((auth, conduit) => getObject(auth.storageUrl.toString, container, name, auth.token, conduit))
+      executeRequest((auth, conduit) => getObject(auth.storageUrl, container, name, auth.token, conduit))
 
     case PutObject(container, name, mediaType, data) =>
-      executeRequest((auth, conduit) => putObject(auth.storageUrl.toString, container, name, mediaType, data, auth.token, conduit))
+      executeRequest((auth, conduit) => putObject(auth.storageUrl, container, name, mediaType, data, auth.token, conduit))
 
     case DeleteObject(container, name) =>
-      executeRequest((auth, conduit) => deleteObject(auth.storageUrl.toString, container, name, auth.token, conduit))
+      executeRequest((auth, conduit) => deleteObject(auth.storageUrl, container, name, auth.token, conduit))
 
     case NotifyExpiredAuthentication(rev) => refreshAuthentication(rev)
 
@@ -61,7 +58,7 @@ class SwiftClient(credentials: SwiftCredentials,
   private def refreshAuthentication(lastSeenRevision: Int) {
     if (authenticationRevision == lastSeenRevision) {
       log.debug(s"About to refresh authentication. Current revision: $authenticationRevision")
-      authenticationResult = authenticate(httpClient, credentials, authHost, authPort, authSslEnabled)
+      authenticationResult = authenticate(httpClient, credentials, authUrl)
       authenticationRevision += 1
     }
   }
@@ -91,5 +88,5 @@ class SwiftClient(credentials: SwiftCredentials,
     authenticationResult.flatMap(auth => action(auth, httpClient))
 }
 
-private[swift] case class AuthenticationResult(token: String, storageUrl: Url)
+private[swift] case class AuthenticationResult(token: String, storageUrl: String)
 private[swift] case class RetryRequest[R](action: (AuthenticationResult, ActorRef) => Future[R], promise: Promise[R])

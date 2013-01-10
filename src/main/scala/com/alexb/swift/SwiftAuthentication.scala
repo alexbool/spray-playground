@@ -9,16 +9,14 @@ trait SwiftAuthentication {
 
   def authenticate(httpClient: ActorRef,
                    credentials: SwiftCredentials,
-                   host: String,
-                   port: Int,
-                   sslEnabled: Boolean)(implicit ctx: ExecutionContext) = {
+                   authUrl: String)(implicit ctx: ExecutionContext) = {
     log.debug(s"About to make authentication request: $credentials")
-    (Get(Url(host, port, sslEnabled, "/v1.0").toString) ~> authPipeline(httpClient, credentials))
-      .map { resp =>
+    (Get(authUrl) ~> authPipeline(httpClient, credentials))
+    .map { resp =>
       log.debug(s"Recieved authentication response: $resp")
       AuthenticationResult(
         resp.headers.find(_.is("x-auth-token")).map(_.value).get,
-        resp.headers.find(_.is("x-storage-url")).map(h => Url(h.value)).get)
+        resp.headers.find(_.is("x-storage-url")).map(_.value).get)
     }
   }
 
