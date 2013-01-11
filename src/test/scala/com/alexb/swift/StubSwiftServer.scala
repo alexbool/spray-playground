@@ -16,7 +16,7 @@ import scala.util.Random
 
 case object RegenerateToken
 
-class MockSwiftServer extends Actor with HttpService with SwiftMarshallers {
+class StubSwiftServer extends Actor with HttpService with SwiftMarshallers {
 
   var token = generateToken
 
