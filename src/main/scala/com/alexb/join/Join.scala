@@ -110,7 +110,7 @@ object Join {
    * @return         joined collection
    */
   def oneToOneInnerJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) =
-    join(left, right, leftKey, rightKey)
+    oneToOneJoin(left, right, leftKey, rightKey)
 
   /**
    * Joins elements of right collection to the left collection, following the rule:
