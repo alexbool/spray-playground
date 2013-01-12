@@ -1,11 +1,15 @@
 package com.alexb.join
 
+import scala.collection.generic.CanBuildFrom
+
 /**
  * This object contains several methods for SQL-like joining collections.
  *
  * @author Alexander Bulaev
  */
 object Join {
+
+  type CBF[Col[_], Elem] = CanBuildFrom[Col[Elem], Elem, Col[Elem]]
 
   /**
    * Joins elements of right collection to the left collection, following the rule:
@@ -20,13 +24,16 @@ object Join {
    * @tparam A       left collection type
    * @tparam B       right collection type
    * @tparam K       key type
-   * @return         joined collection
+   * @tparam Col     left collection type
+   * @return         joined collection, same type as the left collection
    */
-  def join[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) = {
+  def join[A, B, K, Col[X] <: Iterable[X]](left: Col[A], right: Iterable[B], leftKey: A => K, rightKey: B => K)
+                                          (implicit cbf: CBF[Col, (A, Seq[B])]): Col[(A, Seq[B])] = {
     val rightGrouped = right.groupBy(rightKey(_))
-    for {
-      leftElem <- left.map(e => (leftKey(e), e)) if rightGrouped.contains(leftElem._1)
-    } yield (leftElem._2, rightGrouped.get(leftElem._1).get.to[Seq])
+    val builder = cbf()
+    for (leftElem <- left.map(e => (leftKey(e), e)) if rightGrouped.contains(leftElem._1))
+    builder += ((leftElem._2, rightGrouped.get(leftElem._1).get.to[Seq]))
+    builder.result()
   }
 
   /**
@@ -39,9 +46,11 @@ object Join {
    * @tparam A       left collection type
    * @tparam B       right collection type
    * @tparam K       key type
-   * @return         joined collection
+   * @tparam Col     left collection type
+   * @return         joined collection, same type as the left collection
    */
-  def innerJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) =
+  def innerJoin[A, B, K, Col[X] <: Iterable[X]](left: Col[A], right: Iterable[B], leftKey: A => K, rightKey: B => K)
+                                               (implicit cbf: CBF[Col, (A, Seq[B])]): Col[(A, Seq[B])] =
     join(left, right, leftKey, rightKey)
 
   /**
@@ -57,19 +66,21 @@ object Join {
    * @tparam A       left collection type
    * @tparam B       right collection type
    * @tparam K       key type
-   * @return         joined collection
+   * @tparam Col     left collection type
+   * @return         joined collection, same type as the left collection
    */
-  def leftJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) = {
+  def leftJoin[A, B, K, Col[X] <: Iterable[X]](left: Col[A], right: Iterable[B], leftKey: A => K, rightKey: B => K)
+                                              (implicit cbf: CBF[Col, (A, Seq[B])]): Col[(A, Seq[B])]= {
     val rightGrouped = right.groupBy(rightKey(_))
-    (for {
-      leftElem <- left.map(e => (leftKey(e), e))
-    } yield (leftElem._2, rightGrouped.get(leftElem._1)))
-    .map({ e =>
-      e._2 match {
-        case None => (e._1, Seq[B]())
-        case Some(list) => (e._1, list.to[Seq])
-      }
-    })
+    val builder = cbf()
+    for (leftElem <- left.map(e => (leftKey(e), e))) {
+      val elem = (leftElem._2, rightGrouped.get(leftElem._1))
+      builder += (elem._2 match {
+        case None => (elem._1, Seq[B]())
+        case Some(list) => (elem._1, list.to[Seq])
+      })
+    }
+    builder.result()
   }
 
   /**
@@ -88,13 +99,16 @@ object Join {
    * @tparam A       left collection type
    * @tparam B       right collection type
    * @tparam K       key type
-   * @return         joined collection
+   * @tparam Col     left collection type
+   * @return         joined collection, same type as the left collection
    */
-  def oneToOneJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) = {
+  def oneToOneJoin[A, B, K, Col[X] <: Iterable[X]](left: Col[A], right: Iterable[B], leftKey: A => K, rightKey: B => K)
+                                                  (implicit cbf: CBF[Col, (A, B)]): Col[(A, B)] = {
     val rightMap = right.map(e => (rightKey(e), e)).toMap
-    for {
-      leftElem <- left.map(e => (leftKey(e), e)) if rightMap.contains(leftElem._1)
-    } yield (leftElem._2, rightMap.get(leftElem._1).get)
+    val builder = cbf()
+    for (leftElem <- left.map(e => (leftKey(e), e)) if rightMap.contains(leftElem._1))
+      builder += ((leftElem._2, rightMap.get(leftElem._1).get))
+    builder.result()
   }
 
   /**
@@ -107,9 +121,11 @@ object Join {
    * @tparam A       left collection type
    * @tparam B       right collection type
    * @tparam K       key type
-   * @return         joined collection
+   * @tparam Col     left collection type
+   * @return         joined collection, same type as the left collection
    */
-  def oneToOneInnerJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) =
+  def oneToOneInnerJoin[A, B, K, Col[X] <: Iterable[X]](left: Col[A], right: Iterable[B], leftKey: A => K, rightKey: B => K)
+                                                       (implicit cbf: CBF[Col, (A, B)]): Col[(A, B)] =
     oneToOneJoin(left, right, leftKey, rightKey)
 
   /**
@@ -128,12 +144,15 @@ object Join {
    * @tparam A       left collection type
    * @tparam B       right collection type
    * @tparam K       key type
-   * @return         joined collection
+   * @tparam Col     left collection type
+   * @return         joined collection, same type as the left collection
    */
-  def oneToOneLeftJoin[A, B, K](left: Iterable[A], right: Iterable[B], leftKey: A => K, rightKey: B => K) = {
+  def oneToOneLeftJoin[A, B, K, Col[X] <: Iterable[X]](left: Col[A], right: Iterable[B], leftKey: A => K, rightKey: B => K)
+                                                      (implicit cbf: CBF[Col, (A, Option[B])]): Col[(A, Option[B])] = {
     val rightMap = right.map(e => (rightKey(e), e)).toMap
-    for {
-      leftElem <- left.map(e => (leftKey(e), e))
-    } yield (leftElem._2, rightMap.get(leftElem._1))
+    val builder = cbf()
+    for (leftElem <- left.map(e => (leftKey(e), e)))
+      builder += ((leftElem._2, rightMap.get(leftElem._1)))
+    builder.result()
   }
 }
