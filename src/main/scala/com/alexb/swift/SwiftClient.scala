@@ -8,6 +8,7 @@ import scala.concurrent.{Promise, Future}
 import spray.client.HttpClient
 import spray.httpx.UnsuccessfulResponseException
 import spray.http.StatusCodes
+import language.postfixOps
 
 class SwiftClient(credentials: SwiftCredentials, authUrl: String)
   extends Actor with ActorLogging with SwiftAuthentication

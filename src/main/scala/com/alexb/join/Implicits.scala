@@ -1,5 +1,7 @@
 package com.alexb.join
 
+import language.higherKinds
+
 object Implicits {
   implicit class Joinable[A, Col[X] <: Iterable[X]](left: Col[A]) {
     import Join.CBF

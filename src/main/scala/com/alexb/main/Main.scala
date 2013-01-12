@@ -9,6 +9,7 @@ import com.alexb.orders.OrderModule
 import com.alexb.statics.StaticsModule
 import com.alexb.user.UserModule
 import context._
+import language.postfixOps
 
 object Main extends App with SprayCanHttpServerApp {
 

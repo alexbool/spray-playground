@@ -1,6 +1,7 @@
 package com.alexb.join
 
 import scala.collection.generic.CanBuildFrom
+import language.higherKinds
 
 /**
  * This object contains several methods for SQL-like joining collections.
