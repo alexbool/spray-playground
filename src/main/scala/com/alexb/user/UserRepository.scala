@@ -1,7 +1,6 @@
 package com.alexb.user
 
 import com.mongodb.casbah.Imports._
-import org.scala_tools.time.Imports._
 import org.joda.time.Instant
 import com.mongodb.MongoException
 import com.alexb.main.context.MongoSupport

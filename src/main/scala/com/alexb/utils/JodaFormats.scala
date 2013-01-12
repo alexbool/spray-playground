@@ -1,8 +1,7 @@
 package com.alexb.utils
 
-import org.joda.time.Instant
+import org.joda.time.{DateTimeZone, Instant}
 import org.joda.time.format.ISODateTimeFormat
-import org.scala_tools.time.Imports._
 import spray.json._
 
 trait JodaFormats extends DefaultJsonProtocol {
