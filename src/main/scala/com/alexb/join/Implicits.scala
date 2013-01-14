@@ -3,6 +3,13 @@ package com.alexb.join
 import language.higherKinds
 
 object Implicits {
+
+  /**
+   * This class contains several methods for SQL-like joining collections.
+   *
+   * @see [[com.alexb.join.Join]]
+   * @author Alexander Bulaev
+   */
   implicit class Joinable[A, Col[X] <: Iterable[X]](left: Col[A]) {
     import Join.CBF
 
