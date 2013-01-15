@@ -9,7 +9,8 @@ import spray.json.DefaultJsonProtocol._
 import scala.concurrent.{ Future, ExecutionContext }
 import akka.actor.ActorRef
 
-class OAuthdTokenValidator(httpClient: ActorRef, url: String)(implicit executor: ExecutionContext) extends OAuthTokenValidator[User] {
+class OAuthdTokenValidator(httpClient: ActorRef, url: String)(implicit executor: ExecutionContext)
+  extends OAuthTokenValidator[User] {
 
   implicit val userFormat = jsonFormat3(User)
 
