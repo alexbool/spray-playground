@@ -10,6 +10,7 @@ import scala.concurrent.duration._
 import spray.can.server.SprayCanHttpServerApp
 import spray.client.HttpClient
 import akka.util.Timeout
+import language.postfixOps
 
 class OAuthdTokenValidatorSpec extends WordSpec with MustMatchers with SprayCanHttpServerApp {
 

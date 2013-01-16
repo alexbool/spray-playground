@@ -6,6 +6,7 @@ import scala.concurrent.duration._
 import spray.testkit._
 import org.scalatest._
 import com.alexb.main.context.ActorSystemContext
+import language.postfixOps
 
 class CalculatorServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
   with CalculatorService with CalculatorServiceContext with ActorSystemContext {

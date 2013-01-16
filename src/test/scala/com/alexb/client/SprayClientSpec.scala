@@ -6,6 +6,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import spray.client.HttpClient
 import spray.client.pipelining._
+import language.postfixOps
 
 class SprayClientSpec extends WordSpec with MustMatchers {
   val system = ActorSystem("test")

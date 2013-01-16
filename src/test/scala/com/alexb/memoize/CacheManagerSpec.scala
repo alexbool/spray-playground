@@ -4,6 +4,7 @@ import org.scalatest._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import language.postfixOps
 
 trait CacheManagerSpec extends WordSpec with MustMatchers {
 	def name: String

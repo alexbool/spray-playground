@@ -11,6 +11,7 @@ import scala.util.Random
 import spray.can.server.SprayCanHttpServerApp
 import spray.http.MediaTypes
 import scala.io.Source
+import language.postfixOps
 
 class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServerApp {
   import system.dispatcher
