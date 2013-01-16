@@ -1,10 +1,9 @@
 package com.alexb.main
 package context
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.ActorSystem
 import com.typesafe.config.Config
 import com.alexb.memoize.CacheManager
-import spray.io.IOExtension
 
 trait ActorSystemContext {
   def actorSystem: ActorSystem
