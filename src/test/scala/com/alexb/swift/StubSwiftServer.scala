@@ -93,20 +93,32 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers {
           } ~
           get { ctx =>
             val containerEntry = containers.find(_._1.name == container)
-            if (containerEntry.isEmpty) ctx.complete(StatusCodes.NotFound)
-            val objectEntry = containerEntry.get._2.get(name)
-            if (objectEntry.isEmpty) ctx.complete(StatusCodes.NotFound)
-            val response = HttpResponse(StatusCodes.OK,
-                                        HttpBody(ContentType(objectEntry.get._2.mediaType), objectEntry.get._2.data))
-            ctx.complete(response)
+            if (containerEntry.isEmpty) {
+              ctx.complete(StatusCodes.NotFound)
+            } else {
+              val objectEntry = containerEntry.get._2.get(name)
+              if (objectEntry.isEmpty) {
+                ctx.complete(StatusCodes.NotFound)
+              } else {
+                val response = HttpResponse(StatusCodes.OK,
+                  HttpBody(ContentType(objectEntry.get._2.mediaType), objectEntry.get._2.data))
+                ctx.complete(response)
+              }
+            }
           } ~
           delete { ctx =>
             val containerEntry = containers.find(_._1.name == container)
-            if (containerEntry.isEmpty) ctx.complete(StatusCodes.NotFound)
-            val objectEntry = containerEntry.get._2.get(name)
-            if (objectEntry.isEmpty) ctx.complete(StatusCodes.NotFound)
-            containerEntry.get._2.remove(name)
-            ctx.complete(StatusCodes.OK)
+            if (containerEntry.isEmpty) {
+              ctx.complete(StatusCodes.NotFound)
+            } else {
+              val objectEntry = containerEntry.get._2.get(name)
+              if (objectEntry.isEmpty) {
+                ctx.complete(StatusCodes.NotFound)
+              } else {
+                containerEntry.get._2.remove(name)
+                ctx.complete(StatusCodes.OK)
+              }
+            }
           }
         }
       }
