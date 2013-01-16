@@ -10,7 +10,7 @@ trait OAuthSupport {
 }
 
 trait OAuthdSupport extends OAuthSupport {
-  this: ActorSystemContext with Configuration with IOBridgeContext =>
+  this: ActorSystemContext with Configuration =>
 
   private val httpClient = actorSystem.actorOf(
     props = Props(new HttpClient),

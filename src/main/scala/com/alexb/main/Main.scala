@@ -14,7 +14,7 @@ import language.postfixOps
 object Main extends App with SprayCanHttpServerApp {
 
   // create the service instance, supplying all required dependencies
-  class SprayPlaygroundActor extends Actor with ActorSystemContext with ActorSystemConfiguration with IOBridgeContext
+  class SprayPlaygroundActor extends Actor with ActorSystemContext with ActorSystemConfiguration
     with OAuthdSupport with MongoSupport with ElasticSearchSupport with InfinispanSupport
     with CalculatorModule with OrderModule with StaticsModule with UserModule {
 

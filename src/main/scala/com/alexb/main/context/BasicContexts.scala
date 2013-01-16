@@ -22,8 +22,3 @@ trait ActorSystemConfiguration extends Configuration {
 trait Caching {
   def cacheManager: CacheManager
 }
-
-trait IOBridgeContext {
-  this: ActorSystemContext =>
-  def ioBridge: ActorRef = IOExtension(actorSystem).ioBridge()
-}
