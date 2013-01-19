@@ -13,6 +13,7 @@
         <casbah-version>2.5.0</casbah-version>
         <infinispan-version>5.2.0.CR1</infinispan-version>
         <elasticsearch-version>0.20.2</elasticsearch-version>
+        <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.2.0</nscala-time-version>
         <scalatest-version>2.0.M5b</scalatest-version>
         <specs2-version>1.13</specs2-version>
@@ -98,6 +99,21 @@
             <groupId>com.spatial4j</groupId>
             <artifactId>spatial4j</artifactId>
             <version>0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zookeeper-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.nscala-time</groupId>
