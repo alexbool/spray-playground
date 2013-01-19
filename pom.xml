@@ -10,6 +10,7 @@
         <spray-version>1.1-20130119</spray-version>
         <spray-json-version>1.2.3</spray-json-version>
         <akka-version>2.1.0</akka-version>
+        <casbah-version>2.5.0</casbah-version>
         <infinispan-version>5.2.0.CR1</infinispan-version>
         <elasticsearch-version>0.20.2</elasticsearch-version>
         <nscala-time-version>0.2.0</nscala-time-version>
@@ -81,7 +82,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>casbah-core_2.10</artifactId>
-            <version>2.5.0</version>
+            <version>${casbah-version}</version>
         </dependency>
         <dependency>
             <groupId>org.infinispan</groupId>
