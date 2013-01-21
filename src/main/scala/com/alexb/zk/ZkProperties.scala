@@ -7,7 +7,7 @@ import java.io.Closeable
 import scala.collection.JavaConversions._
 
 class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher with Closeable {
-  private val zk = new ZooKeeper(connectString, sessionTimeout, this, true)
+  private var zk = newZk
   private val properties = collection.concurrent.TrieMap[String, String]()
 
   def apply(key: String): Option[String] = properties.get(key)
@@ -15,6 +15,7 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
   def process(event: WatchedEvent) {
     event.getType match {
       case EventType.None if event.getState == KeeperState.SyncConnected => fetchProperties()
+      case EventType.None if event.getState == KeeperState.Expired       => refreshZk()
       case EventType.NodeChildrenChanged                                 => fetchProperties()
       case EventType.NodeDataChanged                                     => fetchProperty()
       case EventType.NodeDeleted                                         => properties -= toKey(event.getPath)
@@ -28,12 +29,19 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
       zk.getData(event.getPath, this, new PropertyCallback(properties, toKey(event.getPath)), null)
     }
 
+    def refreshZk() {
+      zk.close()
+      zk = newZk
+    }
+
     def toKey(path: String) = path.replace("/", "")
   }
 
   def close() {
     zk.close()
   }
+
+  private def newZk = new ZooKeeper(connectString, sessionTimeout, this, true)
 
   private class PropertyCallback(properties: collection.mutable.Map[String, String], key: String)
     extends AsyncCallback.DataCallback {
