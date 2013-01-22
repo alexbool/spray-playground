@@ -21,6 +21,7 @@ class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers
   }
 
   override def afterAll() {
+    zk.delete(s"$root/prop2", -1)
     zk.delete(root, -1)
     zk.close()
     zkProperties.close()
@@ -36,6 +37,11 @@ class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers
       zk.setData(s"$root/prop1", "new_data".getBytes, -1)
       Thread.sleep(timeout)
       zkProperties("prop1") must be (Some("new_data"))
+    }
+    "get newly created properties" in {
+      zk.create(s"$root/prop2", "some_data".getBytes, acl, CreateMode.PERSISTENT)
+      Thread.sleep(timeout)
+      zkProperties("prop2") must be (Some("some_data"))
     }
     "delete removed properties" in {
       zk.delete(s"$root/prop1", -1)
