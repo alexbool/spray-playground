@@ -27,7 +27,7 @@ class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers
     zkProperties.close()
   }
 
-  "ZkProperties" must {
+  "ZkProperties" ignore {
     "get properties" in {
       zk.create(s"$root/prop1", "data".getBytes, acl, CreateMode.PERSISTENT)
       Thread.sleep(timeout)
