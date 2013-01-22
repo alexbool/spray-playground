@@ -18,7 +18,6 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
       case EventType.None if event.getState == KeeperState.Expired       => refreshZk()
       case EventType.NodeChildrenChanged                                 => fetchProperties()
       case EventType.NodeDataChanged                                     => fetchProperty()
-      case EventType.NodeDeleted                                         => properties -= toKey(event.getPath)
     }
 
     def fetchProperties() {
@@ -26,15 +25,13 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
     }
 
     def fetchProperty() {
-      zk.getData(event.getPath, this, new PropertyCallback(properties, toKey(event.getPath)), null)
+      zk.getData(event.getPath, this, new PropertyCallback(properties, event.getPath.replace("/", "")), null)
     }
 
     def refreshZk() {
       zk.close()
       zk = newZk
     }
-
-    def toKey(path: String) = path.replace("/", "")
   }
 
   def close() {
@@ -55,7 +52,12 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
     extends AsyncCallback.ChildrenCallback {
 
     def processResult(rc: Int, path: String, ctx: Any, children: java.util.List[String]) {
-      children.foreach(c => zk.getData(path + c, watcher, new PropertyCallback(properties, c), null))
+      val knownChildren = properties.keySet
+      val freshChildren = children.to[Set]
+      val deletedChildren = knownChildren &~ freshChildren
+      deletedChildren.foreach(properties -= _)
+      val createdChildren = freshChildren &~ knownChildren
+      createdChildren.foreach(c => zk.getData(path + c, watcher, new PropertyCallback(properties, c), null))
     }
   }
 }
