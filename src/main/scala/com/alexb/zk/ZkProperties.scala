@@ -14,13 +14,13 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
 
   def process(event: WatchedEvent) {
     event.getType match {
-      case EventType.None if event.getState == KeeperState.SyncConnected => fetchProperties()
-      case EventType.NodeChildrenChanged                                 => fetchProperties()
+      case EventType.None if event.getState == KeeperState.SyncConnected => fetchProperties(true)
+      case EventType.NodeChildrenChanged                                 => fetchProperties(false)
       case EventType.NodeDataChanged                                     => fetchProperty()
     }
 
-    def fetchProperties() {
-      zk.get.getChildren("/", this, new ChildrenCallback(zk.get, this, properties), null)
+    def fetchProperties(rewriteKnownProperties: Boolean) {
+      zk.get.getChildren("/", this, new ChildrenCallback(zk.get, this, properties, rewriteKnownProperties), null)
     }
 
     def fetchProperty() {
@@ -40,7 +40,10 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
     }
   }
 
-  private class ChildrenCallback(zk: => ZooKeeper, watcher: Watcher, properties: collection.mutable.Map[String, String])
+  private class ChildrenCallback(zk: => ZooKeeper,
+                                 watcher: Watcher,
+                                 properties: collection.mutable.Map[String, String],
+                                 rewriteKnownProperties: Boolean)
     extends AsyncCallback.ChildrenCallback {
 
     def processResult(rc: Int, path: String, ctx: Any, children: java.util.List[String]) {
@@ -48,8 +51,8 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
       val freshChildren = children.to[Set]
       val deletedChildren = knownChildren &~ freshChildren
       deletedChildren.foreach(properties -= _)
-      val createdChildren = freshChildren &~ knownChildren
-      createdChildren.foreach(c => zk.getData(path + c, watcher, new PropertyCallback(properties, c), null))
+      val propertiesToFetch = if (rewriteKnownProperties) freshChildren else freshChildren &~ knownChildren
+      propertiesToFetch.foreach(c => zk.getData(path + c, watcher, new PropertyCallback(properties, c), null))
     }
   }
 }
