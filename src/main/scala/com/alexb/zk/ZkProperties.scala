@@ -7,7 +7,7 @@ import java.io.Closeable
 import scala.collection.JavaConversions._
 
 class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher with Closeable {
-  private var zk = newZk
+  private val zk = new ReconnectingZk(connectString, sessionTimeout, this, true)
   private val properties = collection.concurrent.TrieMap[String, String]()
 
   def apply(key: String): Option[String] = properties.get(key)
@@ -15,30 +15,22 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
   def process(event: WatchedEvent) {
     event.getType match {
       case EventType.None if event.getState == KeeperState.SyncConnected => fetchProperties()
-      case EventType.None if event.getState == KeeperState.Expired       => refreshZk()
       case EventType.NodeChildrenChanged                                 => fetchProperties()
       case EventType.NodeDataChanged                                     => fetchProperty()
     }
 
     def fetchProperties() {
-      zk.getChildren("/", this, new ChildrenCallback(zk, this, properties), null)
+      zk.get.getChildren("/", this, new ChildrenCallback(zk.get, this, properties), null)
     }
 
     def fetchProperty() {
-      zk.getData(event.getPath, this, new PropertyCallback(properties, event.getPath.replace("/", "")), null)
-    }
-
-    def refreshZk() {
-      zk.close()
-      zk = newZk
+      zk.get.getData(event.getPath, this, new PropertyCallback(properties, event.getPath.replace("/", "")), null)
     }
   }
 
   def close() {
     zk.close()
   }
-
-  private def newZk = new ZooKeeper(connectString, sessionTimeout, this, true)
 
   private class PropertyCallback(properties: collection.mutable.Map[String, String], key: String)
     extends AsyncCallback.DataCallback {
@@ -48,7 +40,7 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
     }
   }
 
-  private class ChildrenCallback(zk: ZooKeeper, watcher: Watcher, properties: collection.mutable.Map[String, String])
+  private class ChildrenCallback(zk: => ZooKeeper, watcher: Watcher, properties: collection.mutable.Map[String, String])
     extends AsyncCallback.ChildrenCallback {
 
     def processResult(rc: Int, path: String, ctx: Any, children: java.util.List[String]) {
