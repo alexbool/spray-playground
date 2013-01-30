@@ -7,7 +7,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala-version>2.10.0</scala-version>
-        <spray-version>1.1-20130125</spray-version>
+        <spray-version>1.1-20130129</spray-version>
         <spray-json-version>1.2.3</spray-json-version>
         <akka-version>2.1.0</akka-version>
         <casbah-version>2.5.0</casbah-version>
