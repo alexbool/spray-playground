@@ -11,12 +11,12 @@ class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers
   val connectString = config.getString("zk.connectString")
   val root = "/test"
   val zkSessionTimeoutMillis = 12000
-  val zk = new ZooKeeper(connectString, zkSessionTimeoutMillis, null)
-  val zkProperties = new ZkProperties(connectString + root, zkSessionTimeoutMillis)
+  lazy val zk = new ZooKeeper(connectString, zkSessionTimeoutMillis, null)
+  lazy val zkProperties = new ZkProperties(connectString + root, zkSessionTimeoutMillis)
   val acl = Ids.OPEN_ACL_UNSAFE
   val timeout = 500
 
-  override def beforeAll() {
+  /* override def beforeAll() {
     zk.create(root, new Array[Byte](0), acl, CreateMode.PERSISTENT)
   }
 
@@ -25,7 +25,7 @@ class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers
     zk.delete(root, -1)
     zk.close()
     zkProperties.close()
-  }
+  } */
 
   "ZkProperties" ignore {
     "get properties" in {
