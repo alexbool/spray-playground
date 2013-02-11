@@ -2,10 +2,10 @@ package com.alexb.user
 
 import org.scalatest._
 import com.alexb.test.Config
-import com.alexb.main.context.MongoSupport
+import com.alexb.main.context.{MongoFromAppContext, MongoSupport}
 import org.joda.time.Instant
 
-class MongoUserRepositorySpec extends WordSpec with MustMatchers with Config with MongoSupport with MongoUserRepository with BeforeAndAfterEach {
+class MongoUserRepositorySpec extends WordSpec with MustMatchers with Config with MongoFromAppContext with MongoUserRepository with BeforeAndAfterEach {
 
   override def beforeEach() {
     clear()
