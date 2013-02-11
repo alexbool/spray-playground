@@ -4,14 +4,37 @@ import akka.actor.ActorSystem
 import com.mongodb.casbah.MongoConnection
 import com.alexb.infinispan.InfinispanCacheManager
 import org.infinispan.manager.DefaultCacheManager
+import org.elasticsearch.client.transport.TransportClient
+import org.elasticsearch.common.transport.InetSocketTransportAddress
 
 object Context extends ActorSystemContext with ActorSystemConfiguration with MongoSupport with ElasticSearchSupport
-  with Caching {
-  lazy val actorSystem = ActorSystem("spray-playground")
-  lazy val mongoDb = MongoConnection(config.getString("mongo.host"))(config.getString("mongo.db"))
-  lazy val cacheManager = new InfinispanCacheManager(new DefaultCacheManager(config.getString("infinispan.config")))
+  with Caching with Initializable {
+  val actorSystem = ActorSystem("spray-playground")
+  val mongoDb = MongoConnection(config.getString("mongo.host"))(config.getString("mongo.db"))
+  val cacheManager = new InfinispanCacheManager(new DefaultCacheManager(config.getString("infinispan.config")))
+  val elasticSearchClient =
+    new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString("elasticsearch.host"), 9300))
 }
 
+trait Initializable extends DelayedInit {
+  private var isInitialized = false
+  private var initBody: () => Unit = null
+
+  def delayedInit(body: => Unit) {
+    initBody = () => body
+  }
+
+  def initialize() {
+    this.synchronized {
+      if (!isInitialized) {
+        isInitialized = true
+        initBody()
+      }
+    }
+  }
+}
+
+// Some DI traits
 trait ActorSystemFromAppContext extends ActorSystemContext {
   def actorSystem = Context.actorSystem
 }
@@ -22,4 +45,8 @@ trait MongoFromAppContext extends MongoSupport {
 
 trait InfinispanFromAppContext extends Caching {
   def cacheManager = Context.cacheManager
+}
+
+trait ElasticSearchFromAppContext extends ElasticSearchSupport {
+  def elasticSearchClient = Context.elasticSearchClient
 }

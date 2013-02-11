@@ -20,7 +20,7 @@ trait MongoUserRepository extends UserRepository {
 
   implicit private val writeConcern = WriteConcern.Safe
 
-  private val userCollection = mongoDb("users")
+  private lazy val userCollection = mongoDb("users")
 
   def find(username: String) =
     userCollection
