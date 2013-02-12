@@ -13,12 +13,12 @@ import language.postfixOps
 
 object Main extends App with SprayCanHttpServerApp {
 
+  Context.initialize()
+
   // create the service instance, supplying all required dependencies
   class SprayPlaygroundActor extends Actor with ActorSystemContext with ActorSystemConfiguration
     with OAuthdSupport with MongoFromAppContext with ElasticSearchFromAppContext with InfinispanFromAppContext
     with CalculatorModule with OrderModule with StaticsModule with UserModule {
-
-    Context.initialize()
 
     def actorSystem = system
 
