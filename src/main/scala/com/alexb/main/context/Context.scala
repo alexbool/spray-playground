@@ -16,24 +16,6 @@ object Context extends ActorSystemContext with ActorSystemConfiguration with Mon
     new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString("elasticsearch.host"), 9300))
 }
 
-trait Initializable extends DelayedInit {
-  private var isInitialized = false
-  private var initBody: () => Unit = null
-
-  def delayedInit(body: => Unit) {
-    initBody = () => body
-  }
-
-  def initialize() {
-    this.synchronized {
-      if (!isInitialized) {
-        isInitialized = true
-        initBody()
-      }
-    }
-  }
-}
-
 // Some DI traits
 trait ActorSystemFromAppContext extends ActorSystemContext {
   def actorSystem = Context.actorSystem
