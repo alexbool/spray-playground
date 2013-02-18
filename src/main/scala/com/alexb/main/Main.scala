@@ -13,6 +13,7 @@ import language.postfixOps
 
 object Main extends App with SprayCanHttpServerApp {
 
+  // Initialize application context beans
   Context.initialize()
 
   // create the service instance, supplying all required dependencies
