@@ -11,10 +11,13 @@ import com.alexb.user.UserModule
 import context._
 import language.postfixOps
 
-object Main extends App with SprayCanHttpServerApp {
+object Main extends App with SprayCanHttpServerApp with ActorSystemFromAppContext {
 
   // Initialize application context beans
   Context.initialize()
+
+  // Override actor system creation with value from application context
+  override lazy val system = actorSystem
 
   // create the service instance, supplying all required dependencies
   class SprayPlaygroundActor extends Actor with ActorSystemContext with ActorSystemConfiguration
