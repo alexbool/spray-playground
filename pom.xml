@@ -10,7 +10,7 @@
         <spray-version>1.1-20130207</spray-version>
         <spray-json-version>1.2.3</spray-json-version>
         <akka-version>2.1.2</akka-version>
-        <casbah-version>2.5.0</casbah-version>
+        <casbah-version>2.5.1</casbah-version>
         <infinispan-version>5.2.1.Final</infinispan-version>
         <elasticsearch-version>0.90.0.RC1</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
