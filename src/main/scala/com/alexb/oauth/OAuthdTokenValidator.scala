@@ -21,7 +21,7 @@ class OAuthdTokenValidator(httpClient: ActorRef, url: String)(implicit executor:
   }
 
   def apply(token: Option[Token]) = token match {
-    case Some(token) => pipeline(token)(Get(url)).map(Some(_)).recover({ case _: UnsuccessfulResponseException => None })
-    case None        => Future.successful(None)
+    case Some(tkn) => pipeline(tkn)(Get(url)).map(Some(_)).recover({ case _: UnsuccessfulResponseException => None })
+    case None      => Future.successful(None)
   }
 }
