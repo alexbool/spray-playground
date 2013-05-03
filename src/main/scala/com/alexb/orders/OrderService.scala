@@ -1,5 +1,6 @@
 package com.alexb.orders
 
+import scala.concurrent.ExecutionContext
 import spray.routing.directives.PathMatchers._
 import spray.routing.HttpService
 import spray.http.{ StatusCodes, EmptyEntity}
@@ -9,17 +10,16 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import com.alexb.utils.PageDirectives
 import com.alexb.oauth.OAuth
-import com.alexb.main.context.OAuthSupport
+import com.alexb.main.context.{ActorSystemContext, OAuthSupport}
 
 trait OrderService
   extends HttpService
   with PageDirectives
   with SprayJsonSupport
-  with OrderMarshallers {
-
-  this: OAuthSupport =>
+  with OrderMarshallers { this: OAuthSupport with ActorSystemContext =>
 
   implicit val timeout: Timeout // needed for `?` below
+  implicit private def ec: ExecutionContext = actorSystem.dispatcher
 
   def orderActor: ActorRef
   def orderSearchActor: ActorRef

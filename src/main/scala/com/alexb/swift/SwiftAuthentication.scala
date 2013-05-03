@@ -1,17 +1,19 @@
 package com.alexb.swift
 
-import akka.actor.{Actor, ActorRef, ActorLogging}
-import scala.concurrent.ExecutionContext
+import akka.actor.{ActorRefFactory, Actor, ActorLogging}
+import akka.util.Timeout
+import scala.concurrent.{Future, ExecutionContext}
 import spray.client.pipelining._
 
 trait SwiftAuthentication {
   this: Actor with ActorLogging =>
 
-  def authenticate(httpClient: ActorRef,
-                   credentials: SwiftCredentials,
-                   authUrl: String)(implicit ctx: ExecutionContext) = {
+  def authenticate(credentials: SwiftCredentials,
+                   authUrl: String)
+                  (implicit refFactory: ActorRefFactory,
+                   ctx: ExecutionContext, futureTimeout: Timeout): Future[AuthenticationResult] = {
     log.debug(s"About to make authentication request: $credentials")
-    (Get(authUrl) ~> authPipeline(httpClient, credentials))
+    (Get(authUrl) ~> authPipeline(credentials))
     .map { resp =>
       log.debug(s"Recieved authentication response: $resp")
       AuthenticationResult(
@@ -20,8 +22,10 @@ trait SwiftAuthentication {
     }
   }
 
-  private def authPipeline(httpClient: ActorRef, credentials: SwiftCredentials) =
+  private def authPipeline(credentials: SwiftCredentials)
+                          (implicit refFactory: ActorRefFactory,
+                           ctx: ExecutionContext, futureTimeout: Timeout) =
     addHeader("X-Auth-User", credentials.user) ~>
       addHeader("X-Auth-Key", credentials.key) ~>
-      sendReceive(httpClient)(context.dispatcher)
+      sendReceive(refFactory, ctx, futureTimeout)
 }

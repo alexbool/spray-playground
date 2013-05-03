@@ -1,5 +1,7 @@
 package com.alexb.oauth
 
+import akka.actor.ActorRefFactory
+import akka.util.Timeout
 import spray.http.{OAuth2BearerToken, HttpRequest}
 import spray.http.HttpHeaders.Authorization
 import spray.httpx.UnsuccessfulResponseException
@@ -7,16 +9,16 @@ import spray.httpx.SprayJsonSupport._
 import spray.client.pipelining._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.{ Future, ExecutionContext }
-import akka.actor.ActorRef
 
-class OAuthdTokenValidator(httpClient: ActorRef, url: String)(implicit executor: ExecutionContext)
+class OAuthdTokenValidator(url: String)(implicit refFactory: ActorRefFactory, executionContext: ExecutionContext,
+                                        futureTimeout: Timeout)
   extends OAuthTokenValidator[User] {
 
   implicit val userFormat = jsonFormat3(User)
 
   val pipeline: Token => HttpRequest => Future[User] = { token =>
     addHeader(Authorization(OAuth2BearerToken(token))) ~>
-    sendReceive(httpClient) ~>
+    sendReceive ~>
     unmarshal[User]
   }
 

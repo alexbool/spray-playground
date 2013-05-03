@@ -1,6 +1,6 @@
 package com.alexb.swift
 
-import akka.actor.Actor
+import akka.actor.{ActorLogging, Actor}
 import spray.routing.HttpService
 import spray.http._
 import spray.http.HttpHeaders.{`Content-Length`, `Content-Type`}
@@ -16,7 +16,7 @@ import scala.util.Random
 
 case object RegenerateToken
 
-class StubSwiftServer extends Actor with HttpService with SwiftMarshallers {
+class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with ActorLogging {
 
   var token = generateToken
 
@@ -25,7 +25,13 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers {
   def receive = handleRegenerateToken orElse runRoute(authRoute ~ storageRoute)
   def actorRefFactory = context.system
 
-  def generateToken = Stream.continually(Random.nextPrintableChar()).take(32).mkString
+  implicit val ec: ExecutionContext = context.dispatcher
+
+  def generateToken = {
+    val newToken = Random.alphanumeric.take(32).mkString
+    log.debug(s"Generated new token: $newToken")
+    newToken
+  }
 
   def handleRegenerateToken: Actor.Receive = {
     case RegenerateToken => token = generateToken
@@ -49,7 +55,7 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers {
     }
 
   val storageRoute =
-    pathPrefix("v1/rootpath") {
+    pathPrefix("v1" / "rootpath") {
       authenticate(Authenticator()) { user =>
         path("") {
           get {
@@ -124,10 +130,12 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers {
       }
     }
 
-  class Authenticator(implicit val executionContext: ExecutionContext) extends HttpAuthenticator[String] {
+  class Authenticator extends HttpAuthenticator[String] {
     def scheme = "Swift"
     def realm = "Swift"
     def params(ctx: RequestContext) = Map.empty
+
+    implicit def executionContext = ec
 
     def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
       val userTokenO = ctx.request.headers.find(_.is("x-storage-token"))
@@ -138,6 +146,6 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers {
   }
 
   object Authenticator {
-    def apply()(implicit executionContext: ExecutionContext) = new Authenticator
+    def apply() = new Authenticator
   }
 }

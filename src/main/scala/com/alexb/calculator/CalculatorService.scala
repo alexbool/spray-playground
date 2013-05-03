@@ -1,19 +1,22 @@
 package com.alexb.calculator
 
+import scala.concurrent.ExecutionContext
 import spray.routing.HttpService
 import spray.httpx.SprayJsonSupport
+import spray.json.DefaultJsonProtocol
 import akka.util.Timeout
 import akka.actor.ActorRef
 import akka.pattern.ask
-import spray.json.DefaultJsonProtocol
+import com.alexb.main.context.ActorSystemContext
 
 trait CalculatorService
   extends HttpService
   with SprayJsonSupport
   with DefaultJsonProtocol
-  with CalculatorMarshallers {
+  with CalculatorMarshallers { this: ActorSystemContext =>
 
   implicit val timeout: Timeout // needed for `?` below
+  implicit private def ec: ExecutionContext = actorSystem.dispatcher
 
   def calculator: ActorRef
 

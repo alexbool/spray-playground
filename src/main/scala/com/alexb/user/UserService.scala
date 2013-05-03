@@ -1,7 +1,7 @@
 package com.alexb.user
 
 import akka.actor.ActorSystem
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import spray.routing.{ HttpService, ExceptionHandler }
 import spray.httpx.SprayJsonSupport
 import spray.http.HttpResponse
@@ -14,11 +14,10 @@ trait UserService
   extends HttpService
   with SprayJsonSupport
   with UserMarshallers
-  with ErrorDescriptionMarshallers {
-
-  this: UserRepository =>
+  with ErrorDescriptionMarshallers { this: UserRepository =>
 
   implicit def actorSystem: ActorSystem
+  implicit private def ec: ExecutionContext = actorSystem.dispatcher
 
   implicit def exceptionHandler = ExceptionHandler.fromPF {
     case e: DuplicateUsernameException => ctx =>

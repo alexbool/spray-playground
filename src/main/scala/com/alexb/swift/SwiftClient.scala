@@ -5,7 +5,6 @@ import akka.pattern.pipe
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.{Promise, Future}
-import spray.client.HttpClient
 import spray.httpx.UnsuccessfulResponseException
 import spray.http.StatusCodes
 import language.postfixOps
@@ -22,33 +21,30 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
   implicit val timeout = Timeout(10 seconds)
   implicit val ctx = context.dispatcher
 
-  private val httpClient = context.actorOf(
-    props = Props(new HttpClient),
-    name = "http-client")
   private var authenticationResult: Future[AuthenticationResult] = null
   private var authenticationRevision = 0
 
   def receive = {
     case ListContainers =>
-      executeRequest(auth => listContainers(auth.storageUrl, auth.token, httpClient))
+      executeRequest(auth => listContainers(auth.storageUrl, auth.token))
 
     case ListObjects(container) =>
-      executeRequest(auth => listObjects(auth.storageUrl, container, auth.token, httpClient))
+      executeRequest(auth => listObjects(auth.storageUrl, container, auth.token))
 
     case CreateContainer(container) =>
-      executeRequest(auth => createContainer(auth.storageUrl, container, auth.token, httpClient))
+      executeRequest(auth => createContainer(auth.storageUrl, container, auth.token))
 
     case DeleteContainer(container) =>
-      executeRequest(auth => deleteContainer(auth.storageUrl, container, auth.token, httpClient))
+      executeRequest(auth => deleteContainer(auth.storageUrl, container, auth.token))
 
     case GetObject(container, name) =>
-      executeRequest(auth => getObject(auth.storageUrl, container, name, auth.token, httpClient))
+      executeRequest(auth => getObject(auth.storageUrl, container, name, auth.token))
 
     case PutObject(container, name, mediaType, data) =>
-      executeRequest(auth => putObject(auth.storageUrl, container, name, mediaType, data, auth.token, httpClient))
+      executeRequest(auth => putObject(auth.storageUrl, container, name, mediaType, data, auth.token))
 
     case DeleteObject(container, name) =>
-      executeRequest(auth => deleteObject(auth.storageUrl, container, name, auth.token, httpClient))
+      executeRequest(auth => deleteObject(auth.storageUrl, container, name, auth.token))
 
     case NotifyExpiredAuthentication(rev) => refreshAuthentication(rev)
 
@@ -62,7 +58,7 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
   private def refreshAuthentication(lastSeenRevision: Int) {
     if (authenticationRevision == lastSeenRevision) {
       log.debug(s"About to refresh authentication. Current revision: $authenticationRevision")
-      authenticationResult = authenticate(httpClient, credentials, authUrl)
+      authenticationResult = authenticate(credentials, authUrl)
       authenticationRevision += 1
     }
   }
@@ -72,7 +68,7 @@ class SwiftClient(credentials: SwiftCredentials, authUrl: String)
     val resultFuture = doExecuteRequest(action)
     val promise = Promise[R]()
     resultFuture onFailure {
-      case e: UnsuccessfulResponseException if e.responseStatus == StatusCodes.Unauthorized => {
+      case e: UnsuccessfulResponseException if e.response.status == StatusCodes.Unauthorized => {
         self ! NotifyExpiredAuthentication(currentRevision)
         self ! RetryRequest(action, promise)
       }

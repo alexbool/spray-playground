@@ -1,27 +1,28 @@
 package com.alexb.swift
 
-import akka.actor.Props
+import akka.actor.{ActorSystem, Props}
+import akka.io.IO
 import akka.pattern.ask
 import akka.util.Timeout
 import org.scalatest.WordSpec
 import org.scalatest.matchers.MustMatchers
-import scala.concurrent.Await
+import scala.concurrent.{ExecutionContext, Await}
 import scala.concurrent.duration._
 import scala.util.Random
-import spray.can.server.SprayCanHttpServerApp
+import spray.can.Http
 import spray.http.MediaTypes
 import scala.io.Source
 import language.postfixOps
 
-class SwiftClientSpec extends WordSpec with MustMatchers with SprayCanHttpServerApp {
-  import system.dispatcher
+class SwiftClientSpec extends WordSpec with MustMatchers {
+  implicit val system: ActorSystem = ActorSystem("SwiftClientSpec")
+  implicit val ec: ExecutionContext = system.dispatcher
   val timeout = 20 seconds
   implicit val askTimeout = Timeout(timeout)
 
   val port = Stream.continually(Random.nextInt(65536)).find(_ > 49152).get
   val mockSwiftServer = system.actorOf(Props(new StubSwiftServer))
-  val server = newHttpServer(mockSwiftServer)
-  Await.ready(server ? Bind("localhost", port), timeout)
+  Await.ready(IO(Http) ? Http.Bind(mockSwiftServer, "localhost", port), timeout)
 
   val client = system.actorOf(Props(new SwiftClient(SwiftCredentials("some_account", "some_auth_key"),
     s"http://localhost:$port/v1.0")))

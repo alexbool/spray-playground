@@ -14,6 +14,7 @@ class StubOAuthdServer extends Actor with HttpService with SprayJsonSupport with
   def receive = runRoute(oauthRoute)
 
   implicit val userFormat = jsonFormat3(User)
+  implicit val ec: ExecutionContext = context.dispatcher
   private val authenticator = new StubAuthenticator
 
   val oauthRoute =
@@ -25,7 +26,7 @@ class StubOAuthdServer extends Actor with HttpService with SprayJsonSupport with
       }
     }
 
-  private class StubAuthenticator(implicit ec: ExecutionContext) extends HttpAuthenticator[String] {
+  private class StubAuthenticator extends HttpAuthenticator[String] {
     implicit def executionContext = ec
     def scheme = "Bearer"
     def realm = "OAuth"

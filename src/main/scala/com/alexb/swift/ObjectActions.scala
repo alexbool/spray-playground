@@ -1,6 +1,7 @@
 package com.alexb.swift
 
-import akka.actor.ActorRef
+import akka.actor.ActorRefFactory
+import akka.util.Timeout
 import scala.concurrent.ExecutionContext
 import spray.client.pipelining._
 import spray.http.{StatusCodes, MediaType, HttpBody}
@@ -10,12 +11,11 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
   def getObject(rootPath: String,
                 container: String,
                 `object`: String,
-                token: String,
-                httpConduit: ActorRef)
-               (implicit ctx: ExecutionContext) =
+                token: String)
+               (implicit refFactory: ActorRefFactory, ctx: ExecutionContext, futureTimeout: Timeout) =
     Get(mkUrl(rootPath, container, `object`)) ~> (
       authHeader(token) ~>
-      sendReceive(httpConduit)
+      sendReceive(refFactory, ctx, futureTimeout)
     ) map { resp =>
       if (resp.status.isSuccess)
         Some(Object(`object`, resp.header[`Content-Type`].get.contentType.mediaType, resp.entity.buffer))
@@ -27,12 +27,11 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
                 `object`: String,
                 mediaType: MediaType,
                 data: Array[Byte],
-                token: String,
-                httpConduit: ActorRef)
-               (implicit ctx: ExecutionContext) =
+                token: String)
+               (implicit refFactory: ActorRefFactory, ctx: ExecutionContext, futureTimeout: Timeout) =
     Put(mkUrl(rootPath, container, `object`), HttpBody(mediaType, data)) ~> (
       authHeader(token) ~>
-      sendReceive(httpConduit)
+      sendReceive(refFactory, ctx, futureTimeout)
     ) map { resp =>
       PutObjectResult(resp.status.isSuccess)
     }
@@ -40,12 +39,11 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
   def deleteObject(rootPath: String,
                    container: String,
                    `object`: String,
-                   token: String,
-                   httpConduit: ActorRef)
-                  (implicit ctx: ExecutionContext) =
+                   token: String)
+                  (implicit refFactory: ActorRefFactory, ctx: ExecutionContext, futureTimeout: Timeout) =
     Delete(mkUrl(rootPath, container, `object`)) ~> (
       authHeader(token) ~>
-      sendReceive(httpConduit)
+      sendReceive(refFactory, ctx, futureTimeout)
     ) map { resp =>
       DeleteObjectResult(
         resp.status.isSuccess || resp.status == StatusCodes.NotFound,
