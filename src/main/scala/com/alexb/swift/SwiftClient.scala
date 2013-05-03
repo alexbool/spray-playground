@@ -9,7 +9,7 @@ import spray.httpx.UnsuccessfulResponseException
 import spray.http.StatusCodes
 import language.postfixOps
 
-class SwiftClient(credentials: SwiftCredentials, authUrl: String)
+class SwiftClient(credentials: Credentials, authUrl: String)
   extends Actor with ActorLogging with SwiftAuthentication
   with AccountActions with ContainerActions with ObjectActions {
 

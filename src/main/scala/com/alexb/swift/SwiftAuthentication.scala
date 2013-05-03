@@ -8,7 +8,7 @@ import spray.client.pipelining._
 trait SwiftAuthentication {
   this: Actor with ActorLogging =>
 
-  def authenticate(credentials: SwiftCredentials,
+  def authenticate(credentials: Credentials,
                    authUrl: String)
                   (implicit refFactory: ActorRefFactory,
                    ctx: ExecutionContext, futureTimeout: Timeout): Future[AuthenticationResult] = {
@@ -22,7 +22,7 @@ trait SwiftAuthentication {
     }
   }
 
-  private def authPipeline(credentials: SwiftCredentials)
+  private def authPipeline(credentials: Credentials)
                           (implicit refFactory: ActorRefFactory,
                            ctx: ExecutionContext, futureTimeout: Timeout) =
     addHeader("X-Auth-User", credentials.user) ~>

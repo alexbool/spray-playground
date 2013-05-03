@@ -6,7 +6,7 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import spray.http.MediaType
 
-class SimpleSwiftClient(credentials: SwiftCredentials, authUrl: String)
+class SimpleSwiftClient(credentials: Credentials, authUrl: String)
                        (implicit system: ActorSystem, timeout: Timeout = Timeout(20 seconds)) {
 
   private val client = system.actorOf(props = Props(new SwiftClient(credentials, authUrl)))

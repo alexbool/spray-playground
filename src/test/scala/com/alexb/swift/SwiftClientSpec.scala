@@ -24,7 +24,7 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
   val mockSwiftServer = system.actorOf(Props(new StubSwiftServer))
   Await.ready(IO(Http) ? Http.Bind(mockSwiftServer, "localhost", port), timeout)
 
-  val client = system.actorOf(Props(new SwiftClient(SwiftCredentials("some_account", "some_auth_key"),
+  val client = system.actorOf(Props(new SwiftClient(Credentials("some_account", "some_auth_key"),
     s"http://localhost:$port/v1.0")))
 
   val bytes = Source.fromFile("src/test/resources/sample.png")(scala.io.Codec.ISO8859).map(_.toByte).toArray
