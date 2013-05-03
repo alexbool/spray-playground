@@ -37,7 +37,7 @@ object TestOuterObject extends AutoCloseable with CloseableMembers {
 class TestCloseableClass extends AutoCloseable with CloseableMembers {
 }
 
-class TestCloseable extends Closeable {
+class CloseableMock extends Closeable {
   var isClosed = false
   def close() {
     isClosed = true
@@ -45,8 +45,8 @@ class TestCloseable extends Closeable {
 }
 
 trait CloseableMembers {
-  val closeableVal = new TestCloseable
-  var closeableVar = new TestCloseable
-  private val hiddenCloseableVal = new TestCloseable
+  val closeableVal = new CloseableMock
+  var closeableVar = new CloseableMock
+  private val hiddenCloseableVal = new CloseableMock
   def closeableGetter = hiddenCloseableVal
 }
