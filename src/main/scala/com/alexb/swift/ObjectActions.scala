@@ -4,7 +4,7 @@ import akka.actor.ActorRefFactory
 import akka.util.Timeout
 import scala.concurrent.ExecutionContext
 import spray.client.pipelining._
-import spray.http.{StatusCodes, MediaType, HttpBody}
+import spray.http.{HttpEntity, StatusCodes, MediaType}
 import spray.http.HttpHeaders.`Content-Type`
 
 private[swift] trait ObjectActions extends SwiftApiUtils {
@@ -29,7 +29,7 @@ private[swift] trait ObjectActions extends SwiftApiUtils {
                 data: Array[Byte],
                 token: String)
                (implicit refFactory: ActorRefFactory, ctx: ExecutionContext, futureTimeout: Timeout) =
-    Put(mkUrl(rootPath, container, `object`), HttpBody(mediaType, data)) ~> (
+    Put(mkUrl(rootPath, container, `object`), HttpEntity(mediaType, data)) ~> (
       authHeader(token) ~>
       sendReceive(refFactory, ctx, futureTimeout)
     ) map { resp =>

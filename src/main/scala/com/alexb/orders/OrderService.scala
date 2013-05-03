@@ -1,7 +1,7 @@
 package com.alexb.orders
 
 import scala.concurrent.ExecutionContext
-import spray.routing.directives.PathMatchers._
+import spray.routing.PathMatchers._
 import spray.routing.HttpService
 import spray.http.{ StatusCodes, EmptyEntity}
 import spray.httpx.SprayJsonSupport

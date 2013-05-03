@@ -107,7 +107,7 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with 
                 ctx.complete(StatusCodes.NotFound)
               } else {
                 val response = HttpResponse(StatusCodes.OK,
-                  HttpBody(ContentType(objectEntry.get._2.mediaType), objectEntry.get._2.data))
+                  HttpEntity(ContentType(objectEntry.get._2.mediaType), objectEntry.get._2.data))
                 ctx.complete(response)
               }
             }
