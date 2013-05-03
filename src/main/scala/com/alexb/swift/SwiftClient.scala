@@ -84,8 +84,7 @@ class SwiftClient(credentials: Credentials, authUrl: String)
     req.promise.completeWith(doExecuteRequest(req.action))
   }
 
-  private def doExecuteRequest[R](action: Action[R]): Future[R] =
-    authenticationResult.flatMap(action(_))
+  private def doExecuteRequest[R](action: Action[R]): Future[R] = authenticationResult.flatMap(action(_))
 }
 
 private[swift] case class AuthenticationResult(token: String, storageUrl: String)
