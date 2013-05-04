@@ -14,7 +14,7 @@ class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers
   val zk = new ZooKeeper(connectString, zkSessionTimeoutMillis, null)
   val zkProperties = new ZkProperties(connectString + root, zkSessionTimeoutMillis)
   val acl = Ids.OPEN_ACL_UNSAFE
-  val timeout = 500
+  val sleepMillis = 500
 
   override def beforeAll() {
     zk.create(root, new Array[Byte](0), acl, CreateMode.PERSISTENT)
@@ -30,35 +30,35 @@ class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers
   "ZkProperties" must {
     "get properties" in {
       zk.create(s"$root/prop1", "data".getBytes, acl, CreateMode.PERSISTENT)
-      Thread.sleep(timeout)
+      Thread.sleep(sleepMillis)
       zkProperties("prop1") must be (Some("data"))
     }
     "update properties" in {
       zk.setData(s"$root/prop1", "new_data".getBytes, -1)
-      Thread.sleep(timeout)
+      Thread.sleep(sleepMillis)
       zkProperties("prop1") must be (Some("new_data"))
     }
     "get newly created properties" in {
       zk.create(s"$root/prop2", "some_data".getBytes, acl, CreateMode.PERSISTENT)
-      Thread.sleep(timeout)
+      Thread.sleep(sleepMillis)
       zkProperties("prop2") must be (Some("some_data"))
     }
     "create, update and remove properties" in {
       zkProperties.put("prop3", true)
-      Thread.sleep(timeout)
+      Thread.sleep(sleepMillis)
       zkProperties.getBoolean("prop3") must be (Some(true))
 
       zkProperties.put("prop3", false)
-      Thread.sleep(timeout)
+      Thread.sleep(sleepMillis)
       zkProperties.getBoolean("prop3") must be (Some(false))
 
       zkProperties.remove("prop3")
-      Thread.sleep(timeout)
+      Thread.sleep(sleepMillis)
       zkProperties.getBoolean("prop3") must be (None)
     }
     "delete removed properties" in {
       zk.delete(s"$root/prop1", -1)
-      Thread.sleep(timeout)
+      Thread.sleep(sleepMillis)
       zkProperties("prop1") must be (None)
     }
   }
