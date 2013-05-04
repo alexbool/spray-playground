@@ -14,8 +14,8 @@ class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher w
 
   def process(event: WatchedEvent) {
     event.getType match {
-      case EventType.None if event.getState == KeeperState.SyncConnected => fetchProperties(true)
-      case EventType.NodeChildrenChanged                                 => fetchProperties(false)
+      case EventType.None if event.getState == KeeperState.SyncConnected => fetchProperties(rewriteKnownProperties = true)
+      case EventType.NodeChildrenChanged                                 => fetchProperties(rewriteKnownProperties = false)
       case EventType.NodeDataChanged                                     => fetchProperty()
     }
 
