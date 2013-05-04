@@ -10,7 +10,7 @@ private[swift] trait AccountActions extends SwiftApiUtils with SwiftMarshallers 
                                                       ctx: ExecutionContext, futureTimeout: Timeout) =
     Get(mkUrlJson(rootPath)) ~> (
       authHeader(token) ~>
-      sendReceive ~>
+      sendReceive(refFactory, ctx, futureTimeout) ~>
       unmarshal[Seq[Container]]
     )
 }
