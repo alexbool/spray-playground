@@ -6,8 +6,10 @@ import org.apache.zookeeper.data.Stat
 import java.io.Closeable
 import scala.collection.JavaConversions._
 
-class ZkProperties(connectString: String, sessionTimeout: Int) extends Watcher with Closeable {
-  private val zk = new ReconnectingZk(connectString, sessionTimeout, this, true)
+class ZkProperties(connectString: String, sessionTimeout: Int, readOnly: Boolean) extends Watcher with Closeable {
+  def this(connectString: String, sessionTimeout: Int) = this(connectString, sessionTimeout, false)
+
+  private val zk = new ReconnectingZk(connectString, sessionTimeout, this, readOnly)
   private val properties = collection.concurrent.TrieMap[String, String]()
 
   def apply(key: String): Option[String] = properties.get(key)
