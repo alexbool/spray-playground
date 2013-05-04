@@ -1,21 +1,24 @@
 package com.alexb.zk
 
-import org.scalatest.{BeforeAndAfterAll, WordSpec}
+import org.scalatest.{Ignore, BeforeAndAfterAll, WordSpec}
 import org.scalatest.matchers.MustMatchers
 import org.apache.zookeeper.{CreateMode, ZooKeeper}
 import com.alexb.test.Config
 import org.apache.zookeeper.ZooDefs.Ids
 
+@Ignore
 class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers with Config {
   val connectString = config.getString("zk.connectString")
   val root = "/test"
   val zkSessionTimeoutMillis = 12000
-  val zk = new ZooKeeper(connectString, zkSessionTimeoutMillis, null)
-  val zkProperties = new ZkProperties(connectString + root, zkSessionTimeoutMillis)
+  // Make it not lazy when you want to run the test
+  lazy val zk = new ZooKeeper(connectString, zkSessionTimeoutMillis, null)
+  lazy val zkProperties = new ZkProperties(connectString + root, zkSessionTimeoutMillis)
   val acl = Ids.OPEN_ACL_UNSAFE
   val sleepMillis = 500
 
-  override def beforeAll() {
+  // Uncomment when you want to run the test
+  /* override def beforeAll() {
     zk.create(root, new Array[Byte](0), acl, CreateMode.PERSISTENT)
   }
 
@@ -24,7 +27,7 @@ class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers
     zk.delete(root, -1)
     zk.close()
     zkProperties.close()
-  }
+  } */
 
   "ZkProperties" must {
     "get properties" in {
