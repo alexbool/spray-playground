@@ -4,7 +4,7 @@ import org.apache.zookeeper.{ZooKeeper, WatchedEvent, Watcher}
 import org.apache.zookeeper.Watcher.Event.{KeeperState, EventType}
 import java.io.Closeable
 
-class ReconnectingZk(connectString: String, sessionTimeout: Int, watcher: Watcher, canBeReadOnly: Boolean)
+class ReconnectingZk(connectString: String, sessionTimeoutMillis: Int, watcher: Watcher, canBeReadOnly: Boolean)
   extends Closeable {
 
   @volatile
@@ -22,7 +22,7 @@ class ReconnectingZk(connectString: String, sessionTimeout: Int, watcher: Watche
   }
 
   private def newZk =
-    new ZooKeeper(connectString, sessionTimeout, new DelegatingWatcher(Option(watcher), this), canBeReadOnly)
+    new ZooKeeper(connectString, sessionTimeoutMillis, new DelegatingWatcher(Option(watcher), this), canBeReadOnly)
 
   private class DelegatingWatcher(delegate: Option[Watcher], parent: ReconnectingZk) extends Watcher {
     def process(event: WatchedEvent) {
