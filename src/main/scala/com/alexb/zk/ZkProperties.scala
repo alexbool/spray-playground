@@ -7,6 +7,7 @@ import java.io.Closeable
 import scala.collection.JavaConversions._
 
 class ZkProperties(connectString: String, sessionTimeoutMillis: Int, readOnly: Boolean) extends Watcher with Closeable {
+  def this(connectString: String) = this(connectString, 30000, false)
   def this(connectString: String, sessionTimeout: Int) = this(connectString, sessionTimeout, false)
 
   private val zk = new ReconnectingZk(connectString, sessionTimeoutMillis, this, readOnly)
