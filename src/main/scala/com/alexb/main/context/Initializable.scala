@@ -1,5 +1,8 @@
 package com.alexb.main.context
 
+/**
+ * A trait that delays all initialization of target object until the `initilaize` method is called.
+ */
 trait Initializable extends DelayedInit {
   private var isInitialized = false
   private var initBody: () => Unit = null
