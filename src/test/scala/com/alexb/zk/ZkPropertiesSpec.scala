@@ -7,7 +7,6 @@ import com.alexb.test.Config
 import org.apache.zookeeper.ZooDefs.Ids
 
 class ZkPropertiesSpec extends WordSpec with BeforeAndAfterAll with MustMatchers with Config {
-
   val connectString = config.getString("zk.connectString")
   val root = "/test"
   val zkSessionTimeoutMillis = 12000
