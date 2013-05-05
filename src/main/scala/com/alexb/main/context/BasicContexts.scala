@@ -22,7 +22,7 @@ trait ExecutionContextContext {
   def ec: ExecutionContext
 }
 
-trait ExecutionContextFromActorSystemContext extends ExecutionContextContext { this: ActorSystemContext =>
+trait ExecutionContextFromActorSystem extends ExecutionContextContext { this: ActorSystemContext =>
   def ec = actorSystem.dispatcher
 }
 
