@@ -26,6 +26,6 @@ trait SwiftAuthentication {
                           (implicit refFactory: ActorRefFactory,
                            ctx: ExecutionContext, futureTimeout: Timeout) =
     addHeader("X-Auth-User", credentials.user) ~>
-      addHeader("X-Auth-Key", credentials.key) ~>
-      sendReceive(refFactory, ctx, futureTimeout)
+    addHeader("X-Auth-Key", credentials.key) ~>
+    sendReceive(refFactory, ctx, futureTimeout)
 }
