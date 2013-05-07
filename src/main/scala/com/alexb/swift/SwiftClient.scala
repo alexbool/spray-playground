@@ -10,7 +10,7 @@ import spray.http.StatusCodes
 import language.postfixOps
 
 class SwiftClient(credentials: Credentials, authUrl: String)
-  extends Actor with ActorLogging with SwiftAuthentication
+  extends Actor with ActorLogging with Authentication
   with AccountActions with ContainerActions with ObjectActions {
 
   type Action[R] = AuthenticationResult => Future[R]

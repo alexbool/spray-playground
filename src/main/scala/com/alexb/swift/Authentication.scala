@@ -5,7 +5,7 @@ import akka.util.Timeout
 import scala.concurrent.{Future, ExecutionContext}
 import spray.client.pipelining._
 
-trait SwiftAuthentication {
+trait Authentication {
   this: Actor with ActorLogging =>
 
   def authenticate(credentials: Credentials,
