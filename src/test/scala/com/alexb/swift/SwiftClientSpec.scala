@@ -17,7 +17,7 @@ import language.postfixOps
 class SwiftClientSpec extends WordSpec with MustMatchers {
   implicit val system: ActorSystem = ActorSystem("SwiftClientSpec")
   implicit val ec: ExecutionContext = system.dispatcher
-  val timeout = 20 seconds
+  val timeout = 3 seconds
   implicit val askTimeout = Timeout(timeout)
 
   val port = Stream.continually(Random.nextInt(65536)).find(_ > 49152).get
