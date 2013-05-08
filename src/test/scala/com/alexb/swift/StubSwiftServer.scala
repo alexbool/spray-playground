@@ -15,14 +15,16 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 case object RegenerateToken
+case object FailOnNextRequest
 
 class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with ActorLogging {
 
   var token = generateToken
+  var failOnNextRequest = false
 
   val containers = TrieMap[Container, TrieMap[String, (ObjectMetadata, Object)]]()
 
-  def receive = handleRegenerateToken orElse runRoute(authRoute ~ storageRoute)
+  def receive = handleRegenerateToken orElse handleFailOnNextRequest orElse runRoute(route)
   def actorRefFactory = context.system
 
   implicit val ec: ExecutionContext = context.dispatcher
@@ -36,6 +38,18 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with 
   def handleRegenerateToken: Actor.Receive = {
     case RegenerateToken => token = generateToken
   }
+  def handleFailOnNextRequest: Actor.Receive = {
+    case FailOnNextRequest => failOnNextRequest = true
+  }
+
+  val route =
+    dynamic {
+      validate(failOnNextRequest, "") { ctx =>
+        failOnNextRequest = false
+        ctx.complete(HttpResponse(StatusCodes.InternalServerError))
+      } ~
+      authRoute ~ storageRoute
+    }
 
   val authRoute =
     path("v1.0") {
