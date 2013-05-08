@@ -80,7 +80,7 @@ class SwiftClient(credentials: Credentials, authUrl: String)
   }
 
   private def retryRequest[R](req: RetryRequest[R]) {
-    log.debug("Retrying request due to expired authentication}")
+    log.debug("Retrying request due to expired authentication")
     req.promise.completeWith(doExecuteRequest(req.action))
   }
 
