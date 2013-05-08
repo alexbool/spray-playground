@@ -78,7 +78,7 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with 
             }
           }
         } ~
-        path(PathElement) { container =>
+        path(Segment) { container =>
           put {
             val alreadyExists = containers.putIfAbsent(
               Container(container, 0, 0),
@@ -94,7 +94,7 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with 
             }
           }
         } ~
-        path(PathElement / PathElement) { (container, name) =>
+        path(Segment / Segment) { (container, name) =>
           put { ctx =>
             val contentLength = ctx.request.headers.find(_.is("content-length")).map(_.asInstanceOf[`Content-Length`])
             val contentType = ctx.request.headers.find(_.is("content-type")).map(_.asInstanceOf[`Content-Type`])
