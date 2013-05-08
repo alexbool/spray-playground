@@ -75,5 +75,13 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
       mockSwiftServer ! RegenerateToken
       Await.result(client ? ListContainers, timeout)
     }
+    "fail when Swift server fails" in {
+      mockSwiftServer ! FailOnNextRequest
+      val req = client ? ListContainers
+      Await.ready(req, timeout) // If this times out, TimeoutException will be thrown. This exception is not the correct behaviour
+      intercept[Exception] {
+        Await.result(req, timeout)
+      }
+    }
   }
 }
