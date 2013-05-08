@@ -1,11 +1,10 @@
 package com.alexb.swift
 
 import akka.actor.{ActorLogging, Actor}
-import spray.routing.HttpService
+import spray.routing.{HttpServiceActor, RequestContext}
 import spray.http._
 import spray.http.HttpHeaders.{`Content-Length`, `Content-Type`}
 import spray.routing.authentication.HttpAuthenticator
-import spray.routing.RequestContext
 import spray.http.HttpHeaders.RawHeader
 import spray.http.HttpResponse
 import collection.concurrent.TrieMap
@@ -17,7 +16,7 @@ import scala.util.Random
 case object RegenerateToken
 case object FailOnNextRequest
 
-class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with ActorLogging {
+class StubSwiftServer extends HttpServiceActor with SwiftMarshallers with ActorLogging {
 
   var token = generateToken
   var failOnNextRequest = false
@@ -25,7 +24,6 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with 
   val containers = TrieMap[Container, TrieMap[String, (ObjectMetadata, Object)]]()
 
   def receive = handleRegenerateToken orElse handleFailOnNextRequest orElse runRoute(route)
-  def actorRefFactory = context.system
 
   implicit val ec: ExecutionContext = context.dispatcher
 
