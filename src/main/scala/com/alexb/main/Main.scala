@@ -49,7 +49,7 @@ object Main extends App with ActorSystemFromAppContext {
   system.eventStream.subscribe(addCommandListener, classOf[AddCommand])
   ///////////////////////////////////////////////////////////////////////////
 
-  // start a new HTTP server on seleccted port with our service actor as the handler
+  // start a new HTTP server on selected port with our service actor as the handler
   IO(Http)(system) ! Http.Bind(httpService,
       interface = system.settings.config.getString("application.host"),
       port = system.settings.config.getInt("application.port"))
