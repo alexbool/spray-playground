@@ -17,8 +17,6 @@ object Main extends App with ActorSystemFromAppContext {
   // Initialize application context beans
   Context.initialize()
 
-  def system = Context.actorSystem
-
   // create the service instance, supplying all required dependencies
   class SprayPlaygroundActor extends Actor with ActorSystemFromAppContext with ActorSystemConfiguration
     with OAuthdSupport with MongoFromAppContext with ElasticSearchFromAppContext with InfinispanFromAppContext
@@ -37,18 +35,18 @@ object Main extends App with ActorSystemFromAppContext {
   }
 
   // create and start the HttpService actor running our service as well as the root actor
-  val httpService = system.actorOf(
+  val httpService = actorSystem.actorOf(
     props = Props[SprayPlaygroundActor],
     name = "service")
 
   ///////////////////////////////////////////////////////////////////////////
   // Subscribing AddCommandListener
-  val addCommandListener = system.actorOf(Props[AddCommandListener])
-  system.eventStream.subscribe(addCommandListener, classOf[AddCommand])
+  val addCommandListener = actorSystem.actorOf(Props[AddCommandListener])
+  actorSystem.eventStream.subscribe(addCommandListener, classOf[AddCommand])
   ///////////////////////////////////////////////////////////////////////////
 
   // start a new HTTP server on selected port with our service actor as the handler
-  IO(Http)(system) ! Http.Bind(httpService,
-      interface = system.settings.config.getString("application.host"),
-      port = system.settings.config.getInt("application.port"))
+  IO(Http)(actorSystem) ! Http.Bind(httpService,
+      interface = actorSystem.settings.config.getString("application.host"),
+      port = actorSystem.settings.config.getInt("application.port"))
 }
