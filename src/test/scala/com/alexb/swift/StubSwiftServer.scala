@@ -44,11 +44,14 @@ class StubSwiftServer extends Actor with HttpService with SwiftMarshallers with 
 
   val route =
     dynamic {
-      validate(failOnNextRequest, "") { ctx =>
+      if (failOnNextRequest) {
         failOnNextRequest = false
-        ctx.complete(HttpResponse(StatusCodes.InternalServerError))
-      } ~
-      authRoute ~ storageRoute
+        complete {
+          HttpResponse(StatusCodes.InternalServerError)
+        }
+      } else {
+        authRoute ~ storageRoute
+      }
     }
 
   val authRoute =
