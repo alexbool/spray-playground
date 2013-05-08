@@ -30,6 +30,14 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
   val bytes = Source.fromFile("src/test/resources/sample.png")(scala.io.Codec.ISO8859).map(_.toByte).toArray
 
   "Swift client" must {
+    "fail when Swift authentication fails" in {
+      mockSwiftServer ! FailOnNextRequest
+      val req = client ? ListContainers
+      Await.ready(req, timeout) // If this times out, TimeoutException will be thrown. This exception is not the correct behaviour
+      intercept[Exception] {
+        req.value.get.get
+      }
+    }
     "create containers" in {
       Await.result(client ? CreateContainer("new_container"), timeout) must be (CreateContainerResult(true, false))
     }
@@ -76,15 +84,6 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
       Await.result(client ? ListContainers, timeout)
     }
     "fail when Swift server fails" in {
-      mockSwiftServer ! FailOnNextRequest
-      val req = client ? ListContainers
-      Await.ready(req, timeout) // If this times out, TimeoutException will be thrown. This exception is not the correct behaviour
-      intercept[Exception] {
-        req.value.get.get
-      }
-    }
-    "fail when Swift authentication fails" in {
-      mockSwiftServer ! RegenerateToken
       mockSwiftServer ! FailOnNextRequest
       val req = client ? ListContainers
       Await.ready(req, timeout) // If this times out, TimeoutException will be thrown. This exception is not the correct behaviour
