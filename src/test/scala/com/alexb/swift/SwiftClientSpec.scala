@@ -34,7 +34,7 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
       mockSwiftServer ! FailOnNextRequest
       val req = client ? ListContainers
       Await.ready(req, timeout) // If this times out, TimeoutException will be thrown. This exception is not the correct behaviour
-      intercept[Exception] {
+      intercept[SwiftException] {
         req.value.get.get
       }
     }
@@ -87,7 +87,7 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
       mockSwiftServer ! FailOnNextRequest
       val req = client ? ListContainers
       Await.ready(req, timeout) // If this times out, TimeoutException will be thrown. This exception is not the correct behaviour
-      intercept[Exception] {
+      intercept[SwiftException] {
         req.value.get.get
       }
     }
