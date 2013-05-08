@@ -20,11 +20,9 @@ object Main extends App with ActorSystemFromAppContext {
   def system = Context.actorSystem
 
   // create the service instance, supplying all required dependencies
-  class SprayPlaygroundActor extends Actor with ActorSystemContext with ActorSystemConfiguration
+  class SprayPlaygroundActor extends Actor with ActorSystemFromAppContext with ActorSystemConfiguration
     with OAuthdSupport with MongoFromAppContext with ElasticSearchFromAppContext with InfinispanFromAppContext
     with CalculatorModule with OrderModule with StaticsModule with UserModule {
-
-    def actorSystem = Context.actorSystem
 
     val timeout = Timeout(5 seconds) // needed for `?`
 
