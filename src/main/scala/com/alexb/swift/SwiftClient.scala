@@ -13,8 +13,6 @@ class SwiftClient(credentials: Credentials, authUrl: String)
   extends Actor with ActorLogging with Authentication
   with AccountActions with ContainerActions with ObjectActions {
 
-  type Action[R] = AuthenticationResult => Future[R]
-
   private case class NotifyExpiredAuthentication(lastSeenRevision: Int)
   private case class RetryRequest[R](action: Action[R], promise: Promise[R])
 
@@ -86,5 +84,3 @@ class SwiftClient(credentials: Credentials, authUrl: String)
 
   private def doExecuteRequest[R](action: Action[R]): Future[R] = authenticationResult.flatMap(action(_))
 }
-
-private[swift] case class AuthenticationResult(token: String, storageUrl: String)
