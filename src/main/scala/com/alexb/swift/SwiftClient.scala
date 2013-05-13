@@ -1,26 +1,19 @@
 package com.alexb.swift
 
 import akka.actor._
-import akka.pattern.pipe
 import akka.util.Timeout
 import scala.concurrent.duration._
-import scala.concurrent.{Promise, Future}
-import spray.httpx.UnsuccessfulResponseException
-import spray.http.StatusCodes
 import language.postfixOps
 
-class SwiftClient(credentials: Credentials, authUrl: String)
-  extends Actor with ActorLogging with Authentication
-  with AccountActions with ContainerActions with ObjectActions {
+class SwiftClient(credentials: Credentials, authUrl: String)(implicit futureTimeout: Timeout = 10 seconds)
+  extends Actor with ActorLogging with AccountActions with ContainerActions with ObjectActions {
 
-  private case class NotifyExpiredAuthentication(lastSeenRevision: Int)
-  private case class RetryRequest[R](action: Action[R], promise: Promise[R])
+  import context.dispatcher
 
-  implicit val timeout = Timeout(10 seconds)
-  implicit val ctx = context.dispatcher
-
-  private var authenticationResult: Future[AuthenticationResult] = null
-  private var authenticationRevision = 0
+  val authenticator = context.actorOf(Props(new Authenticator(credentials, authUrl)), "authenticator")
+  var authInProgress = false
+  var cachedAuth: Option[AuthenticationResult] = None
+  var workerCounter = 0
 
   def receive = {
     case ListContainers =>
@@ -44,43 +37,58 @@ class SwiftClient(credentials: Credentials, authUrl: String)
     case DeleteObject(container, name) =>
       executeRequest(auth => deleteObject(auth.storageUrl, container, name, auth.token))
 
-    case NotifyExpiredAuthentication(rev) => refreshAuthentication(rev)
-
-    case msg: RetryRequest[_] => retryRequest(msg)
+    case msg: GotAuthentication     => handleGotAuthentication(msg)
+    case msg: AuthenticationFailed  => handleAuthenticationFailed(msg)
+    case msg: AuthenticationExpired => handleAuthenticationExpired(msg)
+    case BadCredentials             => handleBadCredentials()
   }
 
-  override def preStart() {
-    refreshAuthentication(0)
+  def executeRequest[R](action: Action[R]) {
+    tryAuthenticateIfNeeded()
+    val worker = newWorker(action, sender)
+    if (cachedAuth.isDefined) worker ! GotAuthentication(cachedAuth.get)
   }
 
-  private def refreshAuthentication(lastSeenRevision: Int) {
-    if (authenticationRevision == lastSeenRevision) {
-      log.debug(s"About to refresh authentication. Current revision: $authenticationRevision")
-      authenticationResult = authenticate(credentials, authUrl)
-      authenticationRevision += 1
+  def handleGotAuthentication(msg: GotAuthentication) {
+    authInProgress = false
+    log.debug(s"Got fresh authentication: ${msg.auth}")
+    cachedAuth = Some(msg.auth)
+    workers ! msg
+  }
+
+  def handleBadCredentials() {
+    log.error("Bad credentials, stopping")
+    workers ! BadCredentials
+    context.stop(self)
+  }
+
+  def handleAuthenticationFailed(msg: AuthenticationFailed) {
+    log.warning("Authentication failed")
+    authInProgress = false
+    workers ! msg
+  }
+
+  def handleAuthenticationExpired(msg: AuthenticationExpired) {
+    if (cachedAuth.isDefined && cachedAuth.get.revision == msg.revision) {
+      log.debug(s"Handling expiration of authentication revision ${msg.revision}")
+      cachedAuth = None
+    }
+    authenticator ! msg
+  }
+
+  def newWorker[R](action: Action[R], recipient: ActorRef) = {
+    val name = s"worker-$workerCounter"
+    workerCounter += 1
+    log.debug(s"Creating new worker for request: $name")
+    context.actorOf(Props(new Worker(action, recipient)), name)
+  }
+
+  def workers = context.actorSelection("worker-*")
+
+  def tryAuthenticateIfNeeded() {
+    if (cachedAuth.isEmpty && !authInProgress) {
+      authInProgress = true
+      authenticator ! TryAuthenticate
     }
   }
-
-  private def executeRequest[R](action: Action[R]) {
-    val currentRevision = authenticationRevision
-    val resultFuture = doExecuteRequest(action)
-    val promise = Promise[R]()
-    resultFuture onFailure {
-      case e: UnsuccessfulResponseException if e.response.status == StatusCodes.Unauthorized => {
-        self ! NotifyExpiredAuthentication(currentRevision)
-        self ! RetryRequest(action, promise)
-      }
-    }
-    resultFuture onSuccess { case r =>
-      promise.success(r)
-    }
-    promise.future.pipeTo(sender)
-  }
-
-  private def retryRequest[R](req: RetryRequest[R]) {
-    log.debug("Retrying request due to expired authentication")
-    req.promise.completeWith(doExecuteRequest(req.action))
-  }
-
-  private def doExecuteRequest[R](action: Action[R]): Future[R] = authenticationResult.flatMap(action(_))
 }

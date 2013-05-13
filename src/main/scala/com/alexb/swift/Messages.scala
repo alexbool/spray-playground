@@ -37,3 +37,10 @@ case class DeleteContainerResult(success: Boolean, alreadyDeleted: Boolean)
 
 case class PutObjectResult(success: Boolean)
 case class DeleteObjectResult(success: Boolean, alreadyDeleted: Boolean)
+
+/////////////////////////////// Internal messages ///////////////////////////////
+private[swift] case class GotAuthentication(auth: AuthenticationResult)
+private[swift] case class AuthenticationExpired(revision: Int)
+private[swift] case object TryAuthenticate
+private[swift] case class AuthenticationFailed(cause: Throwable)
+private[swift] case object BadCredentials

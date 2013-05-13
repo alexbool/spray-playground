@@ -9,7 +9,8 @@ trait Authentication {
   this: Actor with ActorLogging =>
 
   def authenticate(credentials: Credentials,
-                   authUrl: String)
+                   authUrl: String,
+                   revision: Int)
                   (implicit refFactory: ActorRefFactory,
                    ctx: ExecutionContext, futureTimeout: Timeout): Future[AuthenticationResult] = {
     log.debug(s"About to make authentication request: $credentials")
@@ -18,7 +19,8 @@ trait Authentication {
       log.debug(s"Recieved authentication response: $resp")
       AuthenticationResult(
         resp.headers.find(_.is("x-auth-token")).map(_.value).get,
-        resp.headers.find(_.is("x-storage-url")).map(_.value).get)
+        resp.headers.find(_.is("x-storage-url")).map(_.value).get,
+        revision)
     }
   }
 
