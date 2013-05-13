@@ -6,7 +6,7 @@ import scala.concurrent.duration._
 import language.postfixOps
 
 class SwiftClient(credentials: Credentials, authUrl: String)(implicit futureTimeout: Timeout = 10 seconds)
-  extends Actor with ActorLogging with AccountActions with ContainerActions with ObjectActions {
+  extends Actor with ActorLogging {
 
   val authenticator = context.actorOf(Props(new Authenticator(credentials, authUrl)), "authenticator")
   var authInProgress = false
