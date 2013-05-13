@@ -11,17 +11,18 @@ private[swift] class Authenticator(credentials: Credentials, authUrl: String)(im
 
   import context.dispatcher
 
-  var revision = 0
+  val revisionCounter = Iterator from 0
+  var currentRevision = 0
 
   def receive = {
     case TryAuthenticate            => tryAuthenticate()
-    case AuthenticationExpired(rev) => if (rev == revision) tryAuthenticate()
+    case AuthenticationExpired(rev) => if (rev == currentRevision) tryAuthenticate()
   }
 
   def tryAuthenticate() {
-    log.debug(s"About to refresh authentication. Current revision: $revision")
-    revision += 1
-    val resultF = authenticate(credentials, authUrl, revision)
+    log.debug(s"About to refresh authentication. Current revision: $currentRevision")
+    currentRevision = revisionCounter.next()
+    val resultF = authenticate(credentials, authUrl, currentRevision)
     resultF onSuccess { case r =>
       log.debug(s"Successful authentication: $r")
       context.parent ! GotAuthentication(r)

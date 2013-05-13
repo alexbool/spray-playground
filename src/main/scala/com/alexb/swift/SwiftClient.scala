@@ -13,7 +13,7 @@ class SwiftClient(credentials: Credentials, authUrl: String)(implicit futureTime
   val authenticator = context.actorOf(Props(new Authenticator(credentials, authUrl)), "authenticator")
   var authInProgress = false
   var cachedAuth: Option[AuthenticationResult] = None
-  var workerCounter = 0
+  val workerCounter = Iterator from 0
 
   def receive = {
     case ListContainers =>
@@ -77,8 +77,7 @@ class SwiftClient(credentials: Credentials, authUrl: String)(implicit futureTime
   }
 
   def newWorker[R](action: Action[R], recipient: ActorRef) = {
-    val name = s"worker-$workerCounter"
-    workerCounter += 1
+    val name = s"worker-${workerCounter.next()}"
     log.debug(s"Creating new worker for request: $name")
     context.actorOf(Props(new Worker(action, recipient)), name)
   }
