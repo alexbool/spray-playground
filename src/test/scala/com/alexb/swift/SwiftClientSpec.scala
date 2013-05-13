@@ -15,7 +15,7 @@ import scala.io.Source
 import language.postfixOps
 
 class SwiftClientSpec extends WordSpec with MustMatchers {
-  implicit val system: ActorSystem = ActorSystem("SwiftClientSpec")
+  implicit val system: ActorSystem = ActorSystem()
   implicit val ec: ExecutionContext = system.dispatcher
   val timeout = 3 seconds
   implicit val askTimeout = Timeout(timeout)
