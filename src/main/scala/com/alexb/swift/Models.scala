@@ -9,3 +9,5 @@ case class ObjectMetadata(name: String, hash: String, bytes: Long, contentType: 
 case class Object(name: String, mediaType: MediaType, data: Array[Byte])
 
 case class Credentials(user: String, key: String)
+
+private[swift] case class AuthenticationResult(token: String, storageUrl: String, revision: Int)
