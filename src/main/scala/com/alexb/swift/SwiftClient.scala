@@ -76,7 +76,7 @@ class SwiftClient(credentials: Credentials, authUrl: String)(implicit futureTime
 
   def newWorker[R](action: Action[R], recipient: ActorRef) = {
     val name = s"worker-${workerCounter.next()}"
-    log.debug(s"Creating new worker for request: $name")
+    log.debug(s"Creating new worker: $name for action: $action")
     context.actorOf(Props(new Worker(action, recipient)), name)
   }
 
