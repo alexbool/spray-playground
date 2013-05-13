@@ -1,33 +1,16 @@
 package com.alexb.swift
 
-import akka.actor.{ActorRefFactory, Actor, ActorLogging}
-import akka.util.Timeout
-import scala.concurrent.{Future, ExecutionContext}
 import spray.client.pipelining._
+import spray.http.{HttpResponse, HttpRequest}
 
 trait Authentication {
-  this: Actor with ActorLogging =>
 
-  def authenticate(credentials: Credentials,
-                   authUrl: String,
-                   revision: Int)
-                  (implicit refFactory: ActorRefFactory,
-                   ctx: ExecutionContext, futureTimeout: Timeout): Future[AuthenticationResult] = {
-    log.debug(s"About to make authentication request: $credentials")
-    (Get(authUrl) ~> authPipeline(credentials))
-    .map { resp =>
-      log.debug(s"Recieved authentication response: $resp")
-      AuthenticationResult(
-        resp.headers.find(_.is("x-auth-token")).map(_.value).get,
-        resp.headers.find(_.is("x-storage-url")).map(_.value).get,
-        revision)
-    }
-  }
+  def authenticationRequest(credentials: Credentials, authUrl: String): HttpRequest =
+    Get(authUrl) ~> addHeader("X-Auth-User", credentials.user) ~> addHeader("X-Auth-Key", credentials.key)
 
-  private def authPipeline(credentials: Credentials)
-                          (implicit refFactory: ActorRefFactory,
-                           ctx: ExecutionContext, futureTimeout: Timeout) =
-    addHeader("X-Auth-User", credentials.user) ~>
-    addHeader("X-Auth-Key", credentials.key) ~>
-    sendReceive(refFactory, ctx, futureTimeout)
+  def authResultFromResponse(response: HttpResponse, revision: Int) =
+    AuthenticationResult(
+      response.headers.find(_.is("x-auth-token")).map(_.value).get,
+      response.headers.find(_.is("x-storage-url")).map(_.value).get,
+      revision)
 }
