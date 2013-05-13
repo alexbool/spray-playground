@@ -6,10 +6,11 @@ import akka.util.Timeout
 import akka.io.IO
 import spray.can.Http
 import spray.httpx.UnsuccessfulResponseException
-import spray.http.{HttpResponse, StatusCodes}
+import spray.http.{HttpRequest, HttpResponse, StatusCodes}
+import spray.client.pipelining._
 
 private[swift] class Authenticator(credentials: Credentials, authUrl: String)(implicit futureTimeout: Timeout)
-  extends Actor with Authentication with ActorLogging {
+  extends Actor with ActorLogging {
 
   val httpTransport = IO(Http)(context.system)
 
@@ -46,4 +47,13 @@ private[swift] class Authenticator(credentials: Credentials, authUrl: String)(im
     log.warning(s"Authentication failed: $error")
     context.parent ! AuthenticationFailed(error)
   }
+
+  def authenticationRequest(credentials: Credentials, authUrl: String): HttpRequest =
+    Get(authUrl) ~> addHeader("X-Auth-User", credentials.user) ~> addHeader("X-Auth-Key", credentials.key)
+
+  def authResultFromResponse(response: HttpResponse, revision: Int) =
+    AuthenticationResult(
+      response.headers.find(_.is("x-auth-token")).map(_.value).get,
+      response.headers.find(_.is("x-storage-url")).map(_.value).get,
+      revision)
 }
