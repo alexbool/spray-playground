@@ -9,7 +9,7 @@
         <scala-version>2.10.1</scala-version>
         <spray-version>1.1-20130511</spray-version>
         <spray-json-version>1.2.3</spray-json-version>
-        <akka-version>2.1.2</akka-version>
+        <akka-version>2.1.3</akka-version>
         <casbah-version>2.6.0</casbah-version>
         <infinispan-version>5.2.6.Final</infinispan-version>
         <elasticsearch-version>0.90.0</elasticsearch-version>
