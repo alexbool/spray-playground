@@ -8,8 +8,6 @@ import language.postfixOps
 class SwiftClient(credentials: Credentials, authUrl: String)(implicit futureTimeout: Timeout = 10 seconds)
   extends Actor with ActorLogging with AccountActions with ContainerActions with ObjectActions {
 
-  import context.dispatcher
-
   val authenticator = context.actorOf(Props(new Authenticator(credentials, authUrl)), "authenticator")
   var authInProgress = false
   var cachedAuth: Option[AuthenticationResult] = None
@@ -17,25 +15,25 @@ class SwiftClient(credentials: Credentials, authUrl: String)(implicit futureTime
 
   def receive = {
     case ListContainers =>
-      executeRequest(auth => listContainers(auth.storageUrl, auth.token))
+      executeRequest(new ListContainersAction)
 
     case ListObjects(container) =>
-      executeRequest(auth => listObjects(auth.storageUrl, container, auth.token))
+      executeRequest(new ListObjectsAction(container))
 
     case CreateContainer(container) =>
-      executeRequest(auth => createContainer(auth.storageUrl, container, auth.token))
+      executeRequest(new CreateContainerAction(container))
 
     case DeleteContainer(container) =>
-      executeRequest(auth => deleteContainer(auth.storageUrl, container, auth.token))
+      executeRequest(new DeleteContainerAction(container))
 
     case GetObject(container, name) =>
-      executeRequest(auth => getObject(auth.storageUrl, container, name, auth.token))
+      executeRequest(new GetObjectAction(container, name))
 
     case PutObject(container, name, mediaType, data) =>
-      executeRequest(auth => putObject(auth.storageUrl, container, name, mediaType, data, auth.token))
+      executeRequest(new PutObjectAction(container, name, mediaType, data))
 
     case DeleteObject(container, name) =>
-      executeRequest(auth => deleteObject(auth.storageUrl, container, name, auth.token))
+      executeRequest(new DeleteObjectAction(container, name))
 
     case msg: GotAuthentication     => handleGotAuthentication(msg)
     case msg: AuthenticationFailed  => handleAuthenticationFailed(msg)

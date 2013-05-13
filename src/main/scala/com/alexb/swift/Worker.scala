@@ -2,19 +2,19 @@ package com.alexb.swift
 
 import akka.actor.{ActorRef, ActorLogging, Actor}
 import akka.actor.Status.Failure
-import scala.concurrent.Future
-import scala.util.control.NonFatal
+import akka.io.IO
+import spray.can.Http
 import spray.httpx.UnsuccessfulResponseException
-import spray.http.StatusCodes
+import spray.http.{HttpResponse, StatusCodes}
 
 private[swift] class Worker[R](action: Action[R], recipient: ActorRef)
   extends Actor with ActorLogging {
 
   case object Retry
 
-  import context.dispatcher
-
+  val httpTransport = IO(Http)(context.system)
   var inProgress = false
+  var currentAuth: Option[AuthenticationResult] = None
   var fresherAuth: Option[AuthenticationResult] = None
 
   def receive = {
@@ -22,6 +22,8 @@ private[swift] class Worker[R](action: Action[R], recipient: ActorRef)
     case Retry                   => handleRetry()
     case BadCredentials          => recipient ! Failure(new BadCredentialsException)
     case AuthenticationFailed(e) => recipient ! Failure(new SwiftException(e))
+    case r: HttpResponse         => handleResponse(r)
+    case Failure(e)              => handleFailure(e)
   }
 
   def handleGotAuthentication(auth: AuthenticationResult) {
@@ -41,25 +43,30 @@ private[swift] class Worker[R](action: Action[R], recipient: ActorRef)
 
   def executeAction(auth: AuthenticationResult) {
     log.debug("Executing action")
+    currentAuth = Some(auth)
     inProgress = true
-    val resultF: Future[R] = action(auth)
-    resultF onSuccess { case result =>
+    httpTransport ! action.buildRequest(auth)
+  }
+
+  def handleResponse(response: HttpResponse) {
+    if (response.status == StatusCodes.Unauthorized) {
+      // Notify that current authentication expired, wait for another GotAuthentication message
+      context.parent ! AuthenticationExpired(currentAuth.get.revision)
+      currentAuth = None
+      self ! Retry
+    } else if (response.status.isSuccess || response.status == StatusCodes.NotFound) {
+      val result = action.parseResponse(response)
       log.debug(s"Successful result: $result, stopping")
       recipient ! result
       context.stop(self)
+    } else {
+      handleFailure(new UnsuccessfulResponseException(response))
     }
-    resultF onFailure {
-      case e: UnsuccessfulResponseException if e.response.status == StatusCodes.Unauthorized => {
-        // Notify that current authentication expired, wait for another GotAuthentication message
-        context.parent ! AuthenticationExpired(auth.revision)
-        self ! Retry
-        log.info("Got 401 response, will wait for new authentication to retry")
-      }
-      case NonFatal(e) => {
-        log.warning(s"Error when performing request: $e, stopping")
-        recipient ! Failure(new SwiftException(e))
-        context.stop(self)
-      }
-    }
+  }
+
+  def handleFailure(error: Throwable) {
+    log.warning(s"Error when performing request: $error, stopping")
+    recipient ! Failure(new SwiftException(error))
+    context.stop(self)
   }
 }

@@ -14,3 +14,5 @@ private[swift] trait SwiftApiUtils {
 
   def authHeader(token: String) = addHeader("X-Storage-Token", token)
 }
+
+private[swift] object SwiftApiUtils extends SwiftApiUtils

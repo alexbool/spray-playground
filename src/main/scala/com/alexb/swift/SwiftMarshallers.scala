@@ -20,3 +20,5 @@ private[swift] trait SwiftMarshallers extends SprayJsonSupport with DefaultJsonP
                                               "last_modified" -> JsString(obj.lastModified.toString))
   }
 }
+
+private[swift] object SwiftMarshallers extends SwiftMarshallers
