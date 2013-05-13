@@ -21,7 +21,7 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
   implicit val askTimeout = Timeout(timeout)
 
   val port = Stream.continually(Random.nextInt(65536)).find(_ > 49152).get
-  val mockSwiftServer = system.actorOf(Props(new StubSwiftServer))
+  val mockSwiftServer = system.actorOf(Props(new StubSwiftServer), "stub-swift-server")
   Await.ready(IO(Http) ? Http.Bind(mockSwiftServer, "localhost", port), timeout)
 
   val client = system.actorOf(
