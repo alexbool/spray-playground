@@ -10,8 +10,6 @@ import spray.http.{HttpResponse, StatusCodes}
 private[swift] class Worker[R](action: Action[R], recipient: ActorRef)
   extends Actor with ActorLogging {
 
-  case object Retry
-
   val httpTransport = IO(Http)(context.system)
   var inProgress = false
   var currentAuth: Option[AuthenticationResult] = None
@@ -19,7 +17,6 @@ private[swift] class Worker[R](action: Action[R], recipient: ActorRef)
 
   def receive = {
     case GotAuthentication(auth) => handleGotAuthentication(auth)
-    case Retry                   => handleRetry()
     case BadCredentials          => recipient ! Failure(new BadCredentialsException)
     case AuthenticationFailed(e) => recipient ! Failure(new SwiftException(e))
     case r: HttpResponse         => handleResponse(r)
@@ -34,7 +31,8 @@ private[swift] class Worker[R](action: Action[R], recipient: ActorRef)
       fresherAuth = Some(auth)
   }
 
-  def handleRetry() {
+  def retry() {
+    currentAuth = None
     fresherAuth match {
       case Some(auth) => executeAction(auth)
       case None       => inProgress = false
@@ -52,8 +50,7 @@ private[swift] class Worker[R](action: Action[R], recipient: ActorRef)
     if (response.status == StatusCodes.Unauthorized) {
       // Notify that current authentication expired, wait for another GotAuthentication message
       context.parent ! AuthenticationExpired(currentAuth.get.revision)
-      currentAuth = None
-      self ! Retry
+      retry()
     } else if (response.status.isSuccess || response.status == StatusCodes.NotFound) {
       val result = action.parseResponse(response)
       log.debug(s"Successful result: $result, stopping")
