@@ -37,10 +37,10 @@ trait OrderService
         }
       } ~
       get {
-        path("orders" / PathElement) { orderId =>
+        path("orders" / Segment) { orderId =>
           complete((orderActor ? OrderByIdQuery(orderId)).mapTo[Option[Order]])
         } ~
-        path("orders-by-client" / PathElement) { clientId =>
+        path("orders-by-client" / Segment) { clientId =>
           pageInfo { page =>
             complete((orderActor ? OrdersByClientIdQuery(clientId, page)).mapTo[List[Order]])
           }
