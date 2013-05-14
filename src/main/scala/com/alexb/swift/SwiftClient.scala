@@ -1,11 +1,9 @@
 package com.alexb.swift
 
 import akka.actor._
-import akka.util.Timeout
-import scala.concurrent.duration._
 import language.postfixOps
 
-class SwiftClient(credentials: Credentials, authUrl: String)(implicit futureTimeout: Timeout = 10 seconds)
+class SwiftClient(credentials: Credentials, authUrl: String)
   extends Actor with ActorLogging {
 
   val authenticator = context.actorOf(Props(new Authenticator(credentials, authUrl)), "authenticator")

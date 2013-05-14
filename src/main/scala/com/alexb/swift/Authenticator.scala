@@ -2,14 +2,13 @@ package com.alexb.swift
 
 import akka.actor.{ActorLogging, Actor}
 import akka.actor.Status.Failure
-import akka.util.Timeout
 import akka.io.IO
 import spray.can.Http
 import spray.httpx.UnsuccessfulResponseException
 import spray.http.{HttpRequest, HttpResponse, StatusCodes}
 import spray.client.pipelining._
 
-private[swift] class Authenticator(credentials: Credentials, authUrl: String)(implicit futureTimeout: Timeout)
+private[swift] class Authenticator(credentials: Credentials, authUrl: String)
   extends Actor with ActorLogging {
 
   val httpTransport = IO(Http)(context.system)
