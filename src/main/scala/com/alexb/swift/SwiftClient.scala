@@ -1,7 +1,6 @@
 package com.alexb.swift
 
 import akka.actor._
-import language.postfixOps
 
 class SwiftClient(credentials: Credentials, authUrl: String)
   extends Actor with ActorLogging {
