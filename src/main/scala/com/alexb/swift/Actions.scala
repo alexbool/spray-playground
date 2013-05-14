@@ -5,7 +5,7 @@ import spray.http.{HttpEntity, MediaType, StatusCodes, HttpRequest, HttpResponse
 import spray.http.HttpHeaders.`Content-Type`
 
 import SwiftApiUtils._
-import SwiftMarshallers._
+import Marshallers._
 
 private[swift] trait Action[R] {
   def buildRequest(auth: AuthenticationResult): HttpRequest

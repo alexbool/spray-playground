@@ -16,7 +16,7 @@ import scala.util.Random
 case object RegenerateToken
 case object FailOnNextRequest
 
-class StubSwiftServer extends HttpServiceActor with SwiftMarshallers with ActorLogging {
+class StubSwiftServer extends HttpServiceActor with Marshallers with ActorLogging {
 
   var token = generateToken
   var failOnNextRequest = false
