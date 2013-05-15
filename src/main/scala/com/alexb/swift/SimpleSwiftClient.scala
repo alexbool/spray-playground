@@ -1,6 +1,6 @@
 package com.alexb.swift
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorRefFactory, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
@@ -8,9 +8,9 @@ import spray.http.MediaType
 import language.postfixOps
 
 class SimpleSwiftClient(credentials: Credentials, authUrl: String)
-                       (implicit system: ActorSystem, timeout: Timeout = 20 seconds) {
+                       (implicit refFactory: ActorRefFactory, timeout: Timeout = 20 seconds) {
 
-  private val client = system.actorOf(props = Props(new SwiftClient(credentials, authUrl)))
+  private val client = refFactory.actorOf(props = Props(new SwiftClient(credentials, authUrl)))
 
   def listContainers = (client ? ListContainers).mapTo[Seq[Container]]
   def listObjects(container: String) = (client ? ListObjects(container)).mapTo[Seq[ObjectMetadata]]
