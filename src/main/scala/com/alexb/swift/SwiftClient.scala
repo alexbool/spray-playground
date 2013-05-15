@@ -37,16 +37,12 @@ class SwiftClient(credentials: Credentials, authUrl: String) extends Actor with 
   }
 
   def executeRequest[R](action: Action[R]) {
-    tryAuthenticateIfNeeded()
+    if (cachedAuth.isEmpty && !authInProgress) {
+      authInProgress = true
+      authenticator ! TryAuthenticate
+    }
     val worker = newWorker(action, sender)
     if (cachedAuth.isDefined) worker ! GotAuthentication(cachedAuth.get)
-
-    def tryAuthenticateIfNeeded() {
-      if (cachedAuth.isEmpty && !authInProgress) {
-        authInProgress = true
-        authenticator ! TryAuthenticate
-      }
-    }
   }
 
   def handleGotAuthentication(msg: GotAuthentication) {
