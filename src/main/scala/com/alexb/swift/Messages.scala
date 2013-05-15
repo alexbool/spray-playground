@@ -29,9 +29,9 @@ object PutObject {
     new PutObject(container, name, mediaType, data)
 }
 
-// Response messages
 case class DeleteObject(container: String, name: String)
 
+// Response messages
 case class CreateContainerResult(success: Boolean, alreadyExists: Boolean)
 case class DeleteContainerResult(success: Boolean, alreadyDeleted: Boolean)
 
