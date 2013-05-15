@@ -5,9 +5,10 @@ import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
 import spray.http.MediaType
+import language.postfixOps
 
 class SimpleSwiftClient(credentials: Credentials, authUrl: String)
-                       (implicit system: ActorSystem, timeout: Timeout = Timeout(20 seconds)) {
+                       (implicit system: ActorSystem, timeout: Timeout = 20 seconds) {
 
   private val client = system.actorOf(props = Props(new SwiftClient(credentials, authUrl)))
 
