@@ -3,10 +3,10 @@ package com.alexb.swift
 import akka.actor._
 
 class SwiftClient(credentials: Credentials, authUrl: String) extends Actor with ActorLogging {
-  val authenticator = context.actorOf(Props(new Authenticator(credentials, authUrl)), "authenticator")
-  var authInProgress = false
-  var cachedAuth: Option[AuthenticationResult] = None
-  val workerCounter = Iterator from 0
+  private val authenticator = context.actorOf(Props(new Authenticator(credentials, authUrl)), "authenticator")
+  private var authInProgress = false
+  private var cachedAuth: Option[AuthenticationResult] = None
+  private val workerCounter = Iterator from 0
 
   def receive = {
     case ListContainers =>

@@ -8,10 +8,10 @@ import spray.httpx.UnsuccessfulResponseException
 import spray.http.{HttpResponse, StatusCodes}
 
 private[swift] class Worker[R](action: Action[R], recipient: ActorRef) extends Actor with ActorLogging {
-  val httpTransport = IO(Http)(context.system)
-  var inProgress = false
-  var currentAuth: Option[AuthenticationResult] = None
-  var fresherAuth: Option[AuthenticationResult] = None
+  private val httpTransport = IO(Http)(context.system)
+  private var inProgress = false
+  private var currentAuth: Option[AuthenticationResult] = None
+  private var fresherAuth: Option[AuthenticationResult] = None
 
   def receive = {
     case GotAuthentication(auth) => handleGotAuthentication(auth)

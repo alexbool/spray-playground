@@ -9,10 +9,10 @@ import spray.http.{HttpRequest, HttpResponse, StatusCodes}
 import spray.client.pipelining._
 
 private[swift] class Authenticator(credentials: Credentials, authUrl: String) extends Actor with ActorLogging {
-  val httpTransport = IO(Http)(context.system)
+  private val httpTransport = IO(Http)(context.system)
 
-  val revisionCounter = Iterator from 0
-  var currentRevision = 0
+  private val revisionCounter = Iterator from 0
+  private var currentRevision = 0
 
   def receive = {
     case TryAuthenticate            => tryAuthenticate()
