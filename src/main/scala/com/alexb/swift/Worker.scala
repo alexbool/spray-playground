@@ -9,39 +9,29 @@ import spray.http.{HttpResponse, StatusCodes}
 
 private[swift] class Worker[R](action: Action[R], recipient: ActorRef) extends Actor with ActorLogging {
   private val httpTransport = IO(Http)(context.system)
-  private var inProgress = false
   private var currentAuth: Option[AuthenticationResult] = None
   private var fresherAuth: Option[AuthenticationResult] = None
 
-  def receive = {
-    case GotAuthentication(auth) => handleGotAuthentication(auth)
-    case BadCredentials          => recipient ! Failure(new BadCredentialsException)
+  def receive = waitingForAuth
+
+  def waitingForAuth: Receive = {
+    case GotAuthentication(auth) => executeAction(auth)
     case AuthenticationFailed(e) => recipient ! Failure(new SwiftException(e))
+    case BadCredentials          => recipient ! Failure(new BadCredentialsException)
+  }
+
+  def requestInProgress: Receive = {
+    case GotAuthentication(auth) => fresherAuth = Some(auth)
     case r: HttpResponse         => handleResponse(r)
     case Failure(e)              => handleFailure(e)
-  }
-
-  def handleGotAuthentication(auth: AuthenticationResult) {
-    log.debug(s"Got authentication: $auth")
-    if (!inProgress)
-      executeAction(auth)
-    else
-      fresherAuth = Some(auth)
-  }
-
-  def retry() {
-    currentAuth = None
-    fresherAuth match {
-      case Some(auth) => executeAction(auth)
-      case None       => inProgress = false
-    }
+    case BadCredentials          => recipient ! Failure(new BadCredentialsException)
   }
 
   def executeAction(auth: AuthenticationResult) {
     log.debug("Executing action")
     currentAuth = Some(auth)
-    inProgress = true
     httpTransport ! action.buildRequest(auth)
+    context become requestInProgress
   }
 
   def handleResponse(response: HttpResponse) {
@@ -56,6 +46,14 @@ private[swift] class Worker[R](action: Action[R], recipient: ActorRef) extends A
       context.stop(self)
     } else {
       handleFailure(new UnsuccessfulResponseException(response))
+    }
+  }
+
+  def retry() {
+    currentAuth = None
+    fresherAuth match {
+      case Some(auth) => executeAction(auth)
+      case None       => context become waitingForAuth
     }
   }
 
