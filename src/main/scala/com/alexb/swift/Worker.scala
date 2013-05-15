@@ -7,9 +7,7 @@ import spray.can.Http
 import spray.httpx.UnsuccessfulResponseException
 import spray.http.{HttpResponse, StatusCodes}
 
-private[swift] class Worker[R](action: Action[R], recipient: ActorRef)
-  extends Actor with ActorLogging {
-
+private[swift] class Worker[R](action: Action[R], recipient: ActorRef) extends Actor with ActorLogging {
   val httpTransport = IO(Http)(context.system)
   var inProgress = false
   var currentAuth: Option[AuthenticationResult] = None

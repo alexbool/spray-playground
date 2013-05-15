@@ -8,9 +8,7 @@ import spray.httpx.UnsuccessfulResponseException
 import spray.http.{HttpRequest, HttpResponse, StatusCodes}
 import spray.client.pipelining._
 
-private[swift] class Authenticator(credentials: Credentials, authUrl: String)
-  extends Actor with ActorLogging {
-
+private[swift] class Authenticator(credentials: Credentials, authUrl: String) extends Actor with ActorLogging {
   val httpTransport = IO(Http)(context.system)
 
   val revisionCounter = Iterator from 0

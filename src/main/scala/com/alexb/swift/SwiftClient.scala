@@ -2,9 +2,7 @@ package com.alexb.swift
 
 import akka.actor._
 
-class SwiftClient(credentials: Credentials, authUrl: String)
-  extends Actor with ActorLogging {
-
+class SwiftClient(credentials: Credentials, authUrl: String) extends Actor with ActorLogging {
   val authenticator = context.actorOf(Props(new Authenticator(credentials, authUrl)), "authenticator")
   var authInProgress = false
   var cachedAuth: Option[AuthenticationResult] = None
