@@ -42,6 +42,13 @@ class SwiftClient(credentials: Credentials, authUrl: String)
     tryAuthenticateIfNeeded()
     val worker = newWorker(action, sender)
     if (cachedAuth.isDefined) worker ! GotAuthentication(cachedAuth.get)
+
+    def tryAuthenticateIfNeeded() {
+      if (cachedAuth.isEmpty && !authInProgress) {
+        authInProgress = true
+        authenticator ! TryAuthenticate
+      }
+    }
   }
 
   def handleGotAuthentication(msg: GotAuthentication) {
@@ -78,11 +85,4 @@ class SwiftClient(credentials: Credentials, authUrl: String)
   }
 
   def workers = context.actorSelection("worker-*")
-
-  def tryAuthenticateIfNeeded() {
-    if (cachedAuth.isEmpty && !authInProgress) {
-      authInProgress = true
-      authenticator ! TryAuthenticate
-    }
-  }
 }
