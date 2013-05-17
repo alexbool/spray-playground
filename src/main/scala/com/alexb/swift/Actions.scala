@@ -7,7 +7,7 @@ import spray.http.HttpHeaders.`Content-Type`
 import SwiftApiUtils._
 import Marshallers._
 
-private[swift] trait Action[R] {
+private[swift] sealed trait Action[R] {
   def buildRequest(auth: AuthenticationResult): HttpRequest
   def parseResponse(resp: HttpResponse): R
 }
