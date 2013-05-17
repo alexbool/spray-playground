@@ -6,14 +6,16 @@ import spray.http.MediaTypes.CustomMediaType
 ///////////////////////////// External API messages /////////////////////////////
 
 // Command messages
-case object ListContainers
+sealed trait Request
 
-case class ListObjects(container: String)
-case class CreateContainer(container: String)
-case class DeleteContainer(container: String)
+case object ListContainers extends Request
 
-case class GetObject(container: String, name: String)
-case class PutObject(container: String, name: String, mediaType: MediaType, data: Array[Byte]) {
+case class ListObjects(container: String) extends Request
+case class CreateContainer(container: String) extends Request
+case class DeleteContainer(container: String) extends Request
+
+case class GetObject(container: String, name: String) extends Request
+case class PutObject(container: String, name: String, mediaType: MediaType, data: Array[Byte]) extends Request {
   def this(container: String, name: String, data: Array[Byte]) =
     this(container, name, MediaTypes.forExtension(name.split('.').last).get, data)
 
@@ -29,7 +31,7 @@ object PutObject {
     new PutObject(container, name, mediaType, data)
 }
 
-case class DeleteObject(container: String, name: String)
+case class DeleteObject(container: String, name: String) extends Request
 
 // Response messages
 case class CreateContainerResult(success: Boolean, alreadyExists: Boolean)

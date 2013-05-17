@@ -9,27 +9,7 @@ class SwiftClient(credentials: Credentials, authUrl: String) extends Actor with 
   private val workerCounter = Iterator from 0
 
   def receive = {
-    case ListContainers =>
-      executeRequest(new ListContainersAction)
-
-    case ListObjects(container) =>
-      executeRequest(new ListObjectsAction(container))
-
-    case CreateContainer(container) =>
-      executeRequest(new CreateContainerAction(container))
-
-    case DeleteContainer(container) =>
-      executeRequest(new DeleteContainerAction(container))
-
-    case GetObject(container, name) =>
-      executeRequest(new GetObjectAction(container, name))
-
-    case PutObject(container, name, mediaType, data) =>
-      executeRequest(new PutObjectAction(container, name, mediaType, data))
-
-    case DeleteObject(container, name) =>
-      executeRequest(new DeleteObjectAction(container, name))
-
+    case msg: Request               => executeRequest(actionForRequest(msg))
     case msg: GotAuthentication     => handleGotAuthentication(msg)
     case msg: AuthenticationFailed  => handleAuthenticationFailed(msg)
     case msg: AuthenticationExpired => handleAuthenticationExpired(msg)
@@ -70,6 +50,16 @@ class SwiftClient(credentials: Credentials, authUrl: String) extends Actor with 
       cachedAuth = None
     }
     authenticator ! msg
+  }
+
+  def actionForRequest(request: Request) = request match {
+    case ListContainers                              => new ListContainersAction
+    case ListObjects(container)                      => new ListObjectsAction(container)
+    case CreateContainer(container)                  => new CreateContainerAction(container)
+    case DeleteContainer(container)                  => new DeleteContainerAction(container)
+    case GetObject(container, name)                  => new GetObjectAction(container, name)
+    case PutObject(container, name, mediaType, data) => new PutObjectAction(container, name, mediaType, data)
+    case DeleteObject(container, name)               => new DeleteObjectAction(container, name)
   }
 
   def newWorker[R](action: Action[R], recipient: ActorRef) = {
