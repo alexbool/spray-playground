@@ -53,13 +53,13 @@ class SwiftClient(credentials: Credentials, authUrl: String) extends Actor with 
   }
 
   def actionForRequest(request: Request) = request match {
-    case ListContainers                              => new ListContainersAction
-    case ListObjects(container)                      => new ListObjectsAction(container)
-    case CreateContainer(container)                  => new CreateContainerAction(container)
-    case DeleteContainer(container)                  => new DeleteContainerAction(container)
-    case GetObject(container, name)                  => new GetObjectAction(container, name)
-    case PutObject(container, name, mediaType, data) => new PutObjectAction(container, name, mediaType, data)
-    case DeleteObject(container, name)               => new DeleteObjectAction(container, name)
+    case ListContainers     => new ListContainersAction
+    case r: ListObjects     => new ListObjectsAction(r)
+    case r: CreateContainer => new CreateContainerAction(r)
+    case r: DeleteContainer => new DeleteContainerAction(r)
+    case r: GetObject       => new GetObjectAction(r)
+    case r: PutObject       => new PutObjectAction(r)
+    case r: DeleteObject    => new DeleteObjectAction(r)
   }
 
   def newWorker[R](action: Action[R], recipient: ActorRef) = {
