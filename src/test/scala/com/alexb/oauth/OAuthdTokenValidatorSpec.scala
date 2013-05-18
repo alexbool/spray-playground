@@ -16,7 +16,7 @@ class OAuthdTokenValidatorSpec extends WordSpec with MustMatchers {
 
   implicit val system = ActorSystem()
   val timeout = 20 seconds
-  implicit val askTimeout = Timeout(timeout)
+  implicit val askTimeout: Timeout = timeout
 
   val port = Stream.continually(Random.nextInt(65536)).find(_ > 49152).get
   val stubOAuthdServer = system.actorOf(Props(new StubOAuthdServer))
