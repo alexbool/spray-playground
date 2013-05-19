@@ -13,7 +13,7 @@ class OrderSearchActor(client: Client, index: String) extends Actor with Elastic
   implicit val esClient = client
 
   def receive = {
-    case cmd: SearchOrdersByNotesQuery => answerWithFutureResult { searchByNotes(cmd.query, cmd.page) }
+    case SearchOrdersByNotesQuery(query, page) => answerWithFutureResult { searchByNotes(query, page) }
   }
 
   def searchByNotes(query: String, page: PageInfo) =
