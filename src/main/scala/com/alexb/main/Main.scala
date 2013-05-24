@@ -37,7 +37,7 @@ object Main extends App with ActorSystemFromAppContext {
 
   // create and start the HttpService actor running our service as well as the root actor
   val httpService = actorSystem.actorOf(
-    props = Props[SprayPlaygroundActor],
+    props = Props(new SprayPlaygroundActor(Context.calculatorService, Context.orderService)),
     name = "service")
 
   ///////////////////////////////////////////////////////////////////////////
