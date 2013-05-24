@@ -6,7 +6,7 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import spray.can.Http
 import com.alexb.calculator.{CalculatorService, AddCommandListener, AddCommand}
-import com.alexb.orders.OrderModule
+import com.alexb.orders.OrderService
 import com.alexb.statics.StaticsModule
 import com.alexb.user.UserModule
 import context._
@@ -18,10 +18,10 @@ object Main extends App with ActorSystemFromAppContext {
   Context.initialize()
 
   // create the service instance, supplying all required dependencies
-  class SprayPlaygroundActor(calculatorService: CalculatorService)
+  class SprayPlaygroundActor(calculatorService: CalculatorService, orderService: OrderService)
     extends Actor with ActorSystemFromAppContext with ActorSystemConfiguration
-    with OAuthdSupport with MongoFromAppContext with ElasticSearchFromAppContext with InfinispanFromAppContext
-    with OrderModule with StaticsModule with UserModule {
+    with MongoFromAppContext with ElasticSearchFromAppContext with InfinispanFromAppContext
+    with StaticsModule with UserModule {
 
     val timeout = Timeout(5 seconds) // needed for `?`
 
@@ -32,7 +32,7 @@ object Main extends App with ActorSystemFromAppContext {
     // this actor only runs our route, but you could add
     // other things here, like request stream processing
     // or timeout handling
-    def receive = runRoute(calculatorService.calculatorRoute ~ orderRoute ~ staticsRoute ~ userRoute)
+    def receive = runRoute(calculatorService.calculatorRoute ~ orderService.orderRoute ~ staticsRoute ~ userRoute)
   }
 
   // create and start the HttpService actor running our service as well as the root actor

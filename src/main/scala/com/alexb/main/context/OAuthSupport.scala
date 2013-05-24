@@ -11,7 +11,7 @@ trait OAuthSupport {
 trait OAuthdSupport extends OAuthSupport {
   this: ActorSystemContext with Configuration =>
 
-  val tokenValidator = new OAuthdTokenValidator(
+  lazy val tokenValidator = new OAuthdTokenValidator(
     url(config.getString("oauth.host"),
     config.getInt("oauth.port")))(actorSystem, actorSystem.dispatcher, 20.seconds)
 
