@@ -6,8 +6,9 @@ import com.alexb.infinispan.InfinispanCacheManager
 import org.infinispan.manager.DefaultCacheManager
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.transport.InetSocketTransportAddress
+import com.alexb.calculator.CalculatorServiceContext
 
-object Context extends ActorSystemContext with ActorSystemConfiguration with Initializable {
+object Context extends CalculatorServiceContext with ActorSystemContext with ActorSystemConfiguration with Initializable {
   val actorSystem = ActorSystem("spray-playground")
   val mongoDb = MongoConnection(config.getString("mongo.host"))(config.getString("mongo.db"))
   val cacheManager = new InfinispanCacheManager(new DefaultCacheManager(config.getString("infinispan.config")))

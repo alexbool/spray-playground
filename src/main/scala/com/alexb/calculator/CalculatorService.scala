@@ -1,31 +1,23 @@
 package com.alexb.calculator
 
 import scala.concurrent.ExecutionContext
-import spray.routing.HttpService
+import spray.routing.Directives
 import spray.httpx.SprayJsonSupport
 import spray.json.DefaultJsonProtocol
 import akka.util.Timeout
 import akka.actor.ActorRef
 import akka.pattern.ask
-import com.alexb.main.context.ActorSystemContext
+import akka.event.EventStream
 
-trait CalculatorService
-  extends HttpService
-  with SprayJsonSupport
-  with DefaultJsonProtocol
-  with CalculatorMarshallers { this: ActorSystemContext =>
-
-  implicit val timeout: Timeout // needed for `?` below
-  implicit private def ec: ExecutionContext = actorSystem.dispatcher
-
-  def calculator: ActorRef
+class CalculatorService(calculator: ActorRef, eventStream: EventStream)(implicit ec: ExecutionContext, timeout: Timeout)
+  extends Directives with SprayJsonSupport with DefaultJsonProtocol with CalculatorMarshallers {
 
   val calculatorRoute =
     pathPrefix("calculator") {
       get {
         path("add" / DoubleNumber / DoubleNumber) { (a, b) =>
           val cmd = AddCommand(a, b)
-          actorSystem.eventStream.publish(cmd)
+          eventStream.publish(cmd)
           complete((calculator ? cmd).mapTo[CalculatorResult])
         } ~
         path("subtract" / DoubleNumber / DoubleNumber) { (a, b) =>
