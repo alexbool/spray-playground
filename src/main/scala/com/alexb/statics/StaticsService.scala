@@ -1,19 +1,13 @@
 package com.alexb.statics
 
 import scala.concurrent.{ExecutionContext, Future}
-import spray.routing.HttpService
+import spray.routing.{Directives, HttpService}
 import spray.httpx.SprayJsonSupport
-import com.alexb.memoize.Memoize
+import com.alexb.memoize.{CacheManager, Memoize}
 import com.alexb.main.context.{ActorSystemContext, Caching, MongoSupport}
 
-trait StaticsService
-  extends HttpService
-  with SprayJsonSupport
-  with StaticsMarshallers
-  with Memoize { this: CountryRepository with Caching with ActorSystemContext =>
-
-  implicit private val cache = cacheManager
-  implicit private def ec: ExecutionContext = actorSystem.dispatcher
+class StaticsService(countryRepository: CountryRepository)(implicit ec: ExecutionContext, cache: CacheManager)
+  extends Directives with SprayJsonSupport with StaticsMarshallers with Memoize {
 
   val staticsRoute =
     pathPrefix("static") {
@@ -26,9 +20,12 @@ trait StaticsService
       }
     }
 
-  private val countries = memoizeAsyncValue("statics", "countries", Future(findCountries))
+  private val countries = memoizeAsyncValue("statics", "countries", Future(countryRepository.findCountries))
 }
 
-trait StaticsModule extends StaticsService with MongoCountryRepository {
+trait StaticsServiceContext {
   this: MongoSupport with Caching with ActorSystemContext =>
+
+  private lazy val countryRepository = new MongoCountryRepository(mongoDb)
+  lazy val staticsService = new StaticsService(countryRepository)(actorSystem.dispatcher, cacheManager)
 }

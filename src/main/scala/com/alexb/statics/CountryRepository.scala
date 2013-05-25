@@ -1,14 +1,12 @@
 package com.alexb.statics
 
 import com.mongodb.casbah.Imports._
-import com.alexb.main.context.MongoSupport
 
 trait CountryRepository {
   def findCountries: Seq[Country]
 }
 
-trait MongoCountryRepository extends CountryRepository {
-  this: MongoSupport =>
+class MongoCountryRepository(mongoDb: MongoDB) extends CountryRepository {
 
   private val countryCollection = mongoDb("countries")
 
