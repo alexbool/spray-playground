@@ -1,7 +1,6 @@
 package com.alexb.main.context
 
 import akka.actor.ActorSystem
-import com.mongodb.casbah.MongoConnection
 import com.alexb.infinispan.InfinispanCacheManager
 import org.infinispan.manager.DefaultCacheManager
 import org.elasticsearch.client.transport.TransportClient
@@ -11,10 +10,9 @@ import com.alexb.orders.OrderServiceContext
 import com.alexb.statics.StaticsServiceContext
 
 object Context extends CalculatorServiceContext with OrderServiceContext with StaticsServiceContext
-  with OAuthdSupport with ActorSystemContext with ActorSystemConfiguration with MongoSupport with ElasticSearchSupport
+  with OAuthdSupport with ActorSystemContext with ActorSystemConfiguration with DefaultMongo with ElasticSearchSupport
   with Caching with Initializable {
   val actorSystem = ActorSystem("spray-playground")
-  val mongoDb = MongoConnection(config.getString("mongo.host"))(config.getString("mongo.db"))
   val cacheManager = new InfinispanCacheManager(new DefaultCacheManager(config.getString("infinispan.config")))
   val elasticSearchClient =
     new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString("elasticsearch.host"), 9300))
