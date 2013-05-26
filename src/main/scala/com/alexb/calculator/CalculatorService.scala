@@ -8,11 +8,12 @@ import akka.util.Timeout
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.event.EventStream
+import com.alexb.main.HttpRouteContainer
 
 class CalculatorService(calculator: ActorRef, eventStream: EventStream)(implicit ec: ExecutionContext, timeout: Timeout)
-  extends Directives with SprayJsonSupport with DefaultJsonProtocol with CalculatorMarshallers {
+  extends Directives with SprayJsonSupport with DefaultJsonProtocol with CalculatorMarshallers with HttpRouteContainer {
 
-  val calculatorRoute =
+  val route =
     pathPrefix("calculator") {
       get {
         path("add" / DoubleNumber / DoubleNumber) { (a, b) =>

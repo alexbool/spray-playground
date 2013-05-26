@@ -20,6 +20,6 @@ object Context extends CalculatorServiceContext with OrderServiceContext with St
     new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString("elasticsearch.host"), 9300))
 
   val httpActor = actorSystem.actorOf(
-    props = Props(new SprayPlaygroundActor(calculatorService, orderService, staticsService, userService)),
+    props = Props(new SprayPlaygroundActor(Iterable(calculatorService, orderService, staticsService, userService))),
     name = "main")
 }

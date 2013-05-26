@@ -10,12 +10,13 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import com.alexb.utils.PageDirectives
 import com.alexb.oauth.{OAuthTokenValidator, OAuth}
+import com.alexb.main.HttpRouteContainer
 
 class OrderService(orderActor: ActorRef, orderSearchActor: ActorRef, tokenValidator: OAuthTokenValidator[_])
                   (implicit ec: ExecutionContext, timeout: Timeout)
-  extends Directives with PageDirectives with SprayJsonSupport with OrderMarshallers {
+  extends Directives with PageDirectives with SprayJsonSupport with OrderMarshallers with HttpRouteContainer {
 
-  val orderRoute = {
+  val route = {
     pathPrefix("orders") {
       post {
         path("save-order") {

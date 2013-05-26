@@ -8,16 +8,17 @@ import spray.http.StatusCodes._
 import org.joda.time.Instant
 import com.alexb.utils.{ErrorDescription, ErrorDescriptionMarshallers}
 import com.alexb.main.context.{ActorSystemContext, MongoSupport}
+import com.alexb.main.HttpRouteContainer
 
 class UserService(userRepository: UserRepository)(implicit ec: ExecutionContext)
-  extends Directives with SprayJsonSupport with UserMarshallers with ErrorDescriptionMarshallers {
+  extends Directives with SprayJsonSupport with UserMarshallers with ErrorDescriptionMarshallers with HttpRouteContainer {
 
   implicit def exceptionHandler = ExceptionHandler.fromPF {
     case e: DuplicateUsernameException => ctx =>
       ctx.complete(BadRequest, ErrorDescription("Duplicate username"))
   }
 
-  val userRoute =
+  val route =
     pathPrefix("users") {
       get {
         path("check-username-free") {

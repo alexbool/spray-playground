@@ -5,11 +5,12 @@ import spray.routing.{Directives, HttpService}
 import spray.httpx.SprayJsonSupport
 import com.alexb.memoize.{CacheManager, Memoize}
 import com.alexb.main.context.{ActorSystemContext, Caching, MongoSupport}
+import com.alexb.main.HttpRouteContainer
 
 class StaticsService(countryRepository: CountryRepository)(implicit ec: ExecutionContext, cache: CacheManager)
-  extends Directives with SprayJsonSupport with StaticsMarshallers with Memoize {
+  extends Directives with SprayJsonSupport with StaticsMarshallers with Memoize with HttpRouteContainer {
 
-  val staticsRoute =
+  val route =
     pathPrefix("static") {
       get {
         path("countries") {
