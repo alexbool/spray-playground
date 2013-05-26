@@ -7,10 +7,12 @@ import com.alexb.calculator.{AddCommandListener, AddCommand}
 import context._
 import language.postfixOps
 
-object Main extends App with ActorSystemFromAppContext {
+object Main extends App {
 
   // Initialize application context beans
   Context.initialize()
+
+  val actorSystem = Context.actorSystem
 
   // create and start the HttpService actor running our service
   val httpService = actorSystem.actorOf(

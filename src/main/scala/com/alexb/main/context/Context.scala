@@ -18,20 +18,3 @@ object Context extends CalculatorServiceContext with OrderServiceContext with St
   val elasticSearchClient =
     new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString("elasticsearch.host"), 9300))
 }
-
-// Some DI traits
-trait ActorSystemFromAppContext extends ActorSystemContext {
-  def actorSystem = Context.actorSystem
-}
-
-trait MongoFromAppContext extends MongoSupport {
-  def mongoDb = Context.mongoDb
-}
-
-trait InfinispanFromAppContext extends Caching {
-  def cacheManager = Context.cacheManager
-}
-
-trait ElasticSearchFromAppContext extends ElasticSearchSupport {
-  def elasticSearchClient = Context.elasticSearchClient
-}
