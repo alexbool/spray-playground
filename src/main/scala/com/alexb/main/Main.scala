@@ -13,6 +13,7 @@ object Main extends App {
   Context.initialize()
 
   val actorSystem = Context.actorSystem
+  val config = Context.config
 
   ///////////////////////////////////////////////////////////////////////////
   // Subscribing AddCommandListener
@@ -22,6 +23,6 @@ object Main extends App {
 
   // start a new HTTP server on selected port with our service actor as the handler
   IO(Http)(actorSystem) ! Http.Bind(Context.httpActor,
-      interface = actorSystem.settings.config.getString("application.host"),
-      port = actorSystem.settings.config.getInt("application.port"))
+      interface = config.getString("application.host"),
+      port = config.getInt("application.port"))
 }
