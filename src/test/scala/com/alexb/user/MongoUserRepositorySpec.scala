@@ -4,6 +4,7 @@ import org.scalatest._
 import com.alexb.main.context.DefaultMongo
 import com.alexb.test.Config
 import org.joda.time.Instant
+import language.reflectiveCalls
 
 class MongoUserRepositorySpec extends WordSpec with MustMatchers
   with BeforeAndAfterEach with BeforeAndAfterAll {
