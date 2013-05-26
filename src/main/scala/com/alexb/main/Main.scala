@@ -18,7 +18,7 @@ object Main extends App {
   val httpService = actorSystem.actorOf(
     props = Props(new SprayPlaygroundActor(Context.calculatorService, Context.orderService,
       Context.staticsService, Context.userService)),
-    name = "service")
+    name = "main")
 
   ///////////////////////////////////////////////////////////////////////////
   // Subscribing AddCommandListener
