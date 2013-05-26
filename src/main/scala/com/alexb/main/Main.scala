@@ -14,12 +14,6 @@ object Main extends App {
 
   val actorSystem = Context.actorSystem
 
-  // create and start the HttpService actor running our service
-  val httpService = actorSystem.actorOf(
-    props = Props(new SprayPlaygroundActor(Context.calculatorService, Context.orderService,
-      Context.staticsService, Context.userService)),
-    name = "main")
-
   ///////////////////////////////////////////////////////////////////////////
   // Subscribing AddCommandListener
   val addCommandListener = actorSystem.actorOf(Props[AddCommandListener])
@@ -27,7 +21,7 @@ object Main extends App {
   ///////////////////////////////////////////////////////////////////////////
 
   // start a new HTTP server on selected port with our service actor as the handler
-  IO(Http)(actorSystem) ! Http.Bind(httpService,
+  IO(Http)(actorSystem) ! Http.Bind(Context.httpActor,
       interface = actorSystem.settings.config.getString("application.host"),
       port = actorSystem.settings.config.getInt("application.port"))
 }
