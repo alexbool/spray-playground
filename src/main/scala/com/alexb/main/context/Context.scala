@@ -8,8 +8,9 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress
 import com.alexb.calculator.CalculatorServiceContext
 import com.alexb.orders.OrderServiceContext
 import com.alexb.statics.StaticsServiceContext
+import com.alexb.user.UserServiceContext
 
-object Context extends CalculatorServiceContext with OrderServiceContext with StaticsServiceContext
+object Context extends CalculatorServiceContext with OrderServiceContext with StaticsServiceContext with UserServiceContext
   with OAuthdSupport with ActorSystemContext with ActorSystemConfiguration with DefaultMongo with ElasticSearchSupport
   with Caching with Initializable {
   val actorSystem = ActorSystem("spray-playground")

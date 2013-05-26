@@ -1,23 +1,16 @@
 package com.alexb.user
 
-import akka.actor.ActorSystem
 import scala.concurrent.{ExecutionContext, Future}
-import spray.routing.{ HttpService, ExceptionHandler }
+import spray.routing.{Directives, ExceptionHandler}
 import spray.httpx.SprayJsonSupport
 import spray.http.HttpResponse
 import spray.http.StatusCodes._
 import org.joda.time.Instant
-import com.alexb.utils.{ ErrorDescription, ErrorDescriptionMarshallers }
-import com.alexb.main.context.MongoSupport
+import com.alexb.utils.{ErrorDescription, ErrorDescriptionMarshallers}
+import com.alexb.main.context.{ActorSystemContext, MongoSupport}
 
-trait UserService
-  extends HttpService
-  with SprayJsonSupport
-  with UserMarshallers
-  with ErrorDescriptionMarshallers { this: UserRepository =>
-
-  implicit def actorSystem: ActorSystem
-  implicit private def ec: ExecutionContext = actorSystem.dispatcher
+class UserService(userRepository: UserRepository)(implicit ec: ExecutionContext)
+  extends Directives with SprayJsonSupport with UserMarshallers with ErrorDescriptionMarshallers {
 
   implicit def exceptionHandler = ExceptionHandler.fromPF {
     case e: DuplicateUsernameException => ctx =>
@@ -29,12 +22,12 @@ trait UserService
       get {
         path("check-username-free") {
           parameter('username.as[String]) { username =>
-            complete(Future { CheckResult(checkUsernameFree(username)) })
+            complete(Future { CheckResult(userRepository.checkUsernameFree(username)) })
           }
         } ~
           path("check-credentials") {
             parameters('username.as[String], 'password.as[String]) { (username, password) =>
-              complete(Future { CheckResult(checkCredentials(username, password)) })
+              complete(Future { CheckResult(userRepository.checkCredentials(username, password)) })
             }
           }
       } ~
@@ -43,7 +36,7 @@ trait UserService
           entity(as[RegisterUserCommand]) { cmd =>
             ctx =>
               val result = Future {
-                save(User(cmd.username, cmd.password, Instant.now))
+                userRepository.save(User(cmd.username, cmd.password, Instant.now))
               } map {
                 _ => HttpResponse(Created)
               }
@@ -54,7 +47,8 @@ trait UserService
     }
 }
 
-trait UserModule extends UserService with MongoUserRepository {
-  this: MongoSupport =>
-}
+trait UserServiceContext { this: ActorSystemContext with MongoSupport =>
 
+  private lazy val userRepository = new MongoUserRepository(mongoDb)
+  lazy val userService = new UserService(userRepository)(actorSystem.dispatcher)
+}

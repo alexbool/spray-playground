@@ -3,7 +3,6 @@ package com.alexb.user
 import com.mongodb.casbah.Imports._
 import org.joda.time.Instant
 import com.mongodb.MongoException
-import com.alexb.main.context.MongoSupport
 
 class DuplicateUsernameException extends IllegalArgumentException("Cannot create user with duplicate username")
 
@@ -15,12 +14,11 @@ trait UserRepository {
   def clear()
 }
 
-trait MongoUserRepository extends UserRepository {
-  this: MongoSupport =>
+class MongoUserRepository(mongoDb: MongoDB) extends UserRepository {
 
   implicit private val writeConcern = WriteConcern.Safe
 
-  private lazy val userCollection = mongoDb("users")
+  private val userCollection = mongoDb("users")
 
   def find(username: String) =
     userCollection
