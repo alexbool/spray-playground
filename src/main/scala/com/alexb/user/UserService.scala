@@ -26,11 +26,11 @@ class UserService(userRepository: UserRepository)(implicit ec: ExecutionContext)
             complete(Future { CheckResult(userRepository.checkUsernameFree(username)) })
           }
         } ~
-          path("check-credentials") {
-            parameters('username.as[String], 'password.as[String]) { (username, password) =>
-              complete(Future { CheckResult(userRepository.checkCredentials(username, password)) })
-            }
+        path("check-credentials") {
+          parameters('username.as[String], 'password.as[String]) { (username, password) =>
+            complete(Future { CheckResult(userRepository.checkCredentials(username, password)) })
           }
+        }
       } ~
       post {
         path("register") {
@@ -38,8 +38,8 @@ class UserService(userRepository: UserRepository)(implicit ec: ExecutionContext)
             ctx =>
               val result = Future {
                 userRepository.save(User(cmd.username, cmd.password, Instant.now))
-              } map {
-                _ => HttpResponse(Created)
+              } map { _ =>
+                HttpResponse(Created)
               }
               ctx.complete(result)
           }
