@@ -22,12 +22,12 @@ class UserService(userRepository: UserRepository)(implicit ec: ExecutionContext)
     pathPrefix("users") {
       get {
         path("check-username-free") {
-          parameter('username.as[String]) { username =>
+          parameter("username") { username =>
             complete(Future { CheckResult(userRepository.checkUsernameFree(username)) })
           }
         } ~
         path("check-credentials") {
-          parameters('username.as[String], 'password.as[String]) { (username, password) =>
+          parameters(("username", "password")) { (username, password) =>
             complete(Future { CheckResult(userRepository.checkCredentials(username, password)) })
           }
         }
