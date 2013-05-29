@@ -1,7 +1,7 @@
 package com.alexb.statics
 
 import scala.concurrent.{ExecutionContext, Future}
-import spray.routing.{Directives, HttpService}
+import spray.routing.Directives
 import spray.httpx.SprayJsonSupport
 import com.alexb.memoize.{CacheManager, Memoize}
 import com.alexb.main.context.{ActorSystemContext, Caching, MongoSupport}
