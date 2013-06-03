@@ -10,6 +10,7 @@ class ProtobufSerializerSpec extends WordSpec with MustMatchers {
   case class Message3(number: Option[Int])
   case class Message4(numbers: Iterable[Int])
   case class Message5(msg: Message)
+  case class Message6(msgs: Seq[Message])
 
   "Protobuf serializer" must {
     "serialize flat messages" in {
@@ -36,6 +37,10 @@ class ProtobufSerializerSpec extends WordSpec with MustMatchers {
     "serialize embedded messages" in {
       val serializer = Protobuf.serializer[Message5]
       serializer.serialize(Message5(Message(150))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
+    }
+    "serialize repeated embedded messages" in {
+      val serializer = Protobuf.serializer[Message6]
+      serializer.serialize(Message6(Seq(Message(150)))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
     }
   }
 }
