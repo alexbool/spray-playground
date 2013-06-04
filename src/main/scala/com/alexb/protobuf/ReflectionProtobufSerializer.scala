@@ -11,4 +11,11 @@ class ReflectionProtobufSerializer[T: TypeTag] extends Serializer[T] with Protob
     val message = dynamicMessage(obj, rm, descriptor)
     message.writeTo(output)
   }
+
+  override def serialize(objs: Iterable[T], output: OutputStream) {
+    for (obj <- objs) {
+      val message = dynamicMessage(obj, rm, descriptor)
+      message.writeDelimitedTo(output)
+    }
+  }
 }
