@@ -15,6 +15,7 @@
         <elasticsearch-version>0.90.0</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.4.0</nscala-time-version>
+        <protobuf-version>2.5.0</protobuf-version>
         <scalatest-version>2.0.M6-SNAP8</scalatest-version>
         <specs2-version>1.14</specs2-version>
         <scalamock-version>3.0.1</scalamock-version>
@@ -126,6 +127,11 @@
             <version>${nscala-time-version}</version>
         </dependency>
         <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protobuf-version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_2.10</artifactId>
             <version>${scalatest-version}</version>
@@ -148,11 +154,6 @@
             <artifactId>scalamock-scalatest-support_2.10</artifactId>
             <version>${scalamock-version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>2.5.0</version>
         </dependency>
     </dependencies>
     <build>
