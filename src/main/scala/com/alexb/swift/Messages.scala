@@ -1,7 +1,6 @@
 package com.alexb.swift
 
 import spray.http.{MediaTypes, MediaType}
-import spray.http.MediaTypes.CustomMediaType
 
 ///////////////////////////// External API messages /////////////////////////////
 
@@ -20,7 +19,7 @@ case class PutObject(container: String, name: String, mediaType: MediaType, data
     this(container, name, MediaTypes.forExtension(name.split('.').last).get, data)
 
   def this(container: String, name: String, mediaType: String, data: Array[Byte]) =
-    this(container, name, CustomMediaType(mediaType), data)
+    this(container, name, MediaType.custom(mediaType), data)
 }
 
 object PutObject {
