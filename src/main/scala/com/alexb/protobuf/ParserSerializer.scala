@@ -22,7 +22,7 @@ trait Serializer[Message] {
   def serialize(objs: Iterable[Message]): Array[Byte] = {
     val output = new ByteArrayOutputStream
     try {
-      for (obj <- objs) serialize(obj, output)
+      serialize(objs, output)
       output.toByteArray
     } finally {
       output.close()
