@@ -22,11 +22,11 @@ sealed trait Field {
   def fieldName: String = getter.name.decoded
 }
 
-trait Scalar extends Field {
+sealed trait Scalar extends Field {
   def optional: Boolean
 }
 
-trait MessageField extends Field with Message {
+sealed trait MessageField extends Field with Message {
   def messageName = {
     val tpe = thisType
     val actualType = if (tpe <:< typeOf[Option[_]] || tpe <:< typeOf[Iterable[_]]) firstTypeArgument(tpe)
@@ -39,7 +39,7 @@ trait MessageField extends Field with Message {
 case class Primitive private[protobuf] (getter: Getter, optional: Boolean = false) extends Scalar
 case class EmbeddedMessage private[protobuf] (getter: Getter, fields: Seq[Field], optional: Boolean = false) extends Scalar with MessageField
 
-abstract class Repeated extends Field
+sealed trait Repeated extends Field
 case class RepeatedPrimitive private[protobuf] (getter: Getter) extends Repeated
 case class RepeatedMessage private[protobuf] (getter: Getter, fields: Seq[Field]) extends Repeated with MessageField
 
