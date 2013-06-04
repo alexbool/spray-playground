@@ -56,7 +56,7 @@ trait ProtobufUtils {
           case m  @ EmbeddedMessage(_, fields, optional) => if (optional) metaAndValue._2.asInstanceOf[Option[_]].map(v => dynamicMessage(v, m, descriptorForSubMessage(m)))
                                                             else          Some(dynamicMessage(metaAndValue._2, m, descriptorForSubMessage(m)))
           case rp @ RepeatedPrimitive(_)                 => Some(seqAsJavaList(metaAndValue._2.asInstanceOf[Seq[_]]))
-          case rm @ RepeatedMessage(_, fields)           => Some(metaAndValue._2.asInstanceOf[Seq[_]].map(v => dynamicMessage(v, rm, descriptorForSubMessage(rm))))
+          case rm @ RepeatedMessage(_, fields)           => Some(seqAsJavaList(metaAndValue._2.asInstanceOf[Seq[_]].map(v => dynamicMessage(v, rm, descriptorForSubMessage(rm)))))
         })
 
     val builder = DynamicMessage.newBuilder(descriptor)
