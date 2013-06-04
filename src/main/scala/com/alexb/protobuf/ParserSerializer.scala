@@ -32,15 +32,7 @@ trait Serializer[Message] {
 
 trait Parser[Message] {
 
-  /**
-   * Parses one object from the given input stream
-   *
-   * @param input Input stream with serialized data to be parsed
-   * @return Some(object) when parse is successful, None when input stream has ended
-   */
-  protected def parseInternal(input: InputStream): Option[Message]
-
-  def parse(input: InputStream): Message = parseInternal(input).get
+  def parse(input: InputStream): Message
 
   def parse(data: Array[Byte]): Message = {
     val input = new ByteArrayInputStream(data)
@@ -51,15 +43,7 @@ trait Parser[Message] {
     }
   }
 
-  def parseList(input: InputStream): Seq[Message] = {
-    var result = Seq[Message]()
-    var objO: Option[Message] = None
-    do {
-      objO = parseInternal(input)
-      result = result ++ objO
-    } while (objO.isDefined)
-    result
-  }
+  def parseList(input: InputStream): Seq[Message]
 
   def parseList(data: Array[Byte]): Seq[Message] = {
     val input = new ByteArrayInputStream(data)
