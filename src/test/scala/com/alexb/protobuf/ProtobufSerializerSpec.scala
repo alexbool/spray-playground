@@ -49,7 +49,7 @@ class ProtobufSerializerSpec extends WordSpec with MustMatchers {
       serializer.serialize(Message7(None)) must equal (Array())
     }
     "serialize lists of messages using delimeted format" in {
-      val serializer = Protobuf.serializer[Message]
+      val serializer = Protobuf.serializerForList[Message]
       serializer.serialize(Seq(Message(150), Message(0))) must equal (Array(0x03, 0x08, 0x96, 0x01, 0x02, 0x08, 0x00).map(_.toByte))
     }
   }

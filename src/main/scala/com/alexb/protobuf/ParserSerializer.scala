@@ -14,41 +14,15 @@ trait Serializer[Message] {
       output.close()
     }
   }
-
-  def serialize(objs: Iterable[Message], output: OutputStream) {
-    for (obj <- objs) serialize(obj, output)
-  }
-
-  def serialize(objs: Iterable[Message]): Array[Byte] = {
-    val output = new ByteArrayOutputStream
-    try {
-      serialize(objs, output)
-      output.toByteArray
-    } finally {
-      output.close()
-    }
-  }
 }
 
 trait Parser[Message] {
-
   def parse(input: InputStream): Message
 
   def parse(data: Array[Byte]): Message = {
     val input = new ByteArrayInputStream(data)
     try {
       parse(input)
-    } finally {
-      input.close()
-    }
-  }
-
-  def parseList(input: InputStream): Seq[Message]
-
-  def parseList(data: Array[Byte]): Seq[Message] = {
-    val input = new ByteArrayInputStream(data)
-    try {
-      parseList(input)
     } finally {
       input.close()
     }
