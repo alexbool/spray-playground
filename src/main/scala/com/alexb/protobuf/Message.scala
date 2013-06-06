@@ -21,6 +21,11 @@ sealed trait Field {
   def number: Int
   def getter: Getter
   def fieldName: String = getter.name.decoded
+  def actualType = {
+    val tpe = getter.returnType
+    if (tpe <:< typeOf[Option[_]] || tpe <:< typeOf[Iterable[_]]) firstTypeArgument(tpe)
+    else tpe
+  }
 }
 
 sealed trait Scalar extends Field {
@@ -28,12 +33,7 @@ sealed trait Scalar extends Field {
 }
 
 sealed trait MessageField extends Field with Message {
-  def messageName = {
-    val tpe = thisType
-    val actualType = if (tpe <:< typeOf[Option[_]] || tpe <:< typeOf[Iterable[_]]) firstTypeArgument(tpe)
-                     else tpe
-    actualType.typeSymbol.name.decoded
-  }
+  def messageName = actualType.typeSymbol.name.decoded
   def thisType = getter.returnType
 }
 
