@@ -16,6 +16,7 @@ class MessageSpec extends WordSpec with MustMatchers {
       val rm = RootMessage[Message1]
       rm.messageName must be ("Message1")
       rm.fields must have size (1)
+      rm.fields.head.number must be (1)
       rm.fields.head.fieldName must be ("number")
       rm.fields.head.isInstanceOf[Primitive] must be (true)
       rm.fields.head.asInstanceOf[Primitive].optional must be (false)
@@ -24,6 +25,7 @@ class MessageSpec extends WordSpec with MustMatchers {
       val rm = RootMessage[Message2]
       rm.messageName must be ("Message2")
       rm.fields must have size (1)
+      rm.fields.head.number must be (1)
       rm.fields.head.isInstanceOf[RepeatedPrimitive] must be (true)
     }
     "construct tree for types with optional fields" in {
@@ -33,6 +35,7 @@ class MessageSpec extends WordSpec with MustMatchers {
       rm.fields.head.isInstanceOf[Primitive] must be (true)
       rm.fields.head.asInstanceOf[Primitive].optional must be (false)
       rm.fields(1).isInstanceOf[EmbeddedMessage] must be (true)
+      rm.fields(1).number must be (2)
       rm.fields(1).asInstanceOf[EmbeddedMessage].optional must be (true)
       rm.fields(1).asInstanceOf[EmbeddedMessage].messageName must be ("Message2")
     }
@@ -40,10 +43,12 @@ class MessageSpec extends WordSpec with MustMatchers {
       val rm = RootMessage[Message4]
       rm.messageName must be ("Message4")
       rm.fields must have size (2)
+      rm.fields.head.number must be (1)
       rm.fields.head.fieldName must be ("name")
       rm.fields.head.isInstanceOf[Primitive] must be (true)
       rm.fields.head.asInstanceOf[Primitive].optional must be (true)
       rm.fields(1).isInstanceOf[RepeatedMessage] must be (true)
+      rm.fields(1).number must be (2)
       rm.fields(1).asInstanceOf[RepeatedMessage].messageName must be ("Message1")
     }
     "construct tree for types with required embedded fields" in {

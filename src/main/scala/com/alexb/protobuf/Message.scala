@@ -18,6 +18,7 @@ sealed trait Message {
 case class RootMessage private (messageName: String, fields: Seq[Field], thisType: Type) extends Message
 
 sealed trait Field {
+  def number: Int
   def getter: Getter
   def fieldName: String = getter.name.decoded
 }
@@ -36,17 +37,20 @@ sealed trait MessageField extends Field with Message {
   def thisType = getter.returnType
 }
 
-case class Primitive private[protobuf] (getter: Getter, optional: Boolean = false) extends Scalar
-case class EmbeddedMessage private[protobuf] (getter: Getter, fields: Seq[Field], optional: Boolean = false) extends Scalar with MessageField
+case class Primitive private[protobuf] (number: Int, getter: Getter, optional: Boolean = false) extends Scalar
+case class EmbeddedMessage private[protobuf] (number: Int, getter: Getter, fields: Seq[Field], optional: Boolean = false) extends Scalar with MessageField
 
 sealed trait Repeated extends Field
-case class RepeatedPrimitive private[protobuf] (getter: Getter) extends Repeated
-case class RepeatedMessage private[protobuf] (getter: Getter, fields: Seq[Field]) extends Repeated with MessageField
+case class RepeatedPrimitive private[protobuf] (number: Int, getter: Getter) extends Repeated
+case class RepeatedMessage private[protobuf] (number: Int, getter: Getter, fields: Seq[Field]) extends Repeated with MessageField
 
 object RootMessage {
   def apply[T](implicit tt: TypeTag[T]): RootMessage = RootMessage(tt.tpe.typeSymbol.name.decoded, fieldsFor(tt.tpe), tt.tpe)
 
-  private def fieldsFor(tpe: Type): Seq[Field] = scalaFields(tpe) map { fieldFor _ }
+  private def fieldsFor(tpe: Type): Seq[Field] = {
+    val numbers = Stream from 1
+    scalaFields(tpe).zip(numbers).map { typeAndNum => fieldFor(typeAndNum._2, typeAndNum._1) }
+  }
 
   private def scalaFields(tpe: Type): Seq[Getter] =
     tpe.members
@@ -55,14 +59,14 @@ object RootMessage {
       .map(_.asMethod)
       .to[Seq]
 
-  private def fieldFor(getter: Getter): Field = {
+  private def fieldFor(number: Int, getter: Getter): Field = {
     val tpe = getter.returnType
-    if      (isPrimitive(tpe))            Primitive(getter, optional = false)
-    else if (tpe <:< typeOf[Option[_]])   if (isPrimitive(firstTypeArgument(tpe))) Primitive(getter, optional = true)
-                                          else EmbeddedMessage(getter, fieldsFor(firstTypeArgument(tpe)), optional = true)
-    else if (tpe <:< typeOf[Iterable[_]]) if (isPrimitive(firstTypeArgument(tpe))) RepeatedPrimitive(getter)
-                                          else RepeatedMessage(getter, fieldsFor(firstTypeArgument(tpe)))
-    else                                  EmbeddedMessage(getter, fieldsFor(tpe), optional = false)
+    if      (isPrimitive(tpe))            Primitive(number, getter, optional = false)
+    else if (tpe <:< typeOf[Option[_]])   if (isPrimitive(firstTypeArgument(tpe))) Primitive(number, getter, optional = true)
+                                          else EmbeddedMessage(number, getter, fieldsFor(firstTypeArgument(tpe)), optional = true)
+    else if (tpe <:< typeOf[Iterable[_]]) if (isPrimitive(firstTypeArgument(tpe))) RepeatedPrimitive(number, getter)
+                                          else RepeatedMessage(number, getter, fieldsFor(firstTypeArgument(tpe)))
+    else                                  EmbeddedMessage(number, getter, fieldsFor(tpe), optional = false)
   }
 }
 
