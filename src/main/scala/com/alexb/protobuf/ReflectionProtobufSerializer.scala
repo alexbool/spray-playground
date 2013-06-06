@@ -83,3 +83,16 @@ class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
     message.fields.map(f => im.reflectMethod(f.getter)())
   }
 }
+
+class ListReflectionProtobufSerializer2[T: TypeTag] extends Serializer[Iterable[T]] {
+  private val serializer = new ReflectionMessageSerializer(RootMessage(implicitly[TypeTag[T]]))
+
+  def serialize(objs: Iterable[T], output: OutputStream) {
+    val codedOut = CodedOutputStream.newInstance(output)
+    for (obj <- objs) {
+      codedOut.writeRawVarint32(serializer.size(obj))
+      serializer.serialize(obj, codedOut)
+      codedOut.flush()
+    }
+  }
+}
