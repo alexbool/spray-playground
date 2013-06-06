@@ -51,12 +51,12 @@ trait ProtobufUtils {
       meta.fields
         .map(f => (f, im.reflectMethod(f.getter)()))
         .map(metaAndValue => metaAndValue._1 match {
-          case p  @ Primitive(_, optional)               => if (optional) metaAndValue._2.asInstanceOf[Option[_]]
-                                                            else          Some(metaAndValue._2)
-          case m  @ EmbeddedMessage(_, fields, optional) => if (optional) metaAndValue._2.asInstanceOf[Option[_]].map(v => dynamicMessage(v, m, descriptorForSubMessage(m)))
-                                                            else          Some(dynamicMessage(metaAndValue._2, m, descriptorForSubMessage(m)))
-          case rp @ RepeatedPrimitive(_)                 => Some(seqAsJavaList(metaAndValue._2.asInstanceOf[Seq[_]]))
-          case rm @ RepeatedMessage(_, fields)           => Some(seqAsJavaList(metaAndValue._2.asInstanceOf[Seq[_]].map(v => dynamicMessage(v, rm, descriptorForSubMessage(rm)))))
+          case p  @ Primitive(_, _, optional)               => if (optional) metaAndValue._2.asInstanceOf[Option[_]]
+                                                               else          Some(metaAndValue._2)
+          case m  @ EmbeddedMessage(_, _, fields, optional) => if (optional) metaAndValue._2.asInstanceOf[Option[_]].map(v => dynamicMessage(v, m, descriptorForSubMessage(m)))
+                                                               else          Some(dynamicMessage(metaAndValue._2, m, descriptorForSubMessage(m)))
+          case rp @ RepeatedPrimitive(_, _)                 => Some(seqAsJavaList(metaAndValue._2.asInstanceOf[Seq[_]]))
+          case rm @ RepeatedMessage(_, _, fields)           => Some(seqAsJavaList(metaAndValue._2.asInstanceOf[Seq[_]].map(v => dynamicMessage(v, rm, descriptorForSubMessage(rm)))))
         })
 
     val builder = DynamicMessage.newBuilder(descriptor)
