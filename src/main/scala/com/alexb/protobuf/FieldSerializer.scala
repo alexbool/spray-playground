@@ -25,7 +25,7 @@ object FieldSerializers {
 
   val ShortSerializer = new FieldSerializer {
     def serialize(number: Int, value: Any, out: CodedOutputStream) {
-      out.writeInt64(number, value.asInstanceOf[Short])
+      out.writeInt32(number, value.asInstanceOf[Short])
     }
     def size(number: Int, value: Any) = CodedOutputStream.computeInt32Size(number, value.asInstanceOf[Short])
   }
@@ -34,7 +34,7 @@ object FieldSerializers {
     def serialize(number: Int, value: Any, out: CodedOutputStream) {
       out.writeBool(number, value.asInstanceOf[Boolean])
     }
-    def size(number: Int, value: Any) = CodedOutputStream.computeInt32Size(number, value.asInstanceOf[Short])
+    def size(number: Int, value: Any) = CodedOutputStream.computeBoolSize(number, value.asInstanceOf[Boolean])
   }
 
   val FloatSerializer = new FieldSerializer {
