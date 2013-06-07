@@ -45,7 +45,8 @@ case class RepeatedPrimitive private[protobuf] (number: Int, getter: Getter) ext
 case class RepeatedMessage private[protobuf] (number: Int, getter: Getter, fields: Seq[Field]) extends Repeated with MessageField
 
 object RootMessage {
-  def apply[T](implicit tt: WeakTypeTag[T]): RootMessage = RootMessage(tt.tpe.typeSymbol.name.decoded, fieldsFor(tt.tpe), tt.tpe)
+  def apply[T](implicit tt: WeakTypeTag[T]): RootMessage = RootMessage(tt.tpe)
+  def apply(tpe: Type): RootMessage = RootMessage(tpe.typeSymbol.name.decoded, fieldsFor(tpe), tpe)
 
   private def fieldsFor(tpe: Type): Seq[Field] = {
     val numbers = Stream from 1
