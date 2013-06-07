@@ -49,7 +49,7 @@ class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
   private def serializerForPrimitive(tpe: Type) = (tpe match {
     case IntTpe                        => FieldSerializers.IntSerializer
     case LongTpe                       => FieldSerializers.LongSerializer
-    case ShortTpe                      => FieldSerializers.LongSerializer
+    case ShortTpe                      => FieldSerializers.ShortSerializer
     case BooleanTpe                    => FieldSerializers.BooleanSerializer
     case FloatTpe                      => FieldSerializers.FloatSerializer
     case DoubleTpe                     => FieldSerializers.DoubleSerializer
