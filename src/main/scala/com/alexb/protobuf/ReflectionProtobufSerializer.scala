@@ -18,7 +18,7 @@ class ReflectionProtobufSerializer[T: TypeTag] extends Serializer[T] {
 
 class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
 
-  private case class FieldAndSerializer(field: Field, serializer: FieldSerializer)
+  private case class FieldAndSerializer(field: Field, serializer: FieldSerializer[Any])
 
   private val fieldSerializers: Seq[FieldAndSerializer] =
     message.fields.map(f => FieldAndSerializer(f, serializerForField(f)))
@@ -37,16 +37,16 @@ class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
     fieldSerializers.zip(values).map(fas => fas._1.serializer.size(fas._1.field.number, fas._2)).sum // XXX Oppa govnocode!
   }
 
-  private def serializerForField(f: Field) = f match {
+  private def serializerForField(f: Field) = (f match {
     case f: Primitive         => if (f.optional) FieldSerializers.optional(serializerForPrimitive(f.actualType))
                                  else serializerForPrimitive(f.actualType)
     case f: RepeatedPrimitive => FieldSerializers.repeated(serializerForPrimitive(f.actualType))
     case f: EmbeddedMessage   => if (f.optional) FieldSerializers.optional(new ReflectionMessageSerializer(f))
                                  else new ReflectionMessageSerializer(f)
     case f: RepeatedMessage   => FieldSerializers.repeated(new ReflectionMessageSerializer(f))
-  }
+  }).asInstanceOf[FieldSerializer[Any]]
 
-  private def serializerForPrimitive(tpe: Type): FieldSerializer = tpe match {
+  private def serializerForPrimitive(tpe: Type) = (tpe match {
     case IntTpe                        => FieldSerializers.IntSerializer
     case LongTpe                       => FieldSerializers.LongSerializer
     case ShortTpe                      => FieldSerializers.LongSerializer
@@ -54,7 +54,7 @@ class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
     case FloatTpe                      => FieldSerializers.FloatSerializer
     case DoubleTpe                     => FieldSerializers.DoubleSerializer
     case _ if (tpe =:= typeOf[String]) => FieldSerializers.StringSerializer
-  }
+  }).asInstanceOf[FieldSerializer[Any]]
 
   private def fieldValues(obj: Any) = {
     val im = m.reflect(obj)(ClassTag(m.runtimeClass(message.thisType)))
