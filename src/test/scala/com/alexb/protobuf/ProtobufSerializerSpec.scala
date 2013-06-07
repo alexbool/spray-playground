@@ -11,10 +11,10 @@ trait ProtobufSerializerSpec extends WordSpec with MustMatchers {
 
   "Protobuf serializer" must {
     "serialize flat messages" in {
-      val serializer = createSerializer[Message]
+      val serializer = createSerializer[Message1]
       // https://developers.google.com/protocol-buffers/docs/encoding#simple
-      serializer.serialize(Message(150)) must equal (Array(0x08, 0x96, 0x01).map(_.toByte))
-      serializer.serialize(Message(0)) must equal (Array(0x08, 0x00).map(_.toByte))
+      serializer.serialize(Message1(150)) must equal (Array(0x08, 0x96, 0x01).map(_.toByte))
+      serializer.serialize(Message1(0)) must equal (Array(0x08, 0x00).map(_.toByte))
     }
     "serialize messages with strings" in {
       val serializer = createSerializer[Message2]
@@ -33,20 +33,20 @@ trait ProtobufSerializerSpec extends WordSpec with MustMatchers {
     }
     "serialize embedded messages" in {
       val serializer = createSerializer[Message5]
-      serializer.serialize(Message5(Message(150))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
+      serializer.serialize(Message5(Message1(150))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
     }
     "serialize repeated embedded messages" in {
       val serializer = createSerializer[Message6]
-      serializer.serialize(Message6(Seq(Message(150)))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
+      serializer.serialize(Message6(Seq(Message1(150)))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
     }
     "serialize optional embedded messages" in {
       val serializer = createSerializer[Message7]
-      serializer.serialize(Message7(Some(Message(150)))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
+      serializer.serialize(Message7(Some(Message1(150)))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
       serializer.serialize(Message7(None)) must equal (Array[Byte]())
     }
     "serialize lists of messages using delimeted format" in {
-      val serializer = createListSerializer[Message]
-      serializer.serialize(Seq(Message(150), Message(0))) must equal (Array(0x03, 0x08, 0x96, 0x01, 0x02, 0x08, 0x00).map(_.toByte))
+      val serializer = createListSerializer[Message1]
+      serializer.serialize(Seq(Message1(150), Message1(0))) must equal (Array(0x03, 0x08, 0x96, 0x01, 0x02, 0x08, 0x00).map(_.toByte))
     }
   }
 }
