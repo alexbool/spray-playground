@@ -2,33 +2,11 @@ package com.alexb.protobuf
 
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.universe.definitions._
+import scala.reflect.ClassTag
 import java.io.OutputStream
 import com.google.protobuf.CodedOutputStream
-import scala.reflect.ClassTag
 
-class ReflectionProtobufSerializer[T: TypeTag] extends Serializer[T] with ProtobufUtils {
-  private val rm = RootMessage[T]
-  private val descriptor = descriptorFor(rm)
-
-  def serialize(obj: T, output: OutputStream) {
-    val message = dynamicMessage(obj, rm, descriptor)
-    message.writeTo(output)
-  }
-}
-
-class ListReflectionProtobufSerializer[T: TypeTag] extends Serializer[Iterable[T]] with ProtobufUtils {
-  private val rm = RootMessage[T]
-  private val descriptor = descriptorFor(rm)
-
-  def serialize(objs: Iterable[T], output: OutputStream) {
-    for (obj <- objs) {
-      val message = dynamicMessage(obj, rm, descriptor)
-      message.writeDelimitedTo(output)
-    }
-  }
-}
-
-class ReflectionProtobufSerializer2[T: TypeTag] extends Serializer[T] {
+class ReflectionProtobufSerializer[T: TypeTag] extends Serializer[T] {
   private val serializer = new ReflectionMessageSerializer(RootMessage(implicitly[TypeTag[T]]))
 
   def serialize(obj: T, output: OutputStream) {
@@ -84,7 +62,7 @@ class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
   }
 }
 
-class ListReflectionProtobufSerializer2[T: TypeTag] extends Serializer[Iterable[T]] {
+class ListReflectionProtobufSerializer[T: TypeTag] extends Serializer[Iterable[T]] {
   private val serializer = new ReflectionMessageSerializer(RootMessage(implicitly[TypeTag[T]]))
 
   def serialize(objs: Iterable[T], output: OutputStream) {
