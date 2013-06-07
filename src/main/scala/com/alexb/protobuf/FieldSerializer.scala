@@ -83,9 +83,15 @@ object FieldSerializers {
 }
 
 trait MessageSerializier extends FieldSerializer[Any] {
+  /**
+   * For top-level message serializing
+   */
   def serialize(value: Any, out: CodedOutputStream)
   def size(value: Any): Int
 
+  /**
+   * For embedded messages
+   */
   def serialize(number: Int, value: Any, out: CodedOutputStream) {
     out.writeTag(number, WireFormat.WIRETYPE_LENGTH_DELIMITED)
     out.writeRawVarint32(size(value))
