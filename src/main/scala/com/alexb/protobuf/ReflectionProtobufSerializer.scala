@@ -27,7 +27,7 @@ class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
 
   def serialize(value: Any, out: CodedOutputStream) {
     val values = fieldValues(value)
-    fieldSerializers zip(values) foreach { ctx =>
+    fieldSerializers zip values foreach { ctx =>
       ctx._1.serializer.serialize(ctx._1.field.number, ctx._2, out) // XXX Oppa govnocode!
     }
   }
@@ -47,13 +47,13 @@ class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
   }).asInstanceOf[FieldSerializer[Any]]
 
   private def serializerForPrimitive(tpe: Type) = (tpe match {
-    case IntTpe                        => FieldSerializers.IntSerializer
-    case LongTpe                       => FieldSerializers.LongSerializer
-    case ShortTpe                      => FieldSerializers.ShortSerializer
-    case BooleanTpe                    => FieldSerializers.BooleanSerializer
-    case FloatTpe                      => FieldSerializers.FloatSerializer
-    case DoubleTpe                     => FieldSerializers.DoubleSerializer
-    case _ if (tpe =:= typeOf[String]) => FieldSerializers.StringSerializer
+    case IntTpe                      => FieldSerializers.IntSerializer
+    case LongTpe                     => FieldSerializers.LongSerializer
+    case ShortTpe                    => FieldSerializers.ShortSerializer
+    case BooleanTpe                  => FieldSerializers.BooleanSerializer
+    case FloatTpe                    => FieldSerializers.FloatSerializer
+    case DoubleTpe                   => FieldSerializers.DoubleSerializer
+    case _ if tpe =:= typeOf[String] => FieldSerializers.StringSerializer
   }).asInstanceOf[FieldSerializer[Any]]
 
   private def fieldValues(obj: Any) = {
