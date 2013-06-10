@@ -33,24 +33,26 @@ object Macros {
         val exprF: c.Expr[Any] => c.Expr[Unit] = e => helper.writePrimitive(rp.actualType)(out, toExpr(rp.number), e)
         helper.repeated(value(obj, f).asInstanceOf[c.Expr[Seq[Any]]], exprF)
       }
-      /*case em: EmbeddedMessage => {
-
-      }*/
+      case em: mm.EmbeddedMessage => {
+        serializeEmbeddedMessage(em, value(obj, em))
+      }
       case _ => throw new NotImplementedError("This is not implemented. Sorry")
     }
 
-    def serializeEmbeddedMessage(m: mm.Message, number: c.Expr[Int], obj: c.Expr[Any]): c.Expr[Unit] = {
+    def serializeEmbeddedMessage(m: mm.MessageField, obj: c.Expr[Any]): c.Expr[Unit] = {
       // 1. Compute size
+      val size = messageSize(m, obj)
       // 2. Write tag and size
+      val writeTagAndSize = helper.writeEmbeddedMessageTagAndSize(out, toExpr(m.number), size)
       // 3. Write fields
-
-      ???
+      val writeFields = m.fields.map(serializeField(obj, _)).reduce((f1, f2) => reify { f1.splice; f2.splice })
+      reify { writeTagAndSize.splice; writeFields.splice }
     }
 
     def messageSize(m: mm.Message, obj: c.Expr[Any]): c.Expr[Int] = {
       // 1. Get sizes of all the fields
       // 2. Sum them
-      require(m.fields.size > 0, "Message object must contain at leat one field")
+      require(m.fields.size > 0, s"Message ${m.messageName} has no fields. Messages must contain at least one field")
       m.fields
         .map(f => f match {
           case f: mm.Primitive         => helper.sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
