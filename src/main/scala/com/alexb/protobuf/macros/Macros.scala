@@ -50,13 +50,28 @@ object Macros {
     def messageSize(m: mm.Message, obj: c.Expr[Any]): c.Expr[Int] = {
       // 1. Get sizes of all the fields
       // 2. Sum them
+      require(m.fields.size > 0, "Message object must contain at leat one field")
       m.fields
         .map(f => f match {
-          case f: mm.Primitive =>
-          case f: mm.RepeatedPrimitive =>
-          case f: mm.EmbeddedMessage =>
-          case f: mm.RepeatedMessage =>
+          case f: mm.Primitive         => helper.sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
+          case f: mm.RepeatedPrimitive => helper.sizeOfRepeatedPrimitive(f.actualType)(toExpr(f.number), value(obj, f).asInstanceOf[c.Expr[Iterable[Any]]])
+          case f: mm.EmbeddedMessage   => messageSizeWithTag(f, value(obj, f))
+          case f: mm.RepeatedMessage   => {
+            val mapper: c.Expr[Any => Int] = reify {
+              m: Any => messageSizeWithTag(f, c.Expr[Any](Ident(newTermName("m")))).splice
+            }
+            helper.sizeOfRepeated(value(obj, f).asInstanceOf[c.Expr[Iterable[Any]]], mapper)
+          }
         })
+        .reduce((e1, e2) => reify { e1.splice + e2.splice })
+    }
+
+    def messageSizeWithTag(m: mm.MessageField, obj: c.Expr[Any]): c.Expr[Int] = {
+      val tagSize: c.Expr[Int] = helper.sizeOfTag(toExpr(m.number))
+      val msgSize: c.Expr[Int] = messageSize(m, obj)
+      reify {
+        tagSize.splice + msgSize.splice
+      }
     }
 
     val fieldSerializations: Seq[c.Expr[Unit]] = rm.fields.map(serializeField(obj, _))
