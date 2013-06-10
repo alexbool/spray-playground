@@ -91,6 +91,22 @@ class Helper[C <: Context](val c: C) {
     else throw new IllegalArgumentException("Unsupported primitive type")
   }
 
+  def sizeOfRepeatedPrimitive(tpe: c.Type)(number: c.Expr[Int], value: c.Expr[Iterable[Any]]): c.Expr[Int] = {
+    val mapper: c.Expr[Any => Int] = reify {
+      m: Any => sizeOfPrimitive(tpe)(number, c.Expr[Any](Ident(newTermName("m")))).splice
+    }
+    sizeOfRepeated(value, mapper)
+  }
+
+  def sizeOfRepeated(value: c.Expr[Iterable[Any]], sizeF: c.Expr[Any => Int]): c.Expr[Int] =
+    reify {
+      value.splice.map(sizeF.splice).sum
+    }
+
+  def sizeOfTag(number: c.Expr[Int]): c.Expr[Int] = reify {
+    CodedOutputStream.computeTagSize(number.splice)
+  }
+
   // Size calculators
   def sizeOfInt(number: c.Expr[Int], value: c.Expr[Int]): c.Expr[Int] =
     reify {
