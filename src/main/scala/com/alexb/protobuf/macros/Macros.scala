@@ -82,7 +82,7 @@ object Macros {
     }
 
     val fieldSerializations: Seq[c.Expr[Unit]] = rm.fields.map(serializeField(obj, _))
-    val fs = c.Expr(fieldSerializations.map(_.tree).reduce(Block(_, _)))
+    val fs = c.Expr(Block(fieldSerializations.map(_.tree).to[List], Literal(Constant(()))))
     println(fs)
 
     val resultingSerializer = reify {
