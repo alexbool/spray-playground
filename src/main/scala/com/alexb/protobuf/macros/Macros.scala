@@ -88,7 +88,6 @@ object Macros {
     val resultingSerializer = reify {
       new MacroSerializerBase[T] {
         protected def serialize(obj: T, output: CodedOutputStream) {
-          println("Hello, World!")
           fs.splice
         }
       }
