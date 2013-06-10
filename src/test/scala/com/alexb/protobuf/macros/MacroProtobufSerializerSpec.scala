@@ -44,10 +44,10 @@ class MacroProtobufSerializerSpec extends WordSpec with MustMatchers {
       val serializer = Protobuf.macroSerializer[Message5]
       serializer.serialize(Message5(Message1(150))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
     }
-    /*"serialize repeated embedded messages" in {
+    "serialize repeated embedded messages" in {
       val serializer = Protobuf.macroSerializer[Message6]
       serializer.serialize(Message6(Seq(Message1(150)))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
-    }*/
+    }
     "serialize optional embedded messages" in {
       val serializer = Protobuf.macroSerializer[Message7]
       serializer.serialize(Message7(Some(Message1(150)))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))

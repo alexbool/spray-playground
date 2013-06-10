@@ -38,7 +38,10 @@ object Macros {
         if (em.optional) helper.optional(value(obj, f).asInstanceOf[c.Expr[Option[Any]]], exprF)
         else exprF(value(obj, em))
       }
-      case _ => throw new NotImplementedError("This is not implemented. Sorry")
+      case rm: mm.RepeatedMessage => {
+        val exprF: c.Expr[Any] => c.Expr[Unit] = e => serializeEmbeddedMessage(rm, e)
+        helper.repeated(value(obj, rm).asInstanceOf[c.Expr[Seq[Any]]], exprF)
+      }
     }
 
     def serializeEmbeddedMessage(m: mm.MessageField, obj: c.Expr[Any]): c.Expr[Unit] = {
