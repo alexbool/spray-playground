@@ -20,7 +20,7 @@ object Macros {
     val out = c.Expr[CodedOutputStream](Ident(newTermName("output"))) // XXX Not that safe
     val obj = c.Expr[T](Ident(newTermName("obj")))                    // XXX And this too
 
-    def toExpr(n: Int): c.Expr[Int] = c.Expr[Int](Literal(Constant(n)))
+    def toExpr[V](v: V): c.Expr[V] = c.Expr[V](Literal(Constant(v)))
     def value(obj: c.Expr[Any], f: mm.Field): c.Expr[Any] = c.Expr(Select(obj.tree, f.getter))
 
     def serializeField(obj: c.Expr[Any], f: mm.Field): c.Expr[Unit] = f match {
