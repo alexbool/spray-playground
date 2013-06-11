@@ -13,8 +13,6 @@ object Macros {
     val helper = new Helper[c.type](c)
     val rm: helper.mm.RootMessage = helper.mm.apply(tt.tpe)
 
-    require(rm.fields.size > 0, s"Message ${rm.messageName} has no fields. Messages must contain at least one field")
-
     val out = c.Expr[CodedOutputStream](Ident(newTermName("output"))) // XXX Not that safe
     val obj = c.Expr[T](Ident(newTermName("obj")))                    // XXX And this too
 

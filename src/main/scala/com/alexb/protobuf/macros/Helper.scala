@@ -178,22 +178,24 @@ class Helper[C <: Context](val c: C) {
   }
 
   def serializeEmbeddedMessage(m: mm.MessageField, obj: c.Expr[Any], out: c.Expr[CodedOutputStream]): c.Expr[Unit] = {
-    // 1. Compute size
+    // 1. Write fields
+    val writeFields = serializeMessage(m, obj, out)
+    // 2. Compute size
     val size = messageSize(m, obj)
-    // 2. Write tag and size
+    // 3. Write tag and size
     val writeTagAndSize = writeEmbeddedMessageTagAndSize(out, toExpr(m.number), size)
-    // 3. Write fields
-    val writeFields = serializeMessage(m, obj, out)//m.fields.map(serializeField(obj, _, out)).reduce((f1, f2) => reify { f1.splice; f2.splice })
+    // 4. Combine
     reify { writeTagAndSize.splice; writeFields.splice }
   }
 
-  def serializeMessage(m: mm.Message, obj: c.Expr[Any], out: c.Expr[CodedOutputStream]): c.Expr[Unit] =
+  def serializeMessage(m: mm.Message, obj: c.Expr[Any], out: c.Expr[CodedOutputStream]): c.Expr[Unit] = {
+    require(m.fields.size > 0, s"Message ${m.messageName} has no fields. Messages must contain at least one field")
     m.fields.map(serializeField(obj, _, out)).reduce((f1, f2) => reify { f1.splice; f2.splice })
+  }
 
   def messageSize(m: mm.Message, obj: c.Expr[Any]): c.Expr[Int] = {
     // 1. Get sizes of all the fields
     // 2. Sum them
-    require(m.fields.size > 0, s"Message ${m.messageName} has no fields. Messages must contain at least one field")
     m.fields
       .map(f => f match {
       case f: mm.Primitive         => sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
