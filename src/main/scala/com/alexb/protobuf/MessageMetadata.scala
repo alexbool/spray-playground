@@ -48,32 +48,30 @@ class MessageMetadata[U <: Universe](val u: U) {
   case class RepeatedPrimitive private[protobuf] (number: Int, getter: Getter) extends Repeated
   case class RepeatedMessage private[protobuf] (number: Int, getter: Getter, fields: Seq[Field]) extends Repeated with MessageField
 
-  //object RootMessage {
-    def apply[T](implicit tt: WeakTypeTag[T]): RootMessage = apply(tt.tpe)
-    def apply(tpe: Type): RootMessage = RootMessage(tpe.typeSymbol.name.decoded, fieldsFor(tpe), tpe)
+  def apply[T](implicit tt: WeakTypeTag[T]): RootMessage = apply(tt.tpe)
+  def apply(tpe: Type): RootMessage = RootMessage(tpe.typeSymbol.name.decoded, fieldsFor(tpe), tpe)
 
-    private def fieldsFor(tpe: Type): Seq[Field] = {
-      val numbers = Stream from 1
-      scalaFields(tpe).zip(numbers).map { typeAndNum => fieldFor(typeAndNum._2, typeAndNum._1) }
-    }
+  private def fieldsFor(tpe: Type): Seq[Field] = {
+    val numbers = Stream from 1
+    scalaFields(tpe).zip(numbers).map { typeAndNum => fieldFor(typeAndNum._2, typeAndNum._1) }
+  }
 
-    private def scalaFields(tpe: Type): Seq[Getter] =
-      tpe.members
-        .sorted
-        .filter(m => m.isPublic && m.isMethod && m.asMethod.isGetter)
-        .map(_.asMethod)
-        .to[Seq]
+  private def scalaFields(tpe: Type): Seq[Getter] =
+    tpe.members
+      .sorted
+      .filter(m => m.isPublic && m.isMethod && m.asMethod.isGetter)
+      .map(_.asMethod)
+      .to[Seq]
 
-    private def fieldFor(number: Int, getter: Getter): Field = {
-      val tpe = getter.returnType
-      if      (isPrimitive(tpe))            Primitive(number, getter, optional = false)
-      else if (tpe <:< typeOf[Option[_]])   if (isPrimitive(firstTypeArgument(tpe))) Primitive(number, getter, optional = true)
-                                            else EmbeddedMessage(number, getter, fieldsFor(firstTypeArgument(tpe)), optional = true)
-      else if (tpe <:< typeOf[Iterable[_]]) if (isPrimitive(firstTypeArgument(tpe))) RepeatedPrimitive(number, getter)
-                                            else RepeatedMessage(number, getter, fieldsFor(firstTypeArgument(tpe)))
-      else                                  EmbeddedMessage(number, getter, fieldsFor(tpe), optional = false)
-    }
-  //}
+  private def fieldFor(number: Int, getter: Getter): Field = {
+    val tpe = getter.returnType
+    if      (isPrimitive(tpe))            Primitive(number, getter, optional = false)
+    else if (tpe <:< typeOf[Option[_]])   if (isPrimitive(firstTypeArgument(tpe))) Primitive(number, getter, optional = true)
+                                          else EmbeddedMessage(number, getter, fieldsFor(firstTypeArgument(tpe)), optional = true)
+    else if (tpe <:< typeOf[Iterable[_]]) if (isPrimitive(firstTypeArgument(tpe))) RepeatedPrimitive(number, getter)
+                                          else RepeatedMessage(number, getter, fieldsFor(firstTypeArgument(tpe)))
+    else                                  EmbeddedMessage(number, getter, fieldsFor(tpe), optional = false)
+  }
 
   object ReflectionUtils {
     def isPrimitive(tpe: Type): Boolean = tpe <:< AnyValTpe || tpe <:< typeOf[String]
