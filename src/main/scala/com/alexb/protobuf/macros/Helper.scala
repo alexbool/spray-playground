@@ -197,9 +197,14 @@ class Helper[C <: Context](val c: C) {
     // 2. Sum them
     m.fields
       .map(f => f match {
-      case f: mm.Primitive         => {
-        if (f.optional) sizeOfPrimitive(f.actualType)(toExpr(f.number), reify { value(obj, f).asInstanceOf[c.Expr[Option[Any]]].splice.get })
-        else            sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
+      case f: mm.Primitive => {
+        if (f.optional) {
+          val mapper = Function(List(ValDef(Modifiers(Flag.PARAM), newTermName("m"), Ident(f.actualType.typeSymbol), EmptyTree)),
+            sizeOfPrimitive(f.actualType)(toExpr(f.number), c.Expr[f.actualType.type](Ident(newTermName("m")))).tree)
+          val mappedOption = mapOption[f.actualType.type, Int](value(obj, f).asInstanceOf[c.Expr[Option[f.actualType.type]]], c.Expr(mapper))
+          reify { mappedOption.splice.getOrElse(0) }
+        }
+        else sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
       }
       case f: mm.RepeatedPrimitive => sizeOfRepeatedPrimitive(f.actualType)(toExpr(f.number), value(obj, f).asInstanceOf[c.Expr[Iterable[Any]]])
       case f: mm.EmbeddedMessage   => {
@@ -221,5 +226,9 @@ class Helper[C <: Context](val c: C) {
     reify {
       tagSize.splice + msgSize.splice
     }
+  }
+
+  def mapOption[T, R](option: c.Expr[Option[T]], mapper: c.Expr[T => R]): c.Expr[Option[R]] = reify {
+    option.splice.map(mapper.splice)
   }
 }
