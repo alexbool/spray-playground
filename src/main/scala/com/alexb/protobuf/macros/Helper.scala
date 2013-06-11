@@ -183,9 +183,12 @@ class Helper[C <: Context](val c: C) {
     // 2. Write tag and size
     val writeTagAndSize = writeEmbeddedMessageTagAndSize(out, toExpr(m.number), size)
     // 3. Write fields
-    val writeFields = m.fields.map(serializeField(obj, _, out)).reduce((f1, f2) => reify { f1.splice; f2.splice })
+    val writeFields = serializeMessage(m, obj, out)//m.fields.map(serializeField(obj, _, out)).reduce((f1, f2) => reify { f1.splice; f2.splice })
     reify { writeTagAndSize.splice; writeFields.splice }
   }
+
+  def serializeMessage(m: mm.Message, obj: c.Expr[Any], out: c.Expr[CodedOutputStream]): c.Expr[Unit] =
+    m.fields.map(serializeField(obj, _, out)).reduce((f1, f2) => reify { f1.splice; f2.splice })
 
   def messageSize(m: mm.Message, obj: c.Expr[Any]): c.Expr[Int] = {
     // 1. Get sizes of all the fields

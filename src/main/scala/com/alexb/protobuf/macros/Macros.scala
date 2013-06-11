@@ -18,8 +18,7 @@ object Macros {
     val out = c.Expr[CodedOutputStream](Ident(newTermName("output"))) // XXX Not that safe
     val obj = c.Expr[T](Ident(newTermName("obj")))                    // XXX And this too
 
-    val fieldSerializations: Seq[c.Expr[Unit]] = rm.fields.map(helper.serializeField(obj, _, out))
-    val fs = c.Expr(Block(fieldSerializations.map(_.tree).to[List], Literal(Constant(()))))
+    val fs = helper.serializeMessage(rm, obj, out)
     println(fs)
 
     val resultingSerializer = reify {
