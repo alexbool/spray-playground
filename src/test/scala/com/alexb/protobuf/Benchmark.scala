@@ -18,8 +18,8 @@ object Benchmark extends App {
 
   def run[T](data: Seq[T], serializer: Serializer[Iterable[T]]) {
     val start = System.currentTimeMillis
-    val end = System.currentTimeMillis
     serializer.serialize(data)
+    val end = System.currentTimeMillis
     println(s"Took ${end - start} millis")
   }
 
