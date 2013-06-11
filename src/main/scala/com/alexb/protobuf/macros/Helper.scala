@@ -2,10 +2,13 @@ package com.alexb.protobuf.macros
 
 import scala.reflect.macros.Context
 import com.google.protobuf.{WireFormat, CodedOutputStream}
+import com.alexb.protobuf.MessageMetadata
 
 class Helper[C <: Context](val c: C) {
 
   import c.universe._
+
+  val mm = MessageMetadata[c.universe.type](c.universe)
 
   /**
    * Constructs expression to write given value expression
@@ -149,4 +152,65 @@ class Helper[C <: Context](val c: C) {
       out.splice.writeTag(number.splice, WireFormat.WIRETYPE_LENGTH_DELIMITED)
       out.splice.writeRawVarint32(size.splice)
     }
+
+  def value(obj: c.Expr[Any], f: mm.Field): c.Expr[Any] = c.Expr(c.universe.Select(obj.tree, f.getter))
+  def toExpr[V](v: V): c.Expr[V] = c.Expr[V](Literal(Constant(v)))
+
+  def serializeField(obj: c.Expr[Any], f: mm.Field, out: c.Expr[CodedOutputStream]): c.Expr[Unit] = f match {
+    case p: mm.Primitive => {
+      val exprF: c.Expr[Any] => c.Expr[Unit] = e => writePrimitive(p.actualType)(out, toExpr(p.number), e)
+      if (p.optional) optional(value(obj, f).asInstanceOf[c.Expr[Option[Any]]], exprF)
+      else exprF(value(obj, f))
+    }
+    case rp: mm.RepeatedPrimitive => {
+      val exprF: c.Expr[Any] => c.Expr[Unit] = e => writePrimitive(rp.actualType)(out, toExpr(rp.number), e)
+      repeated(value(obj, f).asInstanceOf[c.Expr[Seq[Any]]], exprF)
+    }
+    case em: mm.EmbeddedMessage => {
+      val exprF: c.Expr[Any] => c.Expr[Unit] = e => serializeEmbeddedMessage(em, e, out)
+      if (em.optional) optional(value(obj, f).asInstanceOf[c.Expr[Option[Any]]], exprF)
+      else exprF(value(obj, em))
+    }
+    case rm: mm.RepeatedMessage => {
+      val exprF: c.Expr[Any] => c.Expr[Unit] = e => serializeEmbeddedMessage(rm, e, out)
+      repeated(value(obj, rm).asInstanceOf[c.Expr[Seq[Any]]], exprF)
+    }
+  }
+
+  def serializeEmbeddedMessage(m: mm.MessageField, obj: c.Expr[Any], out: c.Expr[CodedOutputStream]): c.Expr[Unit] = {
+    // 1. Compute size
+    val size = messageSize(m, obj)
+    // 2. Write tag and size
+    val writeTagAndSize = writeEmbeddedMessageTagAndSize(out, toExpr(m.number), size)
+    // 3. Write fields
+    val writeFields = m.fields.map(serializeField(obj, _, out)).reduce((f1, f2) => reify { f1.splice; f2.splice })
+    reify { writeTagAndSize.splice; writeFields.splice }
+  }
+
+  def messageSize(m: mm.Message, obj: c.Expr[Any]): c.Expr[Int] = {
+    // 1. Get sizes of all the fields
+    // 2. Sum them
+    require(m.fields.size > 0, s"Message ${m.messageName} has no fields. Messages must contain at least one field")
+    m.fields
+      .map(f => f match {
+      case f: mm.Primitive         => sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
+      case f: mm.RepeatedPrimitive => sizeOfRepeatedPrimitive(f.actualType)(toExpr(f.number), value(obj, f).asInstanceOf[c.Expr[Iterable[Any]]])
+      case f: mm.EmbeddedMessage   => messageSizeWithTag(f, value(obj, f))
+      case f: mm.RepeatedMessage   => {
+        val mapper: c.Expr[Any => Int] = reify {
+          m: Any => messageSizeWithTag(f, c.Expr[Any](Ident(newTermName("m")))).splice
+        }
+        sizeOfRepeated(value(obj, f).asInstanceOf[c.Expr[Iterable[Any]]], mapper)
+      }
+    })
+      .reduce((e1, e2) => reify { e1.splice + e2.splice })
+  }
+
+  def messageSizeWithTag(m: mm.MessageField, obj: c.Expr[Any]): c.Expr[Int] = {
+    val tagSize: c.Expr[Int] = sizeOfTag(toExpr(m.number))
+    val msgSize: c.Expr[Int] = messageSize(m, obj)
+    reify {
+      tagSize.splice + msgSize.splice
+    }
+  }
 }
