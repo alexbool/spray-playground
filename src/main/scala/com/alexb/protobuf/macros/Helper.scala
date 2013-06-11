@@ -198,9 +198,15 @@ class Helper[C <: Context](val c: C) {
     // 2. Sum them
     m.fields
       .map(f => f match {
-      case f: mm.Primitive         => sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
+      case f: mm.Primitive         => {
+        if (f.optional) sizeOfPrimitive(f.actualType)(toExpr(f.number), reify { value(obj, f).asInstanceOf[c.Expr[Option[Any]]].splice.get })
+        else            sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
+      }
       case f: mm.RepeatedPrimitive => sizeOfRepeatedPrimitive(f.actualType)(toExpr(f.number), value(obj, f).asInstanceOf[c.Expr[Iterable[Any]]])
-      case f: mm.EmbeddedMessage   => messageSizeWithTag(f, value(obj, f))
+      case f: mm.EmbeddedMessage   => {
+        if (f.optional) messageSizeWithTag(f, reify { value(obj, f).asInstanceOf[c.Expr[Option[Any]]].splice.get })
+        else            messageSizeWithTag(f, value(obj, f))
+      }
       case f: mm.RepeatedMessage   => {
         val mapper: c.Expr[Any => Int] = reify {
           m: Any => messageSizeWithTag(f, c.Expr[Any](Ident(newTermName("m")))).splice
