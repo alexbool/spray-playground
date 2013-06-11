@@ -12,7 +12,7 @@ object Benchmark extends App {
   def generate =
     BenchmarkMessage(
       number = Random.nextInt(),
-      optional = if (Random.nextBoolean()) Some(Random.nextInt()) else None,
+      optional = if (Random.nextBoolean()) Some(Random.nextLong()) else None,
       repeated = Stream.continually(Random.alphanumeric.take(32).mkString).take(Random.nextInt(100)).to[Seq],
       embedded = Stream.continually(Embedded(fieldOne = Random.nextInt(), fieldTwo = Random.nextLong())).take(Random.nextInt(100)).to[Seq])
 
