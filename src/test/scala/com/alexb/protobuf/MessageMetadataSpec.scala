@@ -2,8 +2,9 @@ package com.alexb.protobuf
 
 import org.scalatest.WordSpec
 import org.scalatest.matchers.MustMatchers
+import MessageMetadata.runtime._
 
-class MessageSpec extends WordSpec with MustMatchers {
+class MessageMetadataSpec extends WordSpec with MustMatchers {
 
   case class Message1(number: Int)
   case class Message2(numbers: Iterable[Int])
@@ -13,7 +14,7 @@ class MessageSpec extends WordSpec with MustMatchers {
 
   "RootMessage factory" must {
     "construct tree for plain types" in {
-      val rm = RootMessage[Message1]
+      val rm = MessageMetadata.runtime[Message1]
       rm.messageName must be ("Message1")
       rm.fields must have size (1)
       rm.fields.head.number must be (1)
@@ -22,14 +23,14 @@ class MessageSpec extends WordSpec with MustMatchers {
       rm.fields.head.asInstanceOf[Primitive].optional must be (false)
     }
     "construct tree for types with repeated fields" in {
-      val rm = RootMessage[Message2]
+      val rm = MessageMetadata.runtime[Message2]
       rm.messageName must be ("Message2")
       rm.fields must have size (1)
       rm.fields.head.number must be (1)
       rm.fields.head.isInstanceOf[RepeatedPrimitive] must be (true)
     }
     "construct tree for types with optional fields" in {
-      val rm = RootMessage[Message3]
+      val rm = MessageMetadata.runtime[Message3]
       rm.messageName must be ("Message3")
       rm.fields must have size (2)
       rm.fields.head.isInstanceOf[Primitive] must be (true)
@@ -40,7 +41,7 @@ class MessageSpec extends WordSpec with MustMatchers {
       rm.fields(1).asInstanceOf[EmbeddedMessage].messageName must be ("Message2")
     }
     "construct tree for types with repeated message fields" in {
-      val rm = RootMessage[Message4]
+      val rm = MessageMetadata.runtime[Message4]
       rm.messageName must be ("Message4")
       rm.fields must have size (2)
       rm.fields.head.number must be (1)
@@ -52,7 +53,7 @@ class MessageSpec extends WordSpec with MustMatchers {
       rm.fields(1).asInstanceOf[RepeatedMessage].messageName must be ("Message1")
     }
     "construct tree for types with required embedded fields" in {
-      val rm = RootMessage[Message5]
+      val rm = MessageMetadata.runtime[Message5]
       rm.fields.head.isInstanceOf[EmbeddedMessage] must be (true)
       rm.fields.head.asInstanceOf[EmbeddedMessage].optional must be (false)
     }

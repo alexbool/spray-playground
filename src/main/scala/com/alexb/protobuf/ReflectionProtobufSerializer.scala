@@ -5,9 +5,10 @@ import scala.reflect.runtime.universe.definitions._
 import scala.reflect.ClassTag
 import java.io.OutputStream
 import com.google.protobuf.CodedOutputStream
+import MessageMetadata.runtime._
 
 class ReflectionProtobufSerializer[T: TypeTag] extends Serializer[T] {
-  private val serializer = new ReflectionMessageSerializer(RootMessage(implicitly[TypeTag[T]]))
+  private val serializer = new ReflectionMessageSerializer(MessageMetadata.runtime(implicitly[TypeTag[T]]))
 
   def serialize(obj: T, output: OutputStream) {
     val codedOut = CodedOutputStream.newInstance(output)
@@ -63,7 +64,7 @@ class ReflectionMessageSerializer(message: Message) extends MessageSerializier {
 }
 
 class ListReflectionProtobufSerializer[T: TypeTag] extends Serializer[Iterable[T]] {
-  private val serializer = new ReflectionMessageSerializer(RootMessage(implicitly[TypeTag[T]]))
+  private val serializer = new ReflectionMessageSerializer(MessageMetadata.runtime(implicitly[TypeTag[T]]))
 
   def serialize(objs: Iterable[T], output: OutputStream) {
     val codedOut = CodedOutputStream.newInstance(output)
