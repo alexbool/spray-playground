@@ -13,7 +13,7 @@ import com.alexb.main.HttpRouteContainer
 class UserService(userRepository: UserRepository)(implicit ec: ExecutionContext)
   extends Directives with SprayJsonSupport with UserMarshallers with ErrorDescriptionMarshallers with HttpRouteContainer {
 
-  implicit def exceptionHandler = ExceptionHandler.fromPF {
+  implicit def exceptionHandler = ExceptionHandler {
     case e: DuplicateUsernameException => ctx =>
       ctx.complete(BadRequest, ErrorDescription("Duplicate username"))
   }
