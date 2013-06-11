@@ -13,10 +13,7 @@ object Macros {
     val helper = new Helper[c.type](c)
     val rm: helper.mm.RootMessage = helper.mm.apply(tt.tpe)
 
-    val out = c.Expr[CodedOutputStream](Ident(newTermName("output"))) // XXX Not that safe
-    val obj = c.Expr[T](Ident(newTermName("obj")))                    // XXX And this too
-
-    val fs = helper.serializeMessage(rm, obj, out)
+    val fs = helper.serializeMessage(rm, c.Expr[T](Ident(newTermName("obj"))), c.Expr[CodedOutputStream](Ident(newTermName("output"))))
     println(fs)
 
     val resultingSerializer = reify {
@@ -36,12 +33,8 @@ object Macros {
     val helper = new Helper[c.type](c)
     val rm: helper.mm.RootMessage = helper.mm.apply(tt.tpe)
 
-    val out = c.Expr[CodedOutputStream](Ident(newTermName("output"))) // XXX Not that safe
-    val obj = c.Expr[T](Ident(newTermName("obj")))                    // XXX And this too
-    val obj2 = c.Expr[T](Ident(newTermName("obj")))                   // XXX And this too
-
-    val fs = helper.serializeMessage(rm, obj, out)
-    val ms = helper.messageSize(rm, obj2)
+    val fs = helper.serializeMessage(rm, c.Expr[T](Ident(newTermName("obj"))), c.Expr[CodedOutputStream](Ident(newTermName("output"))))
+    val ms = helper.messageSize(rm, c.Expr[T](Ident(newTermName("obj"))))
     println(fs)
     println(ms)
 
