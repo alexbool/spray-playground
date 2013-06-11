@@ -207,11 +207,16 @@ class Helper[C <: Context](val c: C) {
         else sizeOfPrimitive(f.actualType)(toExpr(f.number), value(obj, f))
       }
       case f: mm.RepeatedPrimitive => sizeOfRepeatedPrimitive(f.actualType)(toExpr(f.number), value(obj, f).asInstanceOf[c.Expr[Iterable[Any]]])
-      case f: mm.EmbeddedMessage   => {
-        if (f.optional) messageSizeWithTag(f, reify { value(obj, f).asInstanceOf[c.Expr[Option[Any]]].splice.get })
-        else            messageSizeWithTag(f, value(obj, f))
+      case f: mm.EmbeddedMessage => {
+        if (f.optional) {
+          val mapper = Function(List(ValDef(Modifiers(Flag.PARAM), newTermName("m"), Ident(f.actualType.typeSymbol), EmptyTree)),
+            messageSizeWithTag(f, c.Expr[f.actualType.type](Ident(newTermName("m")))).tree)
+          val mappedOption = mapOption[f.actualType.type, Int](value(obj, f).asInstanceOf[c.Expr[Option[f.actualType.type]]], c.Expr(mapper))
+          reify { mappedOption.splice.getOrElse(0) }
+        }
+        else messageSizeWithTag(f, value(obj, f))
       }
-      case f: mm.RepeatedMessage   => {
+      case f: mm.RepeatedMessage => {
         val mapper = Function(List(ValDef(Modifiers(Flag.PARAM), newTermName("m"), Ident(f.actualType.typeSymbol), EmptyTree)),
           messageSizeWithTag(f, c.Expr[f.thisType.type](Ident(newTermName("m")))).tree)
         sizeOfRepeated(value(obj, f).asInstanceOf[c.Expr[Iterable[f.thisType.type]]], c.Expr(mapper))
