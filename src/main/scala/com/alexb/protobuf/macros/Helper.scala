@@ -95,13 +95,12 @@ class Helper[C <: Context](val c: C) {
   }
 
   def sizeOfRepeatedPrimitive(tpe: c.Type)(number: c.Expr[Int], value: c.Expr[Iterable[Any]]): c.Expr[Int] = {
-    val mapper: c.Expr[Any => Int] = reify {
-      m: Any => sizeOfPrimitive(tpe)(number, c.Expr[Any](Ident(newTermName("m")))).splice
-    }
-    sizeOfRepeated(value, mapper)
+    val mapper = Function(List(ValDef(Modifiers(Flag.PARAM), newTermName("m"), Ident(tpe.typeSymbol), EmptyTree)),
+      sizeOfPrimitive(tpe)(number, c.Expr[tpe.type](Ident(newTermName("m")))).tree)
+    sizeOfRepeated(value, c.Expr(mapper))
   }
 
-  def sizeOfRepeated(value: c.Expr[Iterable[Any]], sizeF: c.Expr[Any => Int]): c.Expr[Int] =
+  def sizeOfRepeated[T](value: c.Expr[Iterable[T]], sizeF: c.Expr[T => Int]): c.Expr[Int] =
     reify {
       value.splice.map(sizeF.splice).sum
     }
@@ -208,10 +207,9 @@ class Helper[C <: Context](val c: C) {
         else            messageSizeWithTag(f, value(obj, f))
       }
       case f: mm.RepeatedMessage   => {
-        val mapper: c.Expr[Any => Int] = reify {
-          m: Any => messageSizeWithTag(f, c.Expr[Any](Ident(newTermName("m")))).splice
-        }
-        sizeOfRepeated(value(obj, f).asInstanceOf[c.Expr[Iterable[Any]]], mapper)
+        val mapper = Function(List(ValDef(Modifiers(Flag.PARAM), newTermName("m"), Ident(f.actualType.typeSymbol), EmptyTree)),
+          messageSizeWithTag(f, c.Expr[f.thisType.type](Ident(newTermName("m")))).tree)
+        sizeOfRepeated(value(obj, f).asInstanceOf[c.Expr[Iterable[f.thisType.type]]], c.Expr(mapper))
       }
     })
       .reduce((e1, e2) => reify { e1.splice + e2.splice })

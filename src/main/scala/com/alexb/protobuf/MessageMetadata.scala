@@ -25,7 +25,7 @@ class MessageMetadata[U <: Universe](val u: U) {
     def number: Int
     def getter: Getter
     def fieldName: String = getter.name.decoded
-    def actualType = {
+    val actualType = {
       val tpe = getter.returnType
       if (tpe <:< typeOf[Option[_]] || tpe <:< typeOf[Iterable[_]]) firstTypeArgument(tpe)
       else tpe
@@ -38,7 +38,7 @@ class MessageMetadata[U <: Universe](val u: U) {
 
   sealed trait MessageField extends Field with Message {
     def messageName = actualType.typeSymbol.name.decoded
-    def thisType = getter.returnType
+    val thisType = getter.returnType
   }
 
   case class Primitive private[protobuf] (number: Int, getter: Getter, optional: Boolean = false) extends Scalar
