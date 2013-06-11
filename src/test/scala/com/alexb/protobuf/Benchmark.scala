@@ -23,6 +23,7 @@ object Benchmark extends App {
     println(s"Took ${end - start} millis")
   }
 
+  println("Generating data...")
   val data = generate(10000)
 
   val reflectionSerializer = Protobuf.serializerForList[BenchmarkMessage]
