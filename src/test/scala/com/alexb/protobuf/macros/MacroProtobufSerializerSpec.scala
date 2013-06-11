@@ -53,10 +53,10 @@ class MacroProtobufSerializerSpec extends WordSpec with MustMatchers {
       serializer.serialize(Message7(Some(Message1(150)))) must equal (Array(0x0a, 0x03, 0x08, 0x96, 0x01).map(_.toByte))
       serializer.serialize(Message7(None)) must equal (Array[Byte]())
     }
-    /*"serialize lists of messages using delimeted format" in {
-      val serializer = createListSerializer[Message1]
+    "serialize lists of messages using delimeted format" in {
+      val serializer = Protobuf.macroSerializerForList[Message1]
       serializer.serialize(Seq(Message1(150), Message1(0))) must equal (Array(0x03, 0x08, 0x96, 0x01, 0x02, 0x08, 0x00).map(_.toByte))
-    }*/
+    }
   }
 }
 
