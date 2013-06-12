@@ -15,7 +15,6 @@
         <elasticsearch-version>0.90.1</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.4.0</nscala-time-version>
-        <protobuf-version>2.5.0</protobuf-version>
         <scalatest-version>2.0.M6-SNAP8</scalatest-version>
         <specs2-version>1.14</specs2-version>
         <scalamock-version>3.0.1</scalamock-version>
@@ -125,11 +124,6 @@
             <groupId>com.github.nscala-time</groupId>
             <artifactId>nscala-time_2.10</artifactId>
             <version>${nscala-time-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>${protobuf-version}</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
