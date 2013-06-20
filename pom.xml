@@ -7,11 +7,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala-version>2.10.2</scala-version>
-        <spray-version>1.1-M8</spray-version>
+        <spray-version>1.1-20130620</spray-version>
         <spray-json-version>1.2.4</spray-json-version>
         <akka-version>2.1.4</akka-version>
         <casbah-version>2.6.1</casbah-version>
-        <infinispan-version>5.3.0.CR1</infinispan-version>
+        <infinispan-version>5.3.0.CR2</infinispan-version>
         <elasticsearch-version>0.90.1</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.4.0</nscala-time-version>
