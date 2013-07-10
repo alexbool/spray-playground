@@ -7,9 +7,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala-version>2.10.2</scala-version>
-        <spray-version>1.1-20130705</spray-version>
+        <spray-version>1.2-20130710</spray-version>
         <spray-json-version>1.2.4</spray-json-version>
-        <akka-version>2.1.4</akka-version>
+        <akka-version>2.2.0</akka-version>
         <casbah-version>2.6.2</casbah-version>
         <infinispan-version>5.3.0.Final</infinispan-version>
         <elasticsearch-version>0.90.1</elasticsearch-version>
