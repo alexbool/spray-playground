@@ -1,9 +1,10 @@
 package com.alexb.oauth
 
 import scala.concurrent.ExecutionContext
-import spray.http.{OAuth2BearerToken, HttpCredentials}
+import spray.http.{HttpChallenge, HttpRequest, OAuth2BearerToken, HttpCredentials}
 import spray.routing.RequestContext
 import spray.routing.authentication.HttpAuthenticator
+import spray.http.HttpHeaders.`WWW-Authenticate`
 
 class OAuthAuthenticator[U](tokenValidator: OAuthTokenValidator[U])(implicit ctx: ExecutionContext)
   extends HttpAuthenticator[U] {
@@ -22,6 +23,9 @@ class OAuthAuthenticator[U](tokenValidator: OAuthTokenValidator[U])(implicit ctx
       }
     }
   }
+
+  def getChallengeHeaders(httpRequest: HttpRequest) =
+    `WWW-Authenticate`(HttpChallenge(scheme = scheme, realm = realm, params = Map.empty)) :: Nil
 }
 
 object OAuth {

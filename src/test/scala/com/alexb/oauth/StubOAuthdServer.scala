@@ -5,7 +5,7 @@ import spray.routing.{RequestContext, HttpService}
 import spray.httpx.SprayJsonSupport
 import spray.json.DefaultJsonProtocol
 import spray.routing.authentication.HttpAuthenticator
-import spray.http.{OAuth2BearerToken, HttpCredentials}
+import spray.http.{HttpRequest, OAuth2BearerToken, HttpCredentials}
 import scala.concurrent.{Future, ExecutionContext}
 
 class StubOAuthdServer extends Actor with HttpService with SprayJsonSupport with DefaultJsonProtocol {
@@ -37,6 +37,7 @@ class StubOAuthdServer extends Actor with HttpService with SprayJsonSupport with
         case _ => None
       })
     }
+    def getChallengeHeaders(httpRequest: HttpRequest) = List()
   }
 }
 

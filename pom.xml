@@ -7,12 +7,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala-version>2.10.2</scala-version>
-        <spray-version>1.2-20130712</spray-version>
+        <spray-version>1.2-20130719</spray-version>
         <spray-json-version>1.2.4</spray-json-version>
         <akka-version>2.2.0</akka-version>
         <casbah-version>2.6.2</casbah-version>
         <infinispan-version>5.3.0.Final</infinispan-version>
-        <elasticsearch-version>0.90.1</elasticsearch-version>
+        <elasticsearch-version>0.90.2</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.4.2</nscala-time-version>
         <scalatest-version>2.0.M6-SNAP8</scalatest-version>
@@ -136,6 +136,11 @@
             <artifactId>spray-testkit</artifactId>
             <version>${spray-version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-testkit_2.10</artifactId>
+            <version>${akka-version}</version>
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>

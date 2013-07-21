@@ -158,6 +158,8 @@ class StubSwiftServer extends HttpServiceActor with Marshallers with ActorLoggin
         .filter(_ == token)
       Future.successful(userTokenO)
     }
+
+    def getChallengeHeaders(httpRequest: HttpRequest) = List()
   }
 
   object Authenticator {
