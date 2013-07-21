@@ -9,9 +9,10 @@ class SprayPlaygroundActor(routeContainers: Iterable[HttpRouteContainer])
   extends HttpServiceActor {
 
   val timeout: Timeout = 5 seconds // needed for `?`
+  private val route = routeContainers.map(_.route).reduce(_ ~ _)
 
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
-  def receive = runRoute(routeContainers map(_.route) reduce(_ ~ _))
+  def receive = runRoute(route)
 }
