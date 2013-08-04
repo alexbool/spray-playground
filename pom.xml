@@ -7,11 +7,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala-version>2.10.2</scala-version>
-        <spray-version>1.2-20130719</spray-version>
+        <spray-version>1.2-20130801</spray-version>
         <spray-json-version>1.2.4</spray-json-version>
         <akka-version>2.2.0</akka-version>
         <casbah-version>2.6.2</casbah-version>
-        <infinispan-version>5.3.0.Final</infinispan-version>
+        <infinispan-version>6.0.0.Alpha2</infinispan-version>
         <elasticsearch-version>0.90.2</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.4.2</nscala-time-version>
@@ -94,6 +94,12 @@
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-core</artifactId>
             <version>${infinispan-version}</version>
+        </dependency>
+        <dependency>
+            <!-- Just to satisfy infinispan during compilation -->
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>

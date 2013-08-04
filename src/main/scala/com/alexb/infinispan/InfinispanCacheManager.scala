@@ -1,8 +1,8 @@
 package com.alexb.infinispan
 
 import com.alexb.memoize.CacheManager
-import org.infinispan.api.BasicCacheContainer
-import org.infinispan.util.concurrent.FutureListener
+import org.infinispan.commons.api.BasicCacheContainer
+import org.infinispan.commons.util.concurrent.FutureListener
 import scala.concurrent.{Promise, ExecutionContext}
 import scala.util.Try
 
