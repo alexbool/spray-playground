@@ -12,7 +12,7 @@
         <akka-version>2.2.0</akka-version>
         <casbah-version>2.6.2</casbah-version>
         <infinispan-version>6.0.0.Alpha2</infinispan-version>
-        <elasticsearch-version>0.90.2</elasticsearch-version>
+        <elasticsearch-version>0.90.3</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.4.2</nscala-time-version>
         <scalatest-version>2.0.M6-SNAP8</scalatest-version>
