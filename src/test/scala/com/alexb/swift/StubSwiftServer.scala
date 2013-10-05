@@ -6,7 +6,6 @@ import spray.http._
 import spray.http.HttpHeaders.{`Content-Length`, `Content-Type`}
 import spray.routing.authentication.HttpAuthenticator
 import spray.http.HttpHeaders.RawHeader
-import spray.http.HttpResponse
 import collection.concurrent.TrieMap
 import org.joda.time.Instant
 import java.security.MessageDigest
@@ -61,7 +60,7 @@ class StubSwiftServer extends HttpServiceActor with Marshallers with ActorLoggin
           ctx.complete(
             HttpResponse(
               StatusCodes.OK,
-              EmptyEntity,
+              HttpEntity.Empty,
               RawHeader("X-Storage-Url", s"http://$host/v1/rootpath") :: RawHeader("X-Auth-Token", token) :: Nil))
         } else {
           ctx.complete(StatusCodes.Unauthorized)
@@ -101,10 +100,10 @@ class StubSwiftServer extends HttpServiceActor with Marshallers with ActorLoggin
             val contentType = ctx.request.headers.find(_.is("content-type")).map(_.asInstanceOf[`Content-Type`])
             if (contentLength.isEmpty || contentType.isEmpty) ctx.complete(StatusCodes.LengthRequired)
             val entity = ctx.request.entity
-            val obj = Object(name, contentType.get.contentType.mediaType, entity.buffer)
+            val obj = Object(name, contentType.get.contentType.mediaType, entity.data.toByteArray)
             val meta = ObjectMetadata(name,
-                                      new String(MessageDigest.getInstance("MD5").digest(entity.buffer)),
-                                      entity.buffer.size,
+                                      new String(MessageDigest.getInstance("MD5").digest(entity.data.toByteArray)),
+                                      entity.data.length,
                                       contentType.get.contentType.mediaType.toString,
                                       new Instant)
             val containerEntry = containers.find(_._1.name == container)

@@ -6,17 +6,17 @@
     <version>1.0.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala-version>2.10.2</scala-version>
-        <spray-version>1.2-20130822</spray-version>
-        <spray-json-version>1.2.4</spray-json-version>
+        <scala-version>2.10.3</scala-version>
+        <spray-version>1.2-20131004</spray-version>
+        <spray-json-version>1.2.5</spray-json-version>
         <akka-version>2.2.1</akka-version>
-        <casbah-version>2.6.2</casbah-version>
-        <infinispan-version>6.0.0.Alpha3</infinispan-version>
-        <elasticsearch-version>0.90.3</elasticsearch-version>
+        <casbah-version>2.6.3</casbah-version>
+        <infinispan-version>6.0.0.CR1</infinispan-version>
+        <elasticsearch-version>0.90.5</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
-        <nscala-time-version>0.4.2</nscala-time-version>
+        <nscala-time-version>0.6.0</nscala-time-version>
         <scalatest-version>2.0.M6-SNAP8</scalatest-version>
-        <specs2-version>2.1</specs2-version>
+        <specs2-version>2.2.2</specs2-version>
         <scalamock-version>3.0.1</scalamock-version>
     </properties>
     <repositories>

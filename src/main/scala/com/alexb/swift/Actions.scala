@@ -40,7 +40,7 @@ private[swift] class GetObjectAction(request: GetObject) extends Action[Option[O
     Get(mkUrl(auth.storageUrl, request.container, request.name)) ~> authHeader(auth.token)
   def parseResponse(resp: HttpResponse) =
     if (resp.status.isSuccess)
-      Some(Object(request.name, resp.header[`Content-Type`].get.contentType.mediaType, resp.entity.buffer))
+      Some(Object(request.name, resp.header[`Content-Type`].get.contentType.mediaType, resp.entity.data.toByteArray))
     else None
 }
 

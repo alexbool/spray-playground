@@ -2,7 +2,7 @@ package com.alexb.orders
 
 import scala.concurrent.ExecutionContext
 import spray.routing.Directives
-import spray.http.{StatusCodes, EmptyEntity}
+import spray.http.{StatusCodes, HttpEntity}
 import spray.httpx.SprayJsonSupport
 import akka.util.Timeout
 import akka.actor.ActorRef
@@ -22,7 +22,7 @@ class OrderService(orderActor: ActorRef, orderSearchActor: ActorRef, tokenValida
           entity(as[AddOrderCommand]) { cmd =>
             orderActor ! cmd
             respondWithStatus(StatusCodes.Accepted) {
-              complete(EmptyEntity)
+              complete(HttpEntity.Empty)
             }
           }
         }
