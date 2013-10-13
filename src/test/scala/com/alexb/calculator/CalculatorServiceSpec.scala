@@ -18,7 +18,7 @@ class CalculatorServiceSpec extends WordSpec with MustMatchers with ScalatestRou
 	"Calculator service" must {
 		"do right additions" in {
 			Get("/calculator/add/35/7.2") ~> service.route ~> check {
-				entityAs[CalculatorResult] must be (SuccessResult(42.2))
+				responseAs[CalculatorResult] must be (SuccessResult(42.2))
 			}
 		}
 	}

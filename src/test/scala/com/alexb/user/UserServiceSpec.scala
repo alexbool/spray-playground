@@ -16,10 +16,10 @@ class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
       (stubRepository.checkUsernameFree _).when("existent-user").returns(false)
       (stubRepository.checkUsernameFree _).when("non-existent-user").returns(true)
       Get("/users/check-username-free?username=existent-user") ~> service.route ~> check {
-        entityAs[CheckResult] must be(CheckResult(false))
+        responseAs[CheckResult] must be(CheckResult(false))
       }
       Get("/users/check-username-free?username=non-existent-user") ~> service.route ~> check {
-        entityAs[CheckResult] must be(CheckResult(true))
+        responseAs[CheckResult] must be(CheckResult(true))
       }
     }
     "check credentials" in {
@@ -28,10 +28,10 @@ class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
       (stubRepository.checkCredentials _).when("alex", "passw0rd").returns(true)
       (stubRepository.checkCredentials _).when(*, *).returns(false)
       Get("/users/check-credentials?username=alex&password=passw0rd") ~> service.route ~> check {
-        entityAs[CheckResult] must be(CheckResult(true))
+        responseAs[CheckResult] must be(CheckResult(true))
       }
       Get("/users/check-credentials?username=mike&password=foo") ~> service.route ~> check {
-        entityAs[CheckResult] must be(CheckResult(false))
+        responseAs[CheckResult] must be(CheckResult(false))
       }
     }
     "register users" in {

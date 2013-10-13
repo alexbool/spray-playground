@@ -8,12 +8,12 @@ class PageDirectivesSpec extends WordSpec with MustMatchers with Directives with
 	"Page directive" must {
 		"extract URL parameters" in {
 			Get("/?page=3&size=20") ~> pageInfo(p => complete(p.num + ":" + p.size)) ~> check {
-				entityAs[String] === "3:20"
+        responseAs[String] === "3:20"
 			}
 		}
 		"substitute correct default values" in {
 			Get("/") ~> pageInfo(p => complete(p.num + ":" + p.size)) ~> check {
-				entityAs[String] === "1:10"
+        responseAs[String] === "1:10"
 			}
 		}
 	}
