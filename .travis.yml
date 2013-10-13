@@ -1,5 +1,8 @@
-language: java
+language: scala
 jdk:
+  - oraclejdk7
   - openjdk7
 services:
   - mongodb
+install: true
+script: mvn test
