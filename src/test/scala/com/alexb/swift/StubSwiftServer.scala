@@ -71,7 +71,7 @@ class StubSwiftServer extends HttpServiceActor with Marshallers with ActorLoggin
   val storageRoute =
     pathPrefix("v1" / "rootpath") {
       authenticate(Authenticator()) { user =>
-        path("") {
+        pathEnd {
           get {
             complete {
               containers.keys
