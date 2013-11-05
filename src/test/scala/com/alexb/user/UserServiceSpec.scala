@@ -1,20 +1,27 @@
 package com.alexb.user
 
 import org.scalatest._
-import org.scalamock.scalatest.MockFactory
 import spray.testkit.ScalatestRouteTest
 import spray.httpx.SprayJsonSupport
 import spray.http.StatusCodes
+import language.reflectiveCalls
 
-class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest with MockFactory
+class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
   with SprayJsonSupport with UserMarshallers {
 
   "UserService" must {
     "check username availability" in {
-      val stubRepository = stub[UserRepository]
+      val stubRepository = new UserRepository {
+        def clear() = ???
+        def checkCredentials(username: String, password: String) = ???
+        def save(user: User) = ???
+        def find(username: String) = ???
+        def checkUsernameFree(username: String) = username match {
+          case "existent-user" => false
+          case _               => true
+        }
+      }
       val service = new UserService(stubRepository)(system.dispatcher)
-      (stubRepository.checkUsernameFree _).when("existent-user").returns(false)
-      (stubRepository.checkUsernameFree _).when("non-existent-user").returns(true)
       Get("/users/check-username-free?username=existent-user") ~> service.route ~> check {
         responseAs[CheckResult] must be(CheckResult(false))
       }
@@ -23,10 +30,17 @@ class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
       }
     }
     "check credentials" in {
-      val stubRepository = stub[UserRepository]
+      val stubRepository = new UserRepository {
+        def clear() = ???
+        def checkCredentials(username: String, password: String) = (username, password) match {
+          case ("alex", "passw0rd") => true
+          case _                    => false
+        }
+        def save(user: User) = ???
+        def find(username: String) = ???
+        def checkUsernameFree(username: String) = ???
+      }
       val service = new UserService(stubRepository)(system.dispatcher)
-      (stubRepository.checkCredentials _).when("alex", "passw0rd").returns(true)
-      (stubRepository.checkCredentials _).when(*, *).returns(false)
       Get("/users/check-credentials?username=alex&password=passw0rd") ~> service.route ~> check {
         responseAs[CheckResult] must be(CheckResult(true))
       }
@@ -35,11 +49,22 @@ class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
       }
     }
     "register users" in {
-      val stubRepository = stub[UserRepository]
+      val stubRepository = new UserRepository {
+        var savedUser: Option[User] = None
+
+        def clear() = ???
+        def checkCredentials(username: String, password: String) = ???
+        def save(user: User) {
+          savedUser = Some(user)
+        }
+        def find(username: String) = ???
+        def checkUsernameFree(username: String) = ???
+      }
       val service = new UserService(stubRepository)(system.dispatcher)
       Post("/users/register", RegisterUserCommand("alex", "password")) ~> service.route ~> check {
         response.status == StatusCodes.Created
-        (stubRepository.save _).verify(where { u: User => u.username == "alex" && u.password == "password" })
+        stubRepository.savedUser.get.username must be("alex")
+        stubRepository.savedUser.get.password must be("password")
       }
     }
   }
