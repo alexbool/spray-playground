@@ -6,20 +6,20 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import language.postfixOps
 
-trait CacheManagerSpec extends WordSpec with MustMatchers {
+trait CacheManagerSpec extends WordSpec with Matchers {
 	def name: String
 	def cacheManager: CacheManager
 
-	name must {
+	name should {
 		"implement get method" in {
-			cacheManager.get("", "a key") must equal (None)
+			cacheManager.get("", "a key") should equal (None)
 		}
     "implement getAsync method" in {
-      Await.result(cacheManager.getAsync("", "a key"), 10 seconds) must equal (None)
+      Await.result(cacheManager.getAsync("", "a key"), 10 seconds) should equal (None)
     }
 		"implement put method" in {
 			cacheManager.put("", "a key", "a value")
-			cacheManager.get("", "a key") must equal (Some("a value"))
+			cacheManager.get("", "a key") should equal (Some("a value"))
 		}
 	}
 }

@@ -7,7 +7,7 @@ import scala.concurrent.duration._
 import spray.client.pipelining._
 import language.postfixOps
 
-class SprayClientSpec extends WordSpec with MustMatchers {
+class SprayClientSpec extends WordSpec with Matchers {
   val system = ActorSystem("test")
 
   val pipeline = sendReceive(system, system.dispatcher)

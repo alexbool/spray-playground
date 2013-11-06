@@ -6,7 +6,7 @@ import com.alexb.test.Config
 import org.joda.time.Instant
 import language.reflectiveCalls
 
-class MongoUserRepositorySpec extends WordSpec with MustMatchers
+class MongoUserRepositorySpec extends WordSpec with Matchers
   with BeforeAndAfterEach with BeforeAndAfterAll {
 
   val context = new DefaultMongo with Config {
@@ -24,18 +24,18 @@ class MongoUserRepositorySpec extends WordSpec with MustMatchers
 
   "MongoUserRepository" ignore {
     "save and find users" in {
-      repository.find("alexb") must equal (Some(user))
+      repository.find("alexb") should equal (Some(user))
     }
     "check user credentials" in {
-      repository.checkCredentials(user.username, user.password) must be (true)
-      repository.checkCredentials(user.username, "wrong password") must be (false)
+      repository.checkCredentials(user.username, user.password) should be (true)
+      repository.checkCredentials(user.username, "wrong password") should be (false)
     }
     "check for free usernames" in {
-      repository.checkUsernameFree(user.username) must be (false)
-      repository.checkUsernameFree("a_free_username") must be (true)
+      repository.checkUsernameFree(user.username) should be (false)
+      repository.checkUsernameFree("a_free_username") should be (true)
     }
     "not insert duplicate users" in {
-      evaluating { repository.save(user) } must produce [DuplicateUsernameException]
+      evaluating { repository.save(user) } should produce [DuplicateUsernameException]
     }
   }
 }

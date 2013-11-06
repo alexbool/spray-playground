@@ -4,8 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.io.IO
 import akka.pattern.ask
 import akka.util.Timeout
-import org.scalatest.WordSpec
-import org.scalatest.matchers.MustMatchers
+import org.scalatest.{Matchers, WordSpec}
 import scala.concurrent.{ExecutionContext, Await}
 import scala.concurrent.duration._
 import scala.util.Random
@@ -14,7 +13,7 @@ import spray.http.MediaTypes
 import scala.io.Source
 import language.postfixOps
 
-class SwiftClientSpec extends WordSpec with MustMatchers {
+class SwiftClientSpec extends WordSpec with Matchers {
   implicit val system: ActorSystem = ActorSystem()
   implicit val ec: ExecutionContext = system.dispatcher
   val timeout = 3 seconds
@@ -30,7 +29,7 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
 
   val bytes = Source.fromFile("src/test/resources/sample.png")(scala.io.Codec.ISO8859).map(_.toByte).toArray
 
-  "Swift client" must {
+  "Swift client" should {
     "fail when Swift authentication fails" in {
       mockSwiftServer ! FailOnNextRequest
       val req = client ? ListContainers
@@ -40,34 +39,34 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
       }
     }
     "create containers" in {
-      Await.result(client ? CreateContainer("new_container"), timeout) must be (CreateContainerResult(true, false))
+      Await.result(client ? CreateContainer("new_container"), timeout) should be (CreateContainerResult(true, false))
     }
     "create duplicate containers" in {
-      Await.result(client ? CreateContainer("new_container"), timeout) must be (CreateContainerResult(true, true))
+      Await.result(client ? CreateContainer("new_container"), timeout) should be (CreateContainerResult(true, true))
     }
     "list containers" in {
-      Await.result(client ? ListContainers, timeout) must be (Seq(Container("new_container", 0, 0)))
+      Await.result(client ? ListContainers, timeout) should be (Seq(Container("new_container", 0, 0)))
     }
     "list objects" in {
-      Await.result(client ? ListObjects("new_container"), timeout) must be (Seq())
+      Await.result(client ? ListObjects("new_container"), timeout) should be (Seq())
     }
     "put objects" in {
-      Await.result(client ? PutObject("new_container", "sample.png", bytes), timeout) must be (PutObjectResult(true))
+      Await.result(client ? PutObject("new_container", "sample.png", bytes), timeout) should be (PutObjectResult(true))
     }
     "get objects" in {
       val obj = Await.result((client ? GetObject("new_container", "sample.png")).mapTo[Option[Object]], timeout).get
-      obj.name must be ("sample.png")
-      obj.mediaType must be (MediaTypes.forExtension("png").get)
-      obj.data.deep must be (bytes.deep)
+      obj.name should be ("sample.png")
+      obj.mediaType should be (MediaTypes.forExtension("png").get)
+      obj.data.deep should be (bytes.deep)
     }
     "get empty objects" in {
-      Await.result(client ? GetObject("new_container", "some_nonexistent_object"), timeout) must be (None)
+      Await.result(client ? GetObject("new_container", "some_nonexistent_object"), timeout) should be (None)
     }
     "delete existent objects" in {
-      Await.result(client ? DeleteObject("new_container", "sample.png"), timeout) must be (DeleteObjectResult(true, false))
+      Await.result(client ? DeleteObject("new_container", "sample.png"), timeout) should be (DeleteObjectResult(true, false))
     }
     "delete nonexistent objects" in {
-      Await.result(client ? DeleteObject("new_container", "sample.png"), timeout) must be (DeleteObjectResult(true, true))
+      Await.result(client ? DeleteObject("new_container", "sample.png"), timeout) should be (DeleteObjectResult(true, true))
     }
     "handle interleaving requests" in {
       val req1 = client ? ListContainers
@@ -77,8 +76,8 @@ class SwiftClientSpec extends WordSpec with MustMatchers {
         res2 <- req2.mapTo[Seq[Container]]
       } yield (res1, res2)
       val readyResult = Await.result(f, timeout)
-      readyResult._1.length must be (1)
-      readyResult._2.length must be (1)
+      readyResult._1.length should be (1)
+      readyResult._2.length should be (1)
     }
     "handle authentication token expiration" in {
       mockSwiftServer ! RegenerateToken

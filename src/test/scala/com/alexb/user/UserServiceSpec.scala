@@ -6,10 +6,10 @@ import spray.httpx.SprayJsonSupport
 import spray.http.StatusCodes
 import language.reflectiveCalls
 
-class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
+class UserServiceSpec extends WordSpec with Matchers with ScalatestRouteTest
   with SprayJsonSupport with UserMarshallers {
 
-  "UserService" must {
+  "UserService" should {
     "check username availability" in {
       val stubRepository = new UserRepository {
         def clear() = ???
@@ -23,10 +23,10 @@ class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
       }
       val service = new UserService(stubRepository)(system.dispatcher)
       Get("/users/check-username-free?username=existent-user") ~> service.route ~> check {
-        responseAs[CheckResult] must be(CheckResult(false))
+        responseAs[CheckResult] should be(CheckResult(false))
       }
       Get("/users/check-username-free?username=non-existent-user") ~> service.route ~> check {
-        responseAs[CheckResult] must be(CheckResult(true))
+        responseAs[CheckResult] should be(CheckResult(true))
       }
     }
     "check credentials" in {
@@ -42,10 +42,10 @@ class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
       }
       val service = new UserService(stubRepository)(system.dispatcher)
       Get("/users/check-credentials?username=alex&password=passw0rd") ~> service.route ~> check {
-        responseAs[CheckResult] must be(CheckResult(true))
+        responseAs[CheckResult] should be(CheckResult(true))
       }
       Get("/users/check-credentials?username=mike&password=foo") ~> service.route ~> check {
-        responseAs[CheckResult] must be(CheckResult(false))
+        responseAs[CheckResult] should be(CheckResult(false))
       }
     }
     "register users" in {
@@ -63,8 +63,8 @@ class UserServiceSpec extends WordSpec with MustMatchers with ScalatestRouteTest
       val service = new UserService(stubRepository)(system.dispatcher)
       Post("/users/register", RegisterUserCommand("alex", "password")) ~> service.route ~> check {
         response.status == StatusCodes.Created
-        stubRepository.savedUser.get.username must be("alex")
-        stubRepository.savedUser.get.password must be("password")
+        stubRepository.savedUser.get.username should be("alex")
+        stubRepository.savedUser.get.password should be("password")
       }
     }
   }
