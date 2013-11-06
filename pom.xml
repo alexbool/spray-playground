@@ -12,11 +12,11 @@
         <akka-version>2.2.3</akka-version>
         <casbah-version>2.6.3</casbah-version>
         <infinispan-version>6.0.0.CR1</infinispan-version>
-        <elasticsearch-version>0.90.5</elasticsearch-version>
+        <elasticsearch-version>0.90.6</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.6.0</nscala-time-version>
         <scalatest-version>2.0</scalatest-version>
-        <specs2-version>2.2.2</specs2-version>
+        <specs2-version>2.3.3</specs2-version>
     </properties>
     <repositories>
         <repository>
