@@ -17,7 +17,6 @@
         <nscala-time-version>0.6.0</nscala-time-version>
         <scalatest-version>2.0.M6-SNAP8</scalatest-version>
         <specs2-version>2.2.2</specs2-version>
-        <scalamock-version>3.0.1</scalamock-version>
     </properties>
     <repositories>
         <repository>
@@ -152,12 +151,6 @@
             <groupId>org.specs2</groupId>
             <artifactId>specs2_2.10</artifactId>
             <version>${specs2-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scalamock</groupId>
-            <artifactId>scalamock-scalatest-support_2.10</artifactId>
-            <version>${scalamock-version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
