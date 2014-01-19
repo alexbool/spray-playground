@@ -4,9 +4,9 @@ import org.scalatest.{BeforeAndAfterAll, WordSpec, Matchers}
 import com.datastax.driver.core.Cluster
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import java.lang.Long
 
 import language.postfixOps
-import java.lang.Long
 
 class SessionSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   val cluster = Cluster.builder().addContactPoint("localhost").build()
