@@ -1,7 +1,7 @@
 package com.alexb.cassandra
 
 import com.datastax.driver.core.{Session => DatastaxSession, _}
-import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.{ListenableFuture, Futures}
 import scala.concurrent.Future
 
 class Session(underlying: DatastaxSession) {
@@ -9,8 +9,8 @@ class Session(underlying: DatastaxSession) {
   def execute(query: String, values: Any*): ResultSet = underlying.execute(query, values)
   def execute(statement: Statement): ResultSet = underlying.execute(statement)
 
-  private def translateFuture(future: ResultSetFuture): Future[ResultSet] = {
-    val listener = new ResultSetFutureListener
+  private def translateFuture[T](future: ListenableFuture[T]): Future[T] = {
+    val listener = new FutureListener[T]
     Futures.addCallback(future, listener)
     listener.future
   }
@@ -22,7 +22,7 @@ class Session(underlying: DatastaxSession) {
   def prepare(query: String): PreparedStatement = underlying.prepare(query)
   def prepare(statement: RegularStatement): PreparedStatement = underlying.prepare(statement)
 
-  def shutdown(): ShutdownFuture = underlying.shutdown()
+  def shutdown(): Future[Void] = translateFuture(underlying.shutdown())
 
   def session: DatastaxSession = underlying
 }
