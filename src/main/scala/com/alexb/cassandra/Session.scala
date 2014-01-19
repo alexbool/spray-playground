@@ -13,8 +13,8 @@ class Session(underlying: DatastaxSession) {
   def executeAsync(query: String, values: Any*): Future[ResultSet] = translateFuture(underlying.executeAsync(query, values))
   def executeAsync(statement: Statement): Future[ResultSet] = translateFuture(underlying.executeAsync(statement))
 
-  def prepare(query: String): PreparedStatement = underlying.prepare(query)
-  def prepare(statement: RegularStatement): PreparedStatement = underlying.prepare(statement)
+  def prepare(query: String): PreparedStatement = new PreparedStatement(underlying.prepare(query))
+  def prepare(statement: RegularStatement): PreparedStatement = new PreparedStatement(underlying.prepare(statement))
 
   def shutdown(): Future[Void] = translateFuture(underlying.shutdown())
 

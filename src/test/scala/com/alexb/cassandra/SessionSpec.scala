@@ -4,7 +4,6 @@ import org.scalatest.{BeforeAndAfterAll, WordSpec, Matchers}
 import com.datastax.driver.core.Cluster
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import java.lang.Long
 
 import language.postfixOps
 
@@ -36,7 +35,7 @@ class SessionSpec extends WordSpec with Matchers with BeforeAndAfterAll {
     }
     "create and use preapred statements" in {
       val prepared = session.prepare("INSERT INTO history (uid, timestamp, track_id, album_id) VALUES (?, ?, ?, ?)")
-      val binded = prepared.bind(new Long(1), new Long(2), new Integer(3), new Integer(4)) // XXX That's ugly
+      val binded = prepared.bind(1L, 2L, 3, 4)
       val future = session.executeAsync(binded)
       Await.result(future, timeout)
     }
