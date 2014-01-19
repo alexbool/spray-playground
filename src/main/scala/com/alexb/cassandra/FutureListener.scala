@@ -1,7 +1,6 @@
 package com.alexb.cassandra
 
 import scala.concurrent.{Future, Promise}
-import com.datastax.driver.core.ResultSet
 import com.google.common.util.concurrent.FutureCallback
 
 class FutureListener[T] extends FutureCallback[T] {
