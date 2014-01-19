@@ -1,32 +1,30 @@
 package com.alexb.main.context
 
-import org.scalatest.matchers.MustMatchers
-import org.scalatest.WordSpec
+import org.scalatest.{Matchers, WordSpec}
 import java.io.Closeable
 
-class AutoCloseableSpec extends WordSpec with MustMatchers {
-  object TestInnerObject extends AutoCloseable with CloseableMembers {
-  }
+class AutoCloseableSpec extends WordSpec with Matchers {
+  object TestInnerObject extends AutoCloseable with CloseableMembers { }
 
-  "AutoCloseable trait" must {
+  "AutoCloseable trait" should {
     "find and close Closeable fields in class instances" in {
       val objectUnderTest = new TestCloseableClass
       objectUnderTest.close()
-      objectUnderTest.closeableVal.isClosed must be (true)
-      objectUnderTest.closeableVar.isClosed must be (true)
-      objectUnderTest.closeableGetter.isClosed must be (true)
+      objectUnderTest.closeableVal.isClosed should be (true)
+      objectUnderTest.closeableVar.isClosed should be (true)
+      objectUnderTest.closeableGetter.isClosed should be (true)
     }
     "find and close Closeable fields in outer objects" in {
       TestOuterObject.close()
-      TestOuterObject.closeableVal.isClosed must be (true)
-      TestOuterObject.closeableVar.isClosed must be (true)
-      TestOuterObject.closeableGetter.isClosed must be (true)
+      TestOuterObject.closeableVal.isClosed should be (true)
+      TestOuterObject.closeableVar.isClosed should be (true)
+      TestOuterObject.closeableGetter.isClosed should be (true)
     }
     "find and close Closeable fields in inner objects" in {
       TestInnerObject.close()
-      TestInnerObject.closeableVal.isClosed must be (true)
-      TestInnerObject.closeableVar.isClosed must be (true)
-      TestInnerObject.closeableGetter.isClosed must be (true)
+      TestInnerObject.closeableVal.isClosed should be (true)
+      TestInnerObject.closeableVar.isClosed should be (true)
+      TestInnerObject.closeableGetter.isClosed should be (true)
     }
   }
 }

@@ -1,18 +1,18 @@
 package com.alexb.oauth
 
-import org.scalatest.WordSpec
-import org.scalatest.matchers.MustMatchers
 import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
+import akka.util.Timeout
+import akka.io.IO
+import org.scalatest.{Matchers, WordSpec}
 import scala.util.Random
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import spray.can.Http
-import akka.util.Timeout
-import akka.io.IO
+
 import language.postfixOps
 
-class OAuthdTokenValidatorSpec extends WordSpec with MustMatchers {
+class OAuthdTokenValidatorSpec extends WordSpec with Matchers {
 
   implicit val system = ActorSystem()
   val timeout = 20 seconds
@@ -24,9 +24,9 @@ class OAuthdTokenValidatorSpec extends WordSpec with MustMatchers {
 
   val tokenValidator = new OAuthdTokenValidator(s"http://localhost:$port/user")(system, system.dispatcher, askTimeout)
 
-  "oauthd token validator" must {
+  "oauthd token validator" should {
     "validate tokens" in {
-      Await.result(tokenValidator(Some("olololo")), timeout) must be (Some(StubOAuthdServer.stubUser))
+      Await.result(tokenValidator(Some("olololo")), timeout) should be (Some(StubOAuthdServer.stubUser))
     }
   }
 }
