@@ -3,7 +3,7 @@ package com.alexb.cassandra
 import scala.concurrent.{Future, Promise}
 import com.google.common.util.concurrent.FutureCallback
 
-class FutureListener[T] extends FutureCallback[T] {
+private class FutureListener[T] extends FutureCallback[T] {
   private val promise: Promise[T] = Promise()
   val future: Future[T] = promise.future
   def onSuccess(result: T) = promise.success(result)
