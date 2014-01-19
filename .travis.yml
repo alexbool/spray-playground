@@ -4,5 +4,6 @@ jdk:
   - openjdk7
 services:
   - mongodb
+  - cassandra
 install: true
 script: mvn test
