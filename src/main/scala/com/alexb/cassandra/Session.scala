@@ -6,11 +6,11 @@ import scala.concurrent.Future
 
 class Session(underlying: DatastaxSession) {
   def execute(query: String): ResultSet = underlying.execute(query)
-  def execute(query: String, values: Any*): ResultSet = underlying.execute(query, values)
+  def execute(query: String, values: Any*): ResultSet = underlying.execute(query, values.map(_.asInstanceOf[AnyRef]): _*)
   def execute(statement: Statement): ResultSet = underlying.execute(statement)
 
   def executeAsync(query: String): Future[ResultSet] = translateFuture(underlying.executeAsync(query))
-  def executeAsync(query: String, values: Any*): Future[ResultSet] = translateFuture(underlying.executeAsync(query, values))
+  def executeAsync(query: String, values: Any*): Future[ResultSet] = translateFuture(underlying.executeAsync(query, values.map(_.asInstanceOf[AnyRef]): _*))
   def executeAsync(statement: Statement): Future[ResultSet] = translateFuture(underlying.executeAsync(statement))
 
   def prepare(query: String): PreparedStatement = new PreparedStatement(underlying.prepare(query))
