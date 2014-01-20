@@ -11,8 +11,8 @@
         <spray-json-version>1.2.5</spray-json-version>
         <akka-version>2.3-M2</akka-version>
         <casbah-version>2.6.4</casbah-version>
-        <infinispan-version>6.0.0.Final</infinispan-version>
-        <elasticsearch-version>1.0.0.Beta2</elasticsearch-version>
+        <infinispan-version>6.0.1.Final</infinispan-version>
+        <elasticsearch-version>1.0.0.RC1</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
         <nscala-time-version>0.6.0</nscala-time-version>
         <scalatest-version>2.0</scalatest-version>
