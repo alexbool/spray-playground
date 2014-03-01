@@ -56,8 +56,8 @@ class SessionSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   override protected def afterAll() {
-    Await.ready(session.closeAsync(), timeout)
-    cluster.shutdown().get()
+    session.close()
+    cluster.close()
     super.afterAll()
   }
 }
