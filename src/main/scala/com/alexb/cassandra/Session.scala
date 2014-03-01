@@ -16,7 +16,8 @@ class Session(underlying: DatastaxSession) {
   def prepare(query: String): PreparedStatement = new PreparedStatement(underlying.prepare(query))
   def prepare(statement: RegularStatement): PreparedStatement = new PreparedStatement(underlying.prepare(statement))
 
-  def shutdown(): Future[Unit] = fromListenableFuture(underlying.shutdown()).asInstanceOf[Future[Unit]]
+  def close(): Unit = underlying.close()
+  def closeAsync(): Future[Unit] = fromListenableFuture(underlying.closeAsync()).asInstanceOf[Future[Unit]]
 
   def session: DatastaxSession = underlying
 }

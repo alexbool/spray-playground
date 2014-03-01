@@ -1,7 +1,7 @@
 package com.alexb.main
 package context
 
-import com.mongodb.casbah.{MongoConnection, MongoDB}
+import com.mongodb.casbah.{MongoClient, MongoDB}
 
 trait MongoSupport {
   // MongoDB database instance
@@ -9,5 +9,5 @@ trait MongoSupport {
 }
 
 trait DefaultMongo extends MongoSupport { this: Configuration =>
-  lazy val mongoDb = MongoConnection(config.getString("mongo.host"))(config.getString("mongo.db"))
+  lazy val mongoDb = MongoClient(config.getString("mongo.host"))(config.getString("mongo.db"))
 }

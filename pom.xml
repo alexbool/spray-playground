@@ -7,14 +7,15 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala-version>2.10.3</scala-version>
-        <spray-version>1.3-M2</spray-version>
+        <spray-version>1.3-RC4</spray-version>
         <spray-json-version>1.2.5</spray-json-version>
-        <akka-version>2.3-M2</akka-version>
-        <casbah-version>2.6.4</casbah-version>
+        <akka-version>2.3.0-RC4</akka-version>
+        <casbah-version>2.7.0-RC0</casbah-version>
+        <datastax-driver-version>2.0.0</datastax-driver-version>
         <infinispan-version>6.0.1.Final</infinispan-version>
-        <elasticsearch-version>1.0.0.RC1</elasticsearch-version>
+        <elasticsearch-version>1.0.0</elasticsearch-version>
         <zookeeper-version>3.4.5</zookeeper-version>
-        <nscala-time-version>0.6.0</nscala-time-version>
+        <nscala-time-version>0.8.0</nscala-time-version>
         <scalatest-version>2.0</scalatest-version>
         <specs2-version>2.3.3</specs2-version>
     </properties>
@@ -92,7 +93,7 @@
         <dependency>
             <groupId>com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
-            <version>2.0.0-rc2</version>
+            <version>${datastax-driver-version}</version>
         </dependency>
         <dependency>
             <groupId>org.infinispan</groupId>
